@@ -330,16 +330,19 @@ The method, step by step (details and scripts in its `README.md`):
 
 ## 6. Improving the toolkit
 
-### 6.1 Before anything: put it under version control
+### 6.1 Version control (done 2026-10-20)
 
-Neither the kit nor `/project-explorer` is a git repository yet, so a bad edit can't be undone:
+The three toolkit folders are git repositories, so every improvement is a commit you can inspect or undo:
 
-```bash
-cd ~/claude-kits/spring-boot-learning && git init && git add -A && git commit -m "Kit as of 2026-10-20"
-cd ~/.claude/skills/project-explorer && git init && git add -A && git commit -m "Skill as of 2026-10-20"
-```
+| Repo | What's tracked | Ignored |
+|---|---|---|
+| `~/claude-kits/spring-boot-learning` | the kit, kit-e2e, kit-check, install.sh, docs | `target/`, `node_modules/`, `reviewer-eval/work/` |
+| `~/.claude/skills/project-explorer` | the skill, its templates and tools | `node_modules/` |
+| `~/Documents/ClaudeProjects` | `GUIDE.md`, `new-project.sh`, `.gitignore` | **every project folder**: each new project is its own repository |
 
-(Add a `.gitignore` with `target/`, `node_modules/`, `reviewer-eval/work/` to the kit first.)
+Before changing anything: `git status` (clean?), then make the change, run the proofs (§6.3–6.7), and commit with a
+message that says why. To see what changed since a date: `git log --since=2026-11-01 --stat`. No remotes yet: add a
+private GitHub repo per folder if you want an off-machine copy.
 
 ### 6.2 The rule: edit the kit, not the copies
 
