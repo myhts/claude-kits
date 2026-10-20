@@ -1,0 +1,5 @@
+# Only this folder's own files are tracked. Each project created here is its own git repository.
+/*
+!/.gitignore
+!/GUIDE.md
+!/new-project.sh
