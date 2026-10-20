@@ -49,7 +49,8 @@ skills/project-explorer/     a personal skill, linked into ~/.claude/skills/ by 
 <your projects>/             created by new-project.sh; ignored by this repo (each is its own repository)
 ```
 
-## Credits
+## Licence and credits
 
-The learning kit started from [piomin/claude-ai-spring-boot](https://github.com/piomin/claude-ai-spring-boot)
-(Apache-2.0) and was reworked into a learning edition; `spring-boot-learning/NOTICE.md` lists what changed.
+[Apache License 2.0](LICENSE) for the whole repository. The learning kit started from
+[piomin/claude-ai-spring-boot](https://github.com/piomin/claude-ai-spring-boot) (Apache-2.0) and was reworked into a
+learning edition; `spring-boot-learning/NOTICE.md` lists what changed.
