@@ -1,0 +1,11 @@
+# Non-secret settings, as environment variables (Spring Boot maps SPRING_DATASOURCE_URL → spring.datasource.url).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  labels: { app.kubernetes.io/name: app }
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/app
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+  SERVER_SHUTDOWN: graceful
+  SPRING_LIFECYCLE_TIMEOUT_PER_SHUTDOWN_PHASE: 20s

@@ -1,0 +1,8 @@
+# build output and installs
+target/
+node_modules/
+# reviewer-eval scratch copies (prepare.sh recreates them)
+kit-check/reviewer-eval/work/
+.DS_Store
+.env
+.env.*

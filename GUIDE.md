@@ -1,6 +1,6 @@
 # Claude toolkit handbook: agents, skills, MCP and scripts for new projects
 
-Everything built so far for working with Claude Code, in one place: what each piece offers, step-by-step use, how to
+Everything in this repository for working with Claude Code, in one place: what each piece offers, step-by-step use, how to
 apply it to a new project (or a different stack), and how to improve it safely. Last updated 2026-10-20.
 
 **Contents:** [1. What exists](#1-what-exists) · [2. Quick starts](#2-quick-starts) ·
@@ -15,13 +15,14 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 
 | Piece | Where | What it's for |
 |---|---|---|
-| **`new-project.sh`** | `~/Documents/ClaudeProjects/` | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it |
-| **The learning kit** | `~/claude-kits/spring-boot-learning/` | 6 agents, 13 skills, a working agreement, progress/lesson files; `install.sh` copies them into any project |
-| **The e2e add-on** (`--e2e`) | `~/claude-kits/spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
-| **kit-check** | `~/claude-kits/spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose 35 tests prove the code in the skills; scripts that verify the templates and the e2e add-on |
-| **The reviewer evaluation** | `~/claude-kits/spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading); the code-reviewer vs blind-reviewer result |
-| **`/project-explorer`** | `~/.claude/skills/project-explorer/` (personal: every project) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
-| **EventStorm** | `~/Documents/EventStorm/` | The full worked example: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use |
+| **`setup.sh`** | repo root | One-time: checks your tools, links `skills/` into `~/.claude/skills/` |
+| **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it |
+| **The learning kit** | `spring-boot-learning/` | 6 agents, 13 skills, a working agreement, progress/lesson files; `install.sh` copies them into any project |
+| **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
+| **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose 35 tests prove the code in the skills; scripts that verify the templates and the e2e add-on |
+| **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
+| **`/project-explorer`** | `skills/project-explorer/` (linked into `~/.claude/skills/` by `setup.sh`, so it works in every project) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
+| **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here |
 
 ### The agents (6 in the kit, plus 1 with `--e2e`)
 
@@ -48,8 +49,8 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 | `resilience-patterns` | Timeouts → retries with jitter → breaker → bulkhead → rate limit → fallback | kit-check |
 | `logging-patterns` | JSON logs, request id across threads and messages | kit-check |
 | `design-patterns` | A correct outbox, idempotent consumers, sagas, CQRS | kit-check (outbox) |
-| `distributed-systems` | Kafka keys/partitions, at-least-once + idempotency, poison, rebalancing, exactly-once trade-offs, Redis with a version guard, read-your-writes, Lua rate limiting, locks, sharding, consistency | EventStorm's tests (named in the skill) |
-| `system-design` | The 45-minute shape, sizing, Little's law, 1×/10×/100× capacity, building blocks, 14 designs, rubric, your project as the answer | method; EventStorm's docs |
+| `distributed-systems` | Kafka keys/partitions, at-least-once + idempotency, poison, rebalancing, exactly-once trade-offs, Redis with a version guard, read-your-writes, Lua rate limiting, locks, sharding, consistency | tests in the private example project, named in the skill |
+| `system-design` | The 45-minute shape, sizing, Little's law, 1×/10×/100× capacity, building blocks, 14 designs, rubric, your project as the answer | method |
 | `java-modern` | Records, sealed types, virtual threads and their limits | |
 | `build-templates` | Dockerfile, .dockerignore, compose, GitHub Actions CI, Kubernetes manifests | `verify-templates.sh` |
 | `e2e-testing` (`--e2e`) | The e2e stack config, waiting without sleeps, oracles, pinned known bugs, the MCP | `verify-e2e.sh` |
@@ -67,7 +68,8 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 ### A new Spring Boot project (5 minutes)
 
 ```bash
-cd ~/Documents/ClaudeProjects
+git clone <this repo> ClaudeProjects && cd ClaudeProjects
+./setup.sh                            # once: checks tools, installs /project-explorer for every project
 ./new-project.sh my-shop --e2e        # Boot 4.1.1, Java 21, Postgres, JPA, Flyway, Testcontainers + e2e
 cd my-shop
 # 1. open CLAUDE.md, fill in "This project" at the end (what it is, architecture, what you want to learn)
@@ -82,8 +84,8 @@ Needs the internet (start.spring.io).
 ### An existing project
 
 ```bash
-~/claude-kits/spring-boot-learning/install.sh ~/code/their-project --dry-run   # see what would be added
-~/claude-kits/spring-boot-learning/install.sh ~/code/their-project [--e2e]
+./spring-boot-learning/install.sh ~/code/their-project --dry-run   # from this repo: see what would be added
+./spring-boot-learning/install.sh ~/code/their-project [--e2e]
 ```
 
 It never overwrites. If the project already has a `CLAUDE.md`, the kit's goes to `CLAUDE.learning.md` (merge the parts
@@ -99,7 +101,7 @@ cd ~/code/any-repo && claude
 
 ### Only an independent review (any project)
 
-Copy `~/claude-kits/spring-boot-learning/kit/.claude/agents/blind-reviewer.md` into the project's `.claude/agents/`,
+Copy `spring-boot-learning/kit/.claude/agents/blind-reviewer.md` into the project's `.claude/agents/`,
 restart `claude`, then: "use the blind-reviewer on my changes". It works for any language: it detects the stack itself.
 
 ---
@@ -200,7 +202,7 @@ E2E_BASE_URL=$(cat .stack-url) npx playwright test   # fast loop against the run
 
 Rules the skill enforces: never sleep (wait on conditions); expected values from an independent **oracle**, never the
 system's own output; pin known bugs exactly (not `test.fail()`); user-facing selectors; prove a new test with
-`--repeat-each=20` before trusting it. EventStorm's suite is the worked example (17 tests, 340/340 on a repeat run).
+`--repeat-each=20` before trusting it. Proven first on the private example project's suite (17 tests, 340/340 on a repeat run).
 
 ### 3.7 The Playwright MCP
 
@@ -242,17 +244,16 @@ It keeps `PROGRESS.md` in the output folder and **resumes** from it in a new ses
 folder): `validate-data.mjs`, `bundle-html.mjs`, `check-explorer.mjs` (geometry and screenshots), `gen-guides.mjs`,
 `lab-kit.mjs`.
 
-**A study plan on the page** (like EventStorm's Study path tab): after the explorer exists, ask for a "Study path"
-tab with weeks of steps that open flows, ladder levels and boxes. EventStorm's implementation is the template:
-`docs/architecture/explorer.html` (search `PATH-DATA-START`) plus `docs/architecture/tools/path-to-md.mjs`, which
-writes the checklist copy.
+**A study plan on the page:** after the explorer exists, ask for a "Study path" tab: weeks of steps that open flows,
+ladder levels and boxes, with ticks saved in the browser, and a script that writes the same plan as a markdown
+checklist. (The private example project has one; its data sits between `PATH-DATA-START` and `PATH-DATA-END`.)
 
 ### 3.9 kit-check: the proofs
 
 **Offers:** confidence that the code in the skills runs on the current versions.
 
 ```bash
-cd ~/claude-kits/spring-boot-learning/kit-check
+cd spring-boot-learning/kit-check
 ./mvnw verify               # 35 tests: catalog/JPA, transactions (18), outbox, resilience, API (Docker needed)
 ./verify-templates.sh       # builds, runs and validates the Docker, compose, CI and Kubernetes templates, then cleans up
 ./verify-e2e.sh             # installs --e2e into a copy, runs Playwright against Testcontainers, checks the stale-image guard
@@ -261,7 +262,7 @@ cd ~/claude-kits/spring-boot-learning/kit-check
 ### 3.10 The reviewer evaluation
 
 **Offers:** a fair way to decide whether a changed agent is better. Used once: `code-reviewer` (with context) vs
-`blind-reviewer` (code only) on EventStorm: **a draw**, 14.83 vs 14.67 points, so both are kept.
+`blind-reviewer` (code only) on the private example project: **a draw**, 14.83 vs 14.67 points, so both are kept.
 
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
@@ -324,29 +325,27 @@ The method, step by step (details and scripts in its `README.md`):
 | **A Java project without Spring** | Keep: `mentor`, both reviewers, `security-reviewer`, `deploy-reviewer`, `implementer`, `learning-loop`, `interview-drill`, `java-modern`, `distributed-systems`, `system-design`, `design-patterns`, `resilience-patterns` (concepts). Delete or ignore the Spring-specific skills |
 | **Another language (Go, Python, TypeScript…)** | Portable as is: `blind-reviewer` (detects the stack), `/project-explorer`, `system-design`, `distributed-systems` (concepts), `learning-loop`, `interview-drill`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). Rewrite for the stack: `code-reviewer`'s checklist, `testing-patterns`, `build-templates` |
 | **A project you don't own** (work, client) | Don't install anything without the owner's agreement. The least invasive option is the `blind-reviewer`, which only reads; `/project-explorer` writes an output folder and debugger configs, so ask first. Never send confidential data to an LLM: check before you start |
-| **A new machine or account** | Copy `~/claude-kits/`, `~/Documents/ClaudeProjects/`, `~/.claude/skills/project-explorer/`. Approve project MCP servers again. A project's `CLAUDE.md` carries its rules; memory files are optional |
+| **A new machine or account** | `git clone` this repo, run `./setup.sh`. Approve project MCP servers again. A project's `CLAUDE.md` carries its rules; memory files are optional |
 
 ---
 
 ## 6. Improving the toolkit
 
-### 6.1 Version control (done 2026-10-20)
+### 6.1 Version control
 
 The three toolkit folders are git repositories, so every improvement is a commit you can inspect or undo:
 
-| Repo | What's tracked | Ignored |
-|---|---|---|
-| `~/claude-kits/spring-boot-learning` | the kit, kit-e2e, kit-check, install.sh, docs | `target/`, `node_modules/`, `reviewer-eval/work/` |
-| `~/.claude/skills/project-explorer` | the skill, its templates and tools | `node_modules/` |
-| `~/Documents/ClaudeProjects` | `GUIDE.md`, `new-project.sh`, `.gitignore` | **every project folder**: each new project is its own repository |
+Everything is in **this one repository**: the kit (`spring-boot-learning/`), the personal skills (`skills/`), the
+scripts and this guide. Ignored: build output (`target/`, `node_modules/`), `reviewer-eval/work/`, and **every project
+folder** you create here with `new-project.sh` (each new project is its own repository).
 
-Before changing anything: `git status` (clean?), then make the change, run the proofs (§6.3–6.7), and commit with a
-message that says why. To see what changed since a date: `git log --since=2026-11-01 --stat`. No remotes yet: add a
-private GitHub repo per folder if you want an off-machine copy.
+`setup.sh` links `skills/*` into `~/.claude/skills/`, so a `git pull` updates them everywhere; projects get **copies**
+of the kit (§6.2). Before changing anything: `git status` (clean?), then make the change, run the proofs (§6.3–6.7),
+and commit with a message that says why. `git log --since=2026-11-01 --stat` shows what changed since a date.
 
 ### 6.2 The rule: edit the kit, not the copies
 
-Projects get **copies**. Change an agent or skill in `~/claude-kits/spring-boot-learning/kit/` (or `kit-e2e/`), then
+Projects get **copies**. Change an agent or skill in `spring-boot-learning/kit/` (or `kit-e2e/`), then
 re-install where you want it: `install.sh <project> --force`, and check `git diff` in the project (`--force`
 overwrites).
 
@@ -385,12 +384,12 @@ Edit `kit-e2e/` (template code: keep `__APP__` placeholders), then `./verify-e2e
 `@playwright/mcp`, testcontainers) and bump them deliberately.
 
 ### 6.8 Improve `/project-explorer`
-Edit `~/.claude/skills/project-explorer/` (`SKILL.md`, `reference/*.md`, `template/`, `tools/`). Test on a small repo
+Edit `skills/project-explorer/` (`SKILL.md`, `reference/*.md`, `template/`, `tools/`). Test on a small repo
 end to end: survey → one flow → bundle → `check-explorer.mjs` clean. Its README lists what was and wasn't tested (the
 Next, Vue and Svelte shells were never run).
 
 ### 6.9 Ideas for next improvements
-- A **Kafka/Redis kit-check module** so `distributed-systems` is proven inside the kit, not only in EventStorm.
+- A **Kafka/Redis kit-check module** so `distributed-systems` is proven inside the kit, not only in the private example project.
 - **Blind** versions of `security-reviewer` and `deploy-reviewer`, measured with the reviewer evaluation.
 - A **CI workflow for the kit itself** running kit-check on every change.
 - Turn the kit into a **Claude Code plugin** so it installs and updates with one command instead of `install.sh`.

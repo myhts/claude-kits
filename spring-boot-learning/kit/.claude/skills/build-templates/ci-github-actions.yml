@@ -1,0 +1,47 @@
+# .github/workflows/ci.yml: build and test on every pull request and on main.
+# Testcontainers works out of the box: Docker is pre-installed on GitHub's Ubuntu runners.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read                 # least privilege for the token
+
+concurrency:                     # a new push to the same branch cancels the old run
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and test (unit + integration)
+        run: ./mvnw -B -ntp verify
+      - name: Keep the test reports when something fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
+          retention-days: 7
+
+  image:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the image (not pushed yet; add a registry login and a push step when you have one)
+        run: docker build -t app:${{ github.sha }} .

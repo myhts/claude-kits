@@ -1,0 +1,20 @@
+{
+  "name": "__APP__-e2e",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests: the whole stack in Testcontainers, driven by Playwright.",
+  "scripts": {
+    "stack:build": "bash stack/build-images.sh",
+    "stack:up": "node --experimental-strip-types --no-warnings stack/up.ts",
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.18.0",
+    "testcontainers": "12.2.0",
+    "typescript": "5.9.3"
+  }
+}

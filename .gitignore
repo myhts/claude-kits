@@ -1,5 +1,18 @@
-# Only this folder's own files are tracked. Each project created here is its own git repository.
+# Only the toolkit is tracked. Every project created here with new-project.sh is its own repository.
 /*
 !/.gitignore
+!/README.md
+!/LICENSE
 !/GUIDE.md
+!/setup.sh
 !/new-project.sh
+!/spring-boot-learning/
+!/skills/
+
+# build output and installs inside the toolkit
+target/
+node_modules/
+spring-boot-learning/kit-check/reviewer-eval/work/
+.DS_Store
+.env
+.env.*

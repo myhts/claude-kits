@@ -5,7 +5,7 @@
 # Uses start.spring.io (needs internet). Never overwrites an existing folder.
 set -euo pipefail
 cd "$(dirname "$0")"
-KIT="$HOME/claude-kits/spring-boot-learning/install.sh"
+KIT="$PWD/spring-boot-learning/install.sh"   # the kit lives in this repo
 NAME="" JAVA=21 BOOT=4.1.1 GROUP=com.example E2E=""
 DEPS="web,validation,data-jpa,postgresql,flyway,actuator,testcontainers"
 while [ $# -gt 0 ]; do

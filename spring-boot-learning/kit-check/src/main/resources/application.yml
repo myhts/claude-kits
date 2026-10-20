@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: kit-check
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false            # no lazy loading from the web layer: fetch what the response needs, in the service
+    hibernate:
+      ddl-auto: validate           # Flyway owns the schema; Hibernate only checks it matches
+  mvc:
+    problemdetails:
+      enabled: true
+
+logging:
+  structured:
+    format:
+      console: ecs                 # JSON lines; MDC values (requestId) become fields
+
+server:
+  shutdown: graceful

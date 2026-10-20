@@ -1,0 +1,40 @@
+# Local development: the app's dependencies (and optionally the app itself). Not for production.
+#   docker compose -p <app> up -d postgres          → run the app from your IDE against it
+#   docker compose -p <app> --profile app up -d     → also run the app in a container (built from the Dockerfile)
+# Secrets come from .env (gitignored); copy .env.example to .env first. Ports bind to 127.0.0.1 only.
+# -p <app> names the project (older Compose versions don't accept a top-level `name:` key).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  app:
+    profiles: [app]
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-app}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-app}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    mem_limit: 768m            # heap = 75% of this; leave room for metaspace, threads, buffers
+    stop_grace_period: 40s     # longer than spring.lifecycle.timeout-per-shutdown-phase (30s)
+
+volumes:
+  pgdata:
