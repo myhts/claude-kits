@@ -19,3 +19,4 @@ spring-boot-learning/kit-check/reviewer-eval/work/
 .DS_Store
 .env
 .env.*
+!/docs/
