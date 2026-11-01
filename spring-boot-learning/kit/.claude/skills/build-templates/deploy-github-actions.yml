@@ -1,0 +1,220 @@
+# .github/workflows/deploy.yml: ship main to Kubernetes. One image per commit, deployed to staging and smoke-tested
+# there, then the same image to production after a person approves. ci.yml already ran the tests on the pull request
+# (make it a required check in branch protection), so this workflow doesn't run them again.
+#
+# Set up once (the setup wizard walks you through it, so the values never pass through an agent):
+#   - GitHub Environments "staging" and "production", each with a secret KUBE_CONFIG: a base64-encoded kubeconfig for
+#     a service account that may only manage its own namespace. Optionally a secret APP_ENV (see the step below).
+#   - The namespaces app-staging and app-prod, created by a cluster admin.
+#   - The cluster must be able to pull from GHCR: make the package public, or give the namespaces an imagePullSecret.
+#   - The placeholders below, and OWNER/REPO in k8s/base/kustomization.yaml and in both overlays.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:             # deploy main's head again by hand (Actions → deploy → Run workflow)
+# Roll back by hand: kubectl rollout undo, or open the deploy run of the last good commit and "Re-run all jobs"
+# (a re-run uses that run's commit SHA, so it rebuilds and redeploys exactly that version; GitHub allows re-runs
+# for 30 days).
+
+permissions:
+  contents: read                 # least privilege; the build job adds packages: write for itself
+
+env:
+  # ---- PLACEHOLDERS: set these for your project ----------------------------------------------------------------
+  STAGING_URL: https://app-staging.example.com    # the host in k8s/overlays/staging
+  PROD_URL: https://app.example.com               # the host in k8s/overlays/prod
+  SMOKE_DIR: e2e                                  # the folder the smoke command runs in
+  SMOKE_COMMAND: npm ci && npx playwright install --with-deps chromium && npm run test:smoke
+  # Production runs only the smoke tests that don't create data: e2e tests tagged @writes do, so they're skipped.
+  PROD_SMOKE_COMMAND: npm ci && npx playwright install --with-deps chromium && npm run test:smoke -- --grep-invert @writes
+  # ---------------------------------------------------------------------------------------------------------------
+  K8S_DIR: k8s                                    # the folder with base/ and overlays/
+  KUBECTL_VERSION: v1.33.13                       # pinned; keep it within one minor version of the cluster
+  ROLLOUT_TIMEOUT: 5m                             # the startup probe allows 2 min per pod, and pods roll one by one
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write            # push to GHCR with this run's own token: no registry password to store or rotate
+    outputs:
+      image: ${{ steps.image.outputs.name }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Image name (GHCR needs lowercase; owner names may not be)
+        id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v4      # BuildKit: the Dockerfile's cache mounts and the layer cache need it
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push, tagged with the full commit SHA (one exact build per deploy, never a moving :latest)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: staging              # this environment's secrets are released to this job only
+      url: ${{ env.STAGING_URL }}
+    concurrency:                 # one staging deploy at a time; a newer commit replaces one that's still running
+      group: deploy-staging
+      cancel-in-progress: true
+    env:
+      OVERLAY: overlays/staging
+      NAMESPACE: app-staging
+      IMAGE: ${{ needs.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: azure/setup-kubectl@v5
+        with:
+          version: ${{ env.KUBECTL_VERSION }}
+      - name: Cluster credentials (a file only this user can read, removed at the end)
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          [ -n "$KUBE_CONFIG" ] || { echo "::error::secret KUBE_CONFIG isn't set on the staging environment"; exit 1; }
+          umask 077
+          printf '%s' "$KUBE_CONFIG" | base64 -d > "$RUNNER_TEMP/kubeconfig"
+          echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
+      # APP_ENV holds the app's secrets as KEY=value lines (SPRING_DATASOURCE_PASSWORD=...). Pods read them when they
+      # start, so a changed value reaches them with the next new image (or kubectl rollout restart).
+      # No APP_ENV: the Secret created by the wizard or by hand stays as it is.
+      - name: The app's Secret from APP_ENV
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+        run: |
+          if [ -z "$APP_ENV" ]; then echo "APP_ENV isn't set: keeping the existing app-secrets"; exit 0; fi
+          umask 077
+          printf '%s\n' "$APP_ENV" > "$RUNNER_TEMP/app.env"
+          kubectl -n "$NAMESPACE" create secret generic app-secrets --from-env-file="$RUNNER_TEMP/app.env" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -f "$RUNNER_TEMP/app.env"
+      - name: Apply this commit's image
+        run: |
+          sed -i "s/IMAGE_TAG/$GITHUB_SHA/" "$K8S_DIR/$OVERLAY/kustomization.yaml"
+          rendered=$(kubectl kustomize "$K8S_DIR/$OVERLAY")
+          grep -qF "image: $IMAGE:$GITHUB_SHA" <<<"$rendered" || {
+            echo "::error::$OVERLAY doesn't render image $IMAGE:$GITHUB_SHA: check OWNER/REPO in $K8S_DIR/base/kustomization.yaml"
+            exit 1
+          }
+          kubectl apply -k "$K8S_DIR/$OVERLAY"
+      # maxUnavailable: 0 keeps the old pods serving while new ones fail their probes, so undo is safe and quick.
+      - name: Wait for the rollout; undo it if it doesn't finish
+        run: |
+          if ! kubectl -n "$NAMESPACE" rollout status deployment/app --timeout="$ROLLOUT_TIMEOUT"; then
+            echo "::error::the rollout didn't finish within $ROLLOUT_TIMEOUT: rolling back"
+            kubectl -n "$NAMESPACE" get pods -l app.kubernetes.io/name=app || true
+            if kubectl -n "$NAMESPACE" rollout undo deployment/app; then
+              kubectl -n "$NAMESPACE" rollout status deployment/app --timeout="$ROLLOUT_TIMEOUT" || true
+            else
+              echo "::warning::no previous version to roll back to (first deploy?)"
+            fi
+            exit 1
+          fi
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      # The e2e guard refuses any host but localhost unless E2E_ALLOWED_HOSTS names it: name staging's, nothing else.
+      - name: Smoke e2e against staging (that host only)
+        working-directory: ${{ env.SMOKE_DIR }}
+        run: |
+          host=$(sed -E 's#^https?://([^/:]+).*#\1#' <<<"$STAGING_URL")
+          E2E_BASE_URL="$STAGING_URL" E2E_ALLOWED_HOSTS="$host" bash -euo pipefail -c "$SMOKE_COMMAND"
+      - name: Remove the credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/kubeconfig"
+
+  deploy-prod:
+    # The approval isn't in this file: it lives on the GitHub Environment (Settings → Environments → production →
+    # Required reviewers, plus Deployment branches: main). The job waits there until a reviewer approves, and only
+    # then receives production's secrets. Required reviewers are free on public repos; private repos need a paid
+    # plan. Without a required reviewer this job runs straight after staging.
+    needs: [build, deploy-staging]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ env.PROD_URL }}
+    concurrency:                 # never cancel a production deploy halfway; a newer one waits (only the newest waits)
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      OVERLAY: overlays/prod
+      NAMESPACE: app-prod
+      IMAGE: ${{ needs.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: azure/setup-kubectl@v5
+        with:
+          version: ${{ env.KUBECTL_VERSION }}
+      - name: Cluster credentials (a file only this user can read, removed at the end)
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          [ -n "$KUBE_CONFIG" ] || { echo "::error::secret KUBE_CONFIG isn't set on the production environment"; exit 1; }
+          umask 077
+          printf '%s' "$KUBE_CONFIG" | base64 -d > "$RUNNER_TEMP/kubeconfig"
+          echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
+      - name: The app's Secret from APP_ENV
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+        run: |
+          if [ -z "$APP_ENV" ]; then echo "APP_ENV isn't set: keeping the existing app-secrets"; exit 0; fi
+          umask 077
+          printf '%s\n' "$APP_ENV" > "$RUNNER_TEMP/app.env"
+          kubectl -n "$NAMESPACE" create secret generic app-secrets --from-env-file="$RUNNER_TEMP/app.env" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -f "$RUNNER_TEMP/app.env"
+      - name: Apply this commit's image
+        run: |
+          sed -i "s/IMAGE_TAG/$GITHUB_SHA/" "$K8S_DIR/$OVERLAY/kustomization.yaml"
+          rendered=$(kubectl kustomize "$K8S_DIR/$OVERLAY")
+          grep -qF "image: $IMAGE:$GITHUB_SHA" <<<"$rendered" || {
+            echo "::error::$OVERLAY doesn't render image $IMAGE:$GITHUB_SHA: check OWNER/REPO in $K8S_DIR/base/kustomization.yaml"
+            exit 1
+          }
+          kubectl apply -k "$K8S_DIR/$OVERLAY"
+      - name: Wait for the rollout; undo it if it doesn't finish
+        run: |
+          if ! kubectl -n "$NAMESPACE" rollout status deployment/app --timeout="$ROLLOUT_TIMEOUT"; then
+            echo "::error::the rollout didn't finish within $ROLLOUT_TIMEOUT: rolling back"
+            kubectl -n "$NAMESPACE" get pods -l app.kubernetes.io/name=app || true
+            if kubectl -n "$NAMESPACE" rollout undo deployment/app; then
+              kubectl -n "$NAMESPACE" rollout status deployment/app --timeout="$ROLLOUT_TIMEOUT" || true
+            else
+              echo "::warning::no previous version to roll back to (first deploy?)"
+            fi
+            exit 1
+          fi
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Smoke e2e against production (read-only tests, that host only)
+        id: smoke
+        working-directory: ${{ env.SMOKE_DIR }}
+        run: |
+          host=$(sed -E 's#^https?://([^/:]+).*#\1#' <<<"$PROD_URL")
+          E2E_BASE_URL="$PROD_URL" E2E_ALLOWED_HOSTS="$host" bash -euo pipefail -c "$PROD_SMOKE_COMMAND"
+      # Unlike staging (left as it is so you can look at what broke), production goes back to the version that worked.
+      - name: Smoke failed in production, so roll back
+        if: failure() && steps.smoke.outcome == 'failure'
+        run: |
+          kubectl -n "$NAMESPACE" rollout undo deployment/app
+          kubectl -n "$NAMESPACE" rollout status deployment/app --timeout="$ROLLOUT_TIMEOUT"
+      - name: Remove the credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/kubeconfig"

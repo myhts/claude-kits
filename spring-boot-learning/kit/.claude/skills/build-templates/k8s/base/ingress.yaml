@@ -1,0 +1,29 @@
+# Routes https://<host>/ to the Service. The overlays set the host per environment.
+# An Ingress does nothing without an ingress controller in the cluster (ingress-nginx, Traefik, the cloud's own...);
+# ingressClassName picks which controller serves it. List what your cluster has: kubectl get ingressclass
+#
+# TLS is off here so the template applies on any cluster. To turn it on with cert-manager (installed once, plus a
+# ClusterIssuer, e.g. Let's Encrypt): uncomment the annotation and the tls: block, and set the same host in both
+# places in each overlay. cert-manager then requests the certificate and keeps the Secret renewed.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  labels: { app.kubernetes.io/name: app }
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod      # the name of your ClusterIssuer
+spec:
+  ingressClassName: replace-with-your-ingress-class         # placeholder, e.g. nginx or traefik
+  # tls:
+  #   - hosts: [app.example.com]
+  #     secretName: app-tls                                 # cert-manager creates and renews this Secret
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app
+                port: { name: http }

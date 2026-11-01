@@ -1,0 +1,30 @@
+# TEST ONLY: what kit-check/verify-templates.sh --kind applies to a throwaway kind cluster, to prove the base really
+# starts on Kubernetes (probes, non-root, read-only root fs, rollout). Never use it for a real environment: Postgres
+# keeps its data in an emptyDir and the password is a test value.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: app-kind
+
+resources:
+  - namespace.yaml
+  - ../../base
+  - postgres.yaml
+
+images:
+  - name: ghcr.io/OWNER/REPO
+    newName: kit-check-verify-app        # built by verify-templates.sh and copied in with `kind load docker-image`
+    newTag: kind
+
+secretGenerator:                         # the Secret the base expects; real environments get it from CI
+  - name: app-secrets                    # kustomize adds a hash suffix and rewrites the references to it
+    literals:
+      - SPRING_DATASOURCE_USERNAME=app
+      - SPRING_DATASOURCE_PASSWORD=kind-test-only
+
+patches:
+  - target: { kind: Deployment, name: app }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Never

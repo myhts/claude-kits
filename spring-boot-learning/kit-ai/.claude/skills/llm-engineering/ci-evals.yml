@@ -1,0 +1,43 @@
+# .github/workflows/evals.yml: the live eval, on purpose only. It spends money, so it never runs on every push.
+# Runs when started by hand (Actions → evals → Run workflow) or when a pull request gets the label "run-evals".
+# Needs a repository secret ANTHROPIC_API_KEY (Settings → Secrets and variables → Actions), from a key with a
+# monthly spend limit set in the Claude Console. Pull requests from forks don't get secrets, so they can't run it.
+# Don't switch this to pull_request_target: it would run a fork's code with your key.
+name: evals
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+concurrency:                     # one eval at a time per branch; a new one cancels the old
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live-eval:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-evals'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20          # a cap on time is also a cap on spend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Live eval (the ci workflow runs the unit tests)
+        env:
+          RUN_LIVE_EVALS: 'true'
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: ./mvnw -B -ntp verify -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dit.test='*EvalIT' -Dfailsafe.failIfNoSpecifiedTests=false
+      - name: Keep the eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: target/failsafe-reports
+          retention-days: 30

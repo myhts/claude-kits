@@ -7,3 +7,6 @@ target/
 docs/
 .env
 *.md
+# the front end and the e2e tests have their own builds (and node_modules): keep them out of the app image context
+web/
+e2e/

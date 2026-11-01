@@ -1,0 +1,26 @@
+# Production: the base with two replicas (one can be drained or replaced while the other serves), its own namespace
+# and host. CI applies it only after staging passed and a person approved the production environment.
+# CI replaces the literal IMAGE_TAG with the commit SHA in its checkout; it stays IMAGE_TAG in git.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: app-prod              # created once, with CI's credentials scoped to it; CI doesn't create namespaces
+
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/OWNER/REPO      # the base's newName (kustomize matches the image as the base emits it)
+    newTag: IMAGE_TAG
+
+patches:
+  - target: { kind: Deployment, name: app }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+  - target: { kind: Ingress, name: app }   # with TLS on, also replace /spec/tls/0/hosts/0
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: app.example.com

@@ -1,0 +1,15 @@
+# Limits voluntary disruptions (node drains, cluster upgrades) to one pod at a time.
+# maxUnavailable: 1, not minAvailable: 1, because it works for every replica count the overlays use:
+#   - prod (2 replicas): a drain evicts one pod while the other keeps serving.
+#   - staging (1 replica): the drain can still evict it (a short gap in staging). minAvailable: 1 would allow zero
+#     evictions there, and the node drain would hang until someone deleted the PDB.
+# Zero downtime during a drain needs 2+ replicas on different nodes, not just a PDB.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: app
+  labels: { app.kubernetes.io/name: app }
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: app }

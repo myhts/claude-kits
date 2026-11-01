@@ -35,7 +35,7 @@ Ctrl+C removes it), then `E2E_BASE_URL=$(cat .stack-url) npx playwright test` as
 | `app.memoryGb`, `app.env` | Container memory (the JVM takes 75% as heap) and extra settings |
 | `postgres` | On by default; the app gets `SPRING_DATASOURCE_URL/USERNAME/PASSWORD` |
 | `kafka`, `redis` | Off by default; set `{ image: … }` and the app gets the bootstrap servers / host |
-| `web` | A front end image (e.g. nginx proxying `/api` to `http://app:<port>`); then it's what's published |
+| `web` | A front end image (e.g. nginx proxying `/api` to `http://app:<port>`); then it's what's published. The kit's `--web` template (`web/`, React + nginx) fits it: `{ image: '<app>-web:e2e', port: 8080, upstreamEnv: 'API_UPSTREAM' }`, built by `npm run stack:build` |
 
 One-off settings for a run (e.g. a fault-injection switch for a lab): `E2E_APP_ENV='KEY=value KEY2=value'`.
 Docker memory is finite: Postgres 0.25 GB, Kafka 0.5 GB, app 0.64 GB. Check `docker stats` before adding more.

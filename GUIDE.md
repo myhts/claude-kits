@@ -1,7 +1,11 @@
 # Claude toolkit handbook: agents, skills, MCP and scripts for new projects
 
 Everything in this repository for working with Claude Code, in one place: what each piece offers, step-by-step use, how to
-apply it to a new project (or a different stack), and how to improve it safely. Last updated 2026-10-20.
+apply it to a new project (or a different stack), and how to improve it safely. Last updated 2026-11-01.
+
+**The delivery pipeline** (plan, Event Storming, test-first build, two reviewers, your review, Kubernetes) works on
+any stack and has its own how-to: **[PIPELINE.md](PIPELINE.md)**. This handbook covers the pieces and the learning
+kit.
 
 **Contents:** [1. What exists](#1-what-exists) · [2. Quick starts](#2-quick-starts) ·
 [3. The pieces, one by one](#3-the-pieces-one-by-one) · [4. Workflows](#4-workflows-step-by-step) ·
@@ -16,27 +20,31 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 | Piece | Where | What it's for |
 |---|---|---|
 | **`setup.sh`** | repo root | One-time: checks your tools, links `skills/` into `~/.claude/skills/` |
-| **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it |
-| **The learning kit** | `spring-boot-learning/` | 6 agents, 13 skills, a working agreement, progress/lesson files; `install.sh` copies them into any project |
+| **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
+| **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
+| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents and 6 core skills; the merge guard hook |
+| **The learning kit** | `spring-boot-learning/` | 6 agents and 6 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
-| **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose 35 tests prove the code in the skills; scripts that verify the templates and the e2e add-on |
+| **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
+| **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
+| **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (35 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
 | **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
 | **`/project-explorer`** | `skills/project-explorer/` (linked into `~/.claude/skills/` by `setup.sh`, so it works in every project) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
-| **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here |
+| **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here, and not public |
 
 ### The agents (6 in the kit, plus 1 with `--e2e`)
 
 | Agent | Writes code? | Tools | Use it when |
 |---|---|---|---|
 | `mentor` | No | Read, Grep, Glob, Bash | You're stuck or curious; you want an explanation with your own code, a hint, an exercise |
-| `code-reviewer` | No | Read, Grep, Glob, Bash | A feature is done: a review that teaches (scenario, how to see it, principle, hint). Uses the project's context |
+| `code-reviewer` | No | Read, Grep, Glob, Bash | A feature is done: a review on two axes, the project's standards (coding standards, the pack's checklist, the glossary, code smells) and the ticket's spec. Uses the project's context; teaches in learn mode (scenario, how to see it, principle, hint) |
 | `blind-reviewer` | No | Read, Grep, Glob, Bash, WebFetch, WebSearch | You want an **independent** review: no project docs or CLAUDE.md, only code; checks against the stack's published best practices with sources |
 | `security-reviewer` | No | Read, Grep, Glob, Bash | Before a release or after adding auth: attack scenarios, access control first |
 | `deploy-reviewer` | No | Read, Grep, Glob | You wrote a Dockerfile, compose, CI or Kubernetes files |
 | `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files |
 | `e2e-tester` (`--e2e`) | Tests only, when asked | all (inherits the MCP browser) | Plan, write, repair or de-flake end-to-end tests; explore the running app in a browser |
 
-### The skills (13 in the kit, plus 1 with `--e2e`)
+### The skills (14 in the kit, plus 1 with `--e2e`)
 
 | Skill | Covers | Proof |
 |---|---|---|
@@ -52,6 +60,7 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 | `distributed-systems` | Kafka keys/partitions, at-least-once + idempotency, poison, rebalancing, exactly-once trade-offs, Redis with a version guard, read-your-writes, Lua rate limiting, locks, sharding, consistency | tests in the private example project, named in the skill |
 | `system-design` | The 45-minute shape, sizing, Little's law, 1×/10×/100× capacity, building blocks, 14 designs, rubric, your project as the answer | method |
 | `java-modern` | Records, sealed types, virtual threads and their limits | |
+| `java-concurrency` | Thread states, the memory model (visibility, happens-before, safe publication), testing concurrent code; grows section by section | kit-check (9 tests) |
 | `build-templates` | Dockerfile, .dockerignore, compose, GitHub Actions CI, Kubernetes manifests | `verify-templates.sh` |
 | `e2e-testing` (`--e2e`) | The e2e stack config, waiting without sleeps, oracles, pinned known bugs, the MCP | `verify-e2e.sh` |
 
@@ -68,7 +77,7 @@ apply it to a new project (or a different stack), and how to improve it safely. 
 ### A new Spring Boot project (5 minutes)
 
 ```bash
-git clone <this repo> ClaudeProjects && cd ClaudeProjects
+git clone https://github.com/myhts/claude-kits.git && cd claude-kits
 ./setup.sh                            # once: checks tools, installs /project-explorer for every project
 ./new-project.sh my-shop --e2e        # Boot 4.1.1, Java 21, Postgres, JPA, Flyway, Testcontainers + e2e
 cd my-shop
@@ -78,7 +87,7 @@ claude
 > /learning-loop
 ```
 
-Options: `--java 25`, `--boot 4.0.8`, `--group com.aseem`, `--deps "web,validation,data-jpa,postgresql,flyway,actuator,testcontainers,kafka"`.
+Options: `--java 25`, `--boot 4.0.8`, `--group com.yourname`, `--deps "web,validation,data-jpa,postgresql,flyway,actuator,testcontainers,kafka"`.
 Needs the internet (start.spring.io).
 
 ### An existing project
@@ -92,6 +101,18 @@ It never overwrites. If the project already has a `CLAUDE.md`, the kit's goes to
 you want). An existing `.mcp.json` gets `.mcp.e2e.json` next to it. With `--e2e` and no Dockerfile, the tested one is
 added.
 
+### The delivery pipeline on any project (any language)
+
+```bash
+cd ~/code/any-repo
+claude plugin marketplace add myhts/claude-kits --scope project
+claude plugin install pipeline@kits --scope project
+claude
+> /pipeline:setup-project
+```
+
+Then follow [PIPELINE.md](PIPELINE.md).
+
 ### Only understand a codebase (any language)
 
 ```bash
@@ -101,7 +122,7 @@ cd ~/code/any-repo && claude
 
 ### Only an independent review (any project)
 
-Copy `spring-boot-learning/kit/.claude/agents/blind-reviewer.md` into the project's `.claude/agents/`,
+Copy `spring-boot-learning/kit-pipeline/agents/blind-reviewer.md` into the project's `.claude/agents/`,
 restart `claude`, then: "use the blind-reviewer on my changes". It works for any language: it detects the stack itself.
 
 ---
@@ -126,6 +147,8 @@ kit installed, the next steps printed.
 |---|---|
 | `--dry-run` | Lists what would be added, writes nothing |
 | `--e2e` | Adds `e2e/`, the e2e skill and agent, `.mcp.json`, and a Dockerfile/.dockerignore if missing |
+| `--ai` | Adds the `llm-engineering` skill and `CLAUDE.ai.md` (merge it into `CLAUDE.md`); with `--e2e` also `e2e/llm-fake/`. It doesn't add the SDK dependency: add `com.anthropic:anthropic-java` at the version the skill names when the project first calls the model |
+| `--web` | Adds `web/` (React + Vite template, Dockerfile) and the `react-frontend` skill |
 | `--force` | Overwrites existing files (check `git diff` afterwards) |
 
 It refuses your home directory. Restart `claude` after installing: agents and skills load at session start.
@@ -154,7 +177,7 @@ its own tools, and hands back a report.
 |---|---|
 | "ask the mentor why my query runs 4 times" | an explanation using your code; hints smallest first |
 | "ask the mentor for an exercise on optimistic locking" | an exercise sized to one session |
-| "use the code-reviewer agent on my changes" | ≤ 8 findings, each with a scenario, how to see it, the principle, a hint; tests run |
+| "use the code-reviewer agent on my changes" | ≤ 8 findings per axis (standards, then spec if there's a ticket), each with a scenario, the rule it breaks, and a hint (learn mode) or the change to make; tests run |
 | "use the blind-reviewer on my changes" (or "…on src/main/…/orders") | a fingerprint of the stack, then findings with a cited standard. **Give only the scope**; it ignores descriptions |
 | "use the security-reviewer agent" | attack scenarios, access control first |
 | "use the deploy-reviewer agent on my Dockerfile" | what the file does at runtime, and what will bite |
@@ -257,19 +280,28 @@ cd spring-boot-learning/kit-check
 ./mvnw verify               # 35 tests: catalog/JPA, transactions (18), outbox, resilience, API (Docker needed)
 ./verify-templates.sh       # builds, runs and validates the Docker, compose, CI and Kubernetes templates, then cleans up
 ./verify-e2e.sh             # installs --e2e into a copy, runs Playwright against Testcontainers, checks the stale-image guard
+./verify-ai.sh              # LLM unit tests; installs --e2e --ai into a copy; the app against the WireMock model fake; lints the eval workflow
+./verify-web.sh             # installs --e2e --web into a copy; builds the web and app images; a Playwright UI test through nginx
 ```
+
+None of these calls the real model or needs a key. The one live check, `LiveExtractionEvalIT`, runs only with
+`RUN_LIVE_EVALS=true` and `ANTHROPIC_API_KEY` set, and costs well under a cent on Haiku 5.5.
 
 ### 3.10 The reviewer evaluation
 
-**Offers:** a fair way to decide whether a changed agent is better. Used once: `code-reviewer` (with context) vs
-`blind-reviewer` (code only) on the private example project: **a draw**, 14.83 vs 14.67 points, so both are kept.
+**Offers:** a fair way to decide whether a changed agent is better. Used twice:
+- `code-reviewer` (with context) vs `blind-reviewer` (code only) on the private example project: **a draw**, 14.83 vs
+  14.67 points, so both are kept.
+- The rewritten, two-axis `code-reviewer` vs its previous version on an invented fixture with 10 planted defects:
+  31.83 vs 27.17. All 10 were found in every run, against 8 or 9, so the new version replaced the old. The reports
+  and grades are in `reviewer-eval/results/`.
 
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
 2. An answer key and scoring rules written **before** reading any result (`answer-key.md`).
 3. 3 runs per variant, same request, headless (`run.sh <agent> <n>`).
 4. Audit what each read (`extract.py`).
-5. Reports stripped of anything that identifies the agent, graded by a separate agent per pair.
+5. Reports stripped of anything that identifies the agent (`blind.py`), graded by a separate agent per pair.
 6. Unblind and total (`score.py`); a winner needs a lead of ≥ 2 points and ≥ 15%, otherwise it's a draw.
 
 ---
@@ -323,7 +355,7 @@ The method, step by step (details and scripts in its `README.md`):
 | **Another Spring Boot project** | `install.sh <project> [--e2e]`. Everything applies |
 | **A project with its own CLAUDE.md** | Merge `CLAUDE.learning.md` into it: keep their rules, add "How we work" and the learning files if you want them |
 | **A Java project without Spring** | Keep: `mentor`, both reviewers, `security-reviewer`, `deploy-reviewer`, `implementer`, `learning-loop`, `interview-drill`, `java-modern`, `distributed-systems`, `system-design`, `design-patterns`, `resilience-patterns` (concepts). Delete or ignore the Spring-specific skills |
-| **Another language (Go, Python, TypeScript…)** | Portable as is: `blind-reviewer` (detects the stack), `/project-explorer`, `system-design`, `distributed-systems` (concepts), `learning-loop`, `interview-drill`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). Rewrite for the stack: `code-reviewer`'s checklist, `testing-patterns`, `build-templates` |
+| **Another language (Go, Python, TypeScript…)** | Use the `pipeline` plugin with no pack ([PIPELINE.md §2](PIPELINE.md#2-set-up-a-project)): every stage and agent works; put the stack's rules in `CODING_STANDARDS.md`. Also portable as is: `/project-explorer`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). What a pack would add: a review checklist, testing and framework skills proved by tests, verified build and deploy templates |
 | **A project you don't own** (work, client) | Don't install anything without the owner's agreement. The least invasive option is the `blind-reviewer`, which only reads; `/project-explorer` writes an output folder and debugger configs, so ask first. Never send confidential data to an LLM: check before you start |
 | **A new machine or account** | `git clone` this repo, run `./setup.sh`. Approve project MCP servers again. A project's `CLAUDE.md` carries its rules; memory files are optional |
 
@@ -333,9 +365,7 @@ The method, step by step (details and scripts in its `README.md`):
 
 ### 6.1 Version control
 
-The three toolkit folders are git repositories, so every improvement is a commit you can inspect or undo:
-
-Everything is in **this one repository**: the kit (`spring-boot-learning/`), the personal skills (`skills/`), the
+Everything is in **this one repository**, so every improvement is a commit you can inspect or undo: the kit (`spring-boot-learning/`), the personal skills (`skills/`), the
 scripts and this guide. Ignored: build output (`target/`, `node_modules/`), `reviewer-eval/work/`, and **every project
 folder** you create here with `new-project.sh` (each new project is its own repository).
 
@@ -345,20 +375,23 @@ and commit with a message that says why. `git log --since=2026-11-01 --stat` sho
 
 ### 6.2 The rule: edit the kit, not the copies
 
-Projects get **copies**. Change an agent or skill in `spring-boot-learning/kit/` (or `kit-e2e/`), then
-re-install where you want it: `install.sh <project> --force`, and check `git diff` in the project (`--force`
-overwrites).
+Projects get **copies** (install.sh) or **plugins** (`pipeline@kits` and a pack). Change an agent or skill in its kit:
+agents and stack-neutral skills in `spring-boot-learning/kit-pipeline/`, Spring skills in `kit/`, add-ons in `kit-e2e/`,
+`kit-ai/`, `kit-web/`. Plugin projects pick the change up at their next session. Copy projects need a re-install:
+`install.sh <project> --force`, then check `git diff` in the project (`--force` overwrites). Never edit
+`kit-pipeline/upstream/`: those skills come unchanged from mattpocock/skills (see PIPELINE.md §10).
 
 ### 6.3 Improve a skill
-1. Edit `kit/.claude/skills/<name>/SKILL.md`. Keep the frontmatter `description` specific: it's how Claude decides to
-   load the skill ("Use when …").
+1. Edit the skill's `SKILL.md`: `kit-pipeline/skills/<name>/` for stack-neutral skills, `kit/.claude/skills/<name>/` for
+   Spring ones. Keep the frontmatter `description` specific: it's how Claude decides to load the skill ("Use when …").
 2. If you add or change **code**, prove it in kit-check: a test under `kit-check/src/test/...`, then `./mvnw verify`.
    No claim in a skill without a test or a cited source.
 3. Concurrency or timing claims: run the test 5+ times (`for i in 1 2 3 4 5; do ./mvnw -q test -Dtest=…; done`).
 4. Update the README's skill table if the scope changed.
 
 ### 6.4 Add a skill
-1. `mkdir kit/.claude/skills/<name>` and a `SKILL.md` with `name:` and `description:` frontmatter; follow the shape of
+1. `mkdir kit/.claude/skills/<name>` (Spring) or `kit-pipeline/skills/<name>` (any stack; add it to install.sh's
+   `CORE_SKILLS` if learning projects should get it), and a `SKILL.md` with `name:` and `description:` frontmatter; follow the shape of
    `transactions`: the core idea, tables of situations → answers → proof, fixes, **Learn by doing**.
 2. Prove its code in kit-check (a new package, a migration if it needs tables).
 3. Add a row to the kit README and to this guide's skill table; mention it in NOTICE.md (the license asks to record
@@ -366,7 +399,7 @@ overwrites).
 4. `install.sh <scratch dir> --dry-run` shows it ships.
 
 ### 6.5 Add or change an agent
-1. A file in `kit/.claude/agents/<name>.md` with frontmatter: `name`, `description` (when to use it: Claude reads this
+1. A file in `kit-pipeline/agents/<name>.md` with frontmatter: `name`, `description` (when to use it: Claude reads this
    to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit`, and if useful
    `omitClaudeMd: true` (no project context), `skills:` (preload), `isolation: worktree` (its own copy of the repo).
 2. Body: what it does, the process, what it must never do, the report format.
@@ -383,16 +416,25 @@ overwrites).
 Edit `kit-e2e/` (template code: keep `__APP__` placeholders), then `./verify-e2e.sh`. Pin tool versions (Playwright,
 `@playwright/mcp`, testcontainers) and bump them deliberately.
 
-### 6.8 Improve `/project-explorer`
+### 6.8 Improve the AI and web add-ons
+Edit `kit-ai/` or `kit-web/`, then `./verify-ai.sh` or `./verify-web.sh`. A code shape in `llm-engineering` goes into
+`kit-check/src/main/java/com/example/kitcheck/llm/` with a test against `FakeClaude` first; keep the canned responses
+in the real shape (copy from a recorded live response when you have one). Pin the SDK, images and npm packages to
+releases at least two weeks old.
+
+### 6.9 Improve `/project-explorer`
 Edit `skills/project-explorer/` (`SKILL.md`, `reference/*.md`, `template/`, `tools/`). Test on a small repo
 end to end: survey → one flow → bundle → `check-explorer.mjs` clean. Its README lists what was and wasn't tested (the
 Next, Vue and Svelte shells were never run).
 
-### 6.9 Ideas for next improvements
+### 6.10 Ideas for next improvements
 - A **Kafka/Redis kit-check module** so `distributed-systems` is proven inside the kit, not only in the private example project.
 - **Blind** versions of `security-reviewer` and `deploy-reviewer`, measured with the reviewer evaluation.
 - A **CI workflow for the kit itself** running kit-check on every change.
-- Turn the kit into a **Claude Code plugin** so it installs and updates with one command instead of `install.sh`.
+- A **TypeScript pack** (testing, framework and build templates proved the way kit-check proves the Spring ones). When
+  it lands, move the stack-neutral parts of the deploy templates (the workflow, the Kustomize shape) into `pipeline`.
+- Run the **LLM checks** of `security-reviewer` and `blind-reviewer` through the reviewer evaluation (prepared in its
+  README).
 - A `jpa-patterns` exercise for `IDENTITY` vs `SEQUENCE` batching, with a statement-count test.
 
 ---

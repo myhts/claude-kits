@@ -1,0 +1,9 @@
+:root { font-family: system-ui, sans-serif; line-height: 1.5; color: #1a1a1a; background: #fff; }
+main { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; }
+form { display: grid; gap: 0.5rem; margin: 1rem 0; max-width: 24rem; }
+label { font-weight: 600; }
+input { padding: 0.4rem; font: inherit; }
+input[aria-invalid='true'] { border: 2px solid #b00020; }
+button { padding: 0.4rem 0.8rem; font: inherit; justify-self: start; }
+[role='alert'] { color: #b00020; }
+.field-error { color: #b00020; font-size: 0.9rem; }

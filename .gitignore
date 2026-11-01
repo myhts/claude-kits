@@ -1,9 +1,12 @@
-# Only the toolkit is tracked. Every project created here with new-project.sh is its own repository.
+# Only the toolkit is tracked. Every project created here with new-project.sh is its own repository, and
+# workspace/ (private notes and plans) is a separate private one.
 /*
 !/.gitignore
+!/.claude-plugin/
 !/README.md
 !/LICENSE
 !/GUIDE.md
+!/PIPELINE.md
 !/setup.sh
 !/new-project.sh
 !/spring-boot-learning/

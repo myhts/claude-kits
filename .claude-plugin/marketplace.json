@@ -1,0 +1,70 @@
+{
+  "name": "kits",
+  "description": "Learn-by-building toolkit: a stack-neutral delivery pipeline (plan, Event Storming, test-first build, two reviewers, human review, Kubernetes deploy) and stack packs that supply verified knowledge.",
+  "owner": { "name": "Aseem Pareek" },
+  "plugins": [
+    {
+      "name": "pipeline",
+      "source": "./spring-boot-learning/kit-pipeline",
+      "description": "The delivery pipeline for any stack: /setup-project, /grill-with-docs, /wayfinder, /to-spec, /to-tickets, /implement, /human-review, /deploy, /retro, the event-storming discipline, the core skills, six agents and the merge guard.",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["pipeline", "tdd", "event-storming", "code-review", "kubernetes"],
+      "skills": ["./upstream"],
+      "hooks": {
+        "PreToolUse": [
+          {
+            "matcher": "Bash",
+            "hooks": [
+              { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/merge-guard.sh" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "spring",
+      "source": "./spring-boot-learning/kit",
+      "description": "Spring pack: Spring Boot 4, testing with Testcontainers, transactions, JPA, modern Java, concurrency, logging, the Spring review checklist, and verified build and deploy templates (Dockerfile, CI, Kustomize, deploy workflow).",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["spring-boot", "java", "testcontainers"],
+      "dependencies": ["pipeline"],
+      "skills": ["./.claude/skills"]
+    },
+    {
+      "name": "e2e",
+      "source": "./spring-boot-learning/kit-e2e",
+      "description": "End-to-end testing: Playwright Test against the app and its infrastructure in Testcontainers, the e2e-tester agent, and the Playwright MCP limited to localhost.",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["e2e", "playwright", "testcontainers"],
+      "skills": ["./.claude/skills"]
+    },
+    {
+      "name": "spring-ai",
+      "source": "./spring-boot-learning/kit-ai",
+      "description": "Calling a model from a Spring service with the Anthropic Java SDK: structured outputs, prompt injection, stop reasons, caching, cost, evals as tests, synthetic data, and a review checklist.",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["llm", "claude", "spring-boot"],
+      "dependencies": ["spring"],
+      "skills": ["./.claude/skills"]
+    },
+    {
+      "name": "spring-web",
+      "source": "./spring-boot-learning/kit-web",
+      "description": "A React 19 + Vite + TanStack Query front end for a Spring Boot API, served by nginx, with accessible markup that matches the e2e selectors.",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["react", "vite", "tanstack-query"],
+      "dependencies": ["spring"],
+      "skills": ["./.claude/skills"]
+    }
+  ]
+}

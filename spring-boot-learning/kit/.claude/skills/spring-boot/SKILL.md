@@ -108,3 +108,8 @@ Pick one and keep to it (write it in `CLAUDE.md`):
 1. Build `POST` + `GET` for one resource; write the `@WebMvcTest` for 201 and 400 before the controller.
 2. Add the problem-details handler; make a request with two invalid fields and read the response.
 3. Turn `open-in-view` on and off; return an entity with a lazy collection; explain what you see.
+
+## Reviewing Spring code
+
+[review-checklist.md](review-checklist.md) is what the `code-reviewer` agent applies to a Spring Boot diff on its
+standards axis: correctness, security, performance, tests and the Boot 4 import facts.
