@@ -28,7 +28,7 @@ Last updated 2026-11-01.
 
 | Plugin | For | Adds |
 |---|---|---|
-| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), six agents, and the merge guard |
+| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`, `/next`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), six agents, and the merge guard |
 | `spring` | Spring Boot 4 | `spring-boot`, `testing-patterns`, `transactions`, `jpa-patterns`, `java-modern`, `java-concurrency`, `logging-patterns`, the Spring review checklist, and the build templates: Dockerfile, CI, a Kustomize base with staging and prod overlays, and the deploy workflow |
 | `e2e` | apps with a UI or flows | Playwright tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP (localhost only) |
 | `spring-ai` | Spring services that call Claude | `llm-engineering` and the review checklist the reviewers use for model calls |
@@ -44,7 +44,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **`setup.sh`** | repo root | One-time: checks your tools, links `skills/` into `~/.claude/skills/` |
 | **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
 | **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
-| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents and 6 core skills; the merge guard hook |
+| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents and 6 core skills; the merge guard hook |
 | **The learning kit** | `spring-boot-learning/` | 6 agents and 6 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
@@ -506,7 +506,7 @@ Next, Vue and Svelte shells were never run).
 |---|---|---|
 | Code in the Spring and AI skills | 44 tests on Spring Boot 4.1.1 with real Postgres, plus 23 for the LLM code shapes against a local fake of the API | `kit-check/` (`./mvnw verify`), §3.9 |
 | Docker, CI and Kubernetes templates | built and run; overlays validated against the Kubernetes 1.33 schemas; workflows linted. With `--kind`: a rollout, a broken release that leaves the old pods serving, and `rollout undo` | `kit-check/verify-templates.sh` |
-| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 16 dangerous commands and allows 9 safe ones; the marketplace validates; all five plugins install and load in a throwaway home | `kit-check/verify-pipeline.sh` |
+| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 16 dangerous commands and allows 9 safe ones; the marketplace validates; all five plugins install and load in a throwaway home; `/next` names the expected step for 20 repo states, with `gh` stubbed | `kit-check/verify-pipeline.sh` |
 | The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version) | `kit-check/reviewer-eval/`, §3.10 |
 | e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
 
@@ -523,6 +523,7 @@ Next, Vue and Svelte shells were never run).
 - The three build modes, including learn and build-with-me.
 - The human gate: a review sized by risk, and a record tied to the head commit.
 - The merge guard.
+- `/next`: the repo's real state read in one pass, and one command named, nearest to production first.
 - Two reviewers, one that knows the project and one blind, compared in `kit-check/reviewer-eval`.
 - Stack packs proved by tests (kit-check).
 - One PR per ticket instead of an integration branch.

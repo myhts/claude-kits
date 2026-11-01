@@ -6,7 +6,7 @@
     {
       "name": "pipeline",
       "source": "./spring-boot-learning/kit-pipeline",
-      "description": "The delivery pipeline for any stack: /setup-project, /grill-with-docs, /wayfinder, /to-spec, /to-tickets, /implement, /human-review, /deploy, /retro, the event-storming discipline, the core skills, six agents and the merge guard.",
+      "description": "The delivery pipeline for any stack: /setup-project, /grill-with-docs, /wayfinder, /to-spec, /to-tickets, /implement, /human-review, /deploy, /retro, /next, the event-storming discipline, the core skills, six agents and the merge guard.",
       "version": "0.1.0",
       "author": { "name": "Aseem Pareek" },
       "license": "Apache-2.0",

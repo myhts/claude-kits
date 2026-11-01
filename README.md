@@ -14,7 +14,7 @@ reviewer agents before you see it. Claude can't merge, so nothing reaches produc
 
 ## Start in three minutes
 
-**1. Add the plugin** to any repository, in any language. You need Claude Code, `git`, `gh` 2.94 or later, and Docker:
+**1. Add the plugin** to any repository, in any language. You need Claude Code, `git`, `gh` 2.94 or later, `jq` and Docker:
 
 ```bash
 claude plugin marketplace add myhts/claude-kits --scope project
@@ -36,7 +36,8 @@ writes it.
 /pipeline:grill-with-docs Members want to reserve a title when every copy is out
 ```
 
-From there, the flow below tells you what comes next.
+From then on, whenever you're unsure, type **`/pipeline:next`**. It reads your PRs, tickets and CI and names the one
+command to type next.
 
 ## The flow, one step at a time
 

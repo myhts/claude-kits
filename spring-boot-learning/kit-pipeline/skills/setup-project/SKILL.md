@@ -88,4 +88,5 @@ Tell the user, in a few lines:
   CI job, and allow no direct pushes. On a private repo this needs a paid GitHub plan; the merge guard still stops Claude.
 - **`gh` older than 2.94:** suggest `brew upgrade gh`.
 - **What to run next:** `/grill-with-docs` for the first feature, or `/wayfinder` when the work is too big for one
-  session. `/deploy` sets up Kubernetes when there is something to ship.
+  session. `/deploy` sets up Kubernetes when there is something to ship. From then on, `/next` reads the repo and
+  names the next command whenever they're unsure.
