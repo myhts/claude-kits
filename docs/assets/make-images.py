@@ -1,11 +1,19 @@
 """make-images.py: writes the flow images used by README.md and PIPELINE.md.
 
-    python3 docs/assets/make-images.py
+    python3 docs/assets/make-images.py          (needs Google Chrome or Chromium; set CHROME to its path if it isn't found)
 
-Every image has a transparent background, white text only on filled boxes, and mid-grey everywhere else, so it reads
-on GitHub's light and dark themes alike. Edit the STAGES table and re-run; don't edit the SVGs by hand.
+Each image is drawn as SVG, then rendered by headless Chrome to a PNG at twice its size. The PNGs are what the docs
+use: an SVG shown as an image draws its text with the viewer's fonts, and some viewers garble system fonts there,
+while a PNG looks the same everywhere. Every image has a transparent background, white text only on filled boxes, and
+mid-grey everywhere else, so it reads on GitHub's light and dark themes alike. Edit the STAGES table and re-run; don't
+edit the PNGs by hand.
 """
+import os
 import pathlib
+import re
+import shutil
+import subprocess
+import tempfile
 from html import escape
 
 OUT = pathlib.Path(__file__).parent
@@ -161,8 +169,27 @@ def modes():
     return svg(w, ch + 8, b, "Three build modes: learn, build-with-me, deliver")
 
 
-(OUT / "flow.svg").write_text(hero())
-for n in range(1, 10):
-    (OUT / f"step-{n}.svg").write_text(strip(n))
-(OUT / "modes.svg").write_text(modes())
-print("wrote flow.svg, step-1..9.svg, modes.svg to", OUT)
+def chrome():
+    for c in (os.environ.get("CHROME"), "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+              shutil.which("google-chrome"), shutil.which("chromium"), shutil.which("chromium-browser")):
+        if c and os.path.exists(c):
+            return c
+    raise SystemExit("Chrome or Chromium not found: set CHROME to its path")
+
+
+def render(name, source, browser, work):
+    w, h = re.search(r'width="(\d+(?:\.\d+)?)" height="(\d+(?:\.\d+)?)"', source).groups()
+    src = work / f"{name}.svg"
+    src.write_text(source)
+    subprocess.run([browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", f"--user-data-dir={work / 'profile'}",
+                    "--force-device-scale-factor=2", "--default-background-color=00000000",
+                    f"--window-size={round(float(w))},{round(float(h))}", f"--screenshot={OUT / (name + '.png')}",
+                    src.as_uri()], check=True, capture_output=True)
+
+
+images = {"flow": hero(), "modes": modes(), **{f"step-{n}": strip(n) for n in range(1, 10)}}
+browser = chrome()
+with tempfile.TemporaryDirectory() as tmp:
+    for name, source in images.items():
+        render(name, source, browser, pathlib.Path(tmp))
+print(f"wrote {', '.join(n + '.png' for n in images)} to {OUT}")

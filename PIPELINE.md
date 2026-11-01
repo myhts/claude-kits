@@ -1,6 +1,6 @@
 # The flow, step by step
 
-<p align="center"><img src="docs/assets/flow.svg" width="100%" alt="The flow in nine steps, grouped as plan, build, review and ship, then keep improving with /retro."></p>
+<p align="center"><img src="docs/assets/flow.png" width="100%" alt="The flow in nine steps, grouped as plan, build, review and ship, then keep improving with /retro."></p>
 
 Every step below has the same shape: why it exists, what you type, what Claude does, what you do, what you get, and
 how you know it's done. One **example feature** runs through all nine steps:
@@ -86,7 +86,7 @@ job, and allow no direct pushes. It's free on public repositories.
 
 ## 1. Plan the language
 
-<img src="docs/assets/step-1.svg" width="720" alt="Step 1 of 9: plan the language">
+<img src="docs/assets/step-1.png" width="720" alt="Step 1 of 9: plan the language">
 
 **Agree what things are called before any code exists.** One word per concept, used everywhere: in code, tests, the UI
 and tickets. Most rework starts with two people meaning different things by the same word.
@@ -119,7 +119,7 @@ and tickets. Most rework starts with two people meaning different things by the 
 
 ## 2. Event Storming
 
-<img src="docs/assets/step-2.svg" width="720" alt="Step 2 of 9: Event Storming">
+<img src="docs/assets/step-2.png" width="720" alt="Step 2 of 9: Event Storming">
 
 **For event-driven work, map what happens over time before designing code.** That means several actors, things that
 happen later, and background reactions. It pays off there, and only there. A form that saves a record doesn't need it.
@@ -154,7 +154,7 @@ Event-driven or not, the plan becomes small tickets before any code is written.
 
 ## 3. Test-first build with container tests
 
-<img src="docs/assets/step-3.svg" width="720" alt="Step 3 of 9: test-first build with container tests">
+<img src="docs/assets/step-3.png" width="720" alt="Step 3 of 9: test-first build with container tests">
 
 **Every behaviour starts as a failing test.** The tests run against the real database and services in containers, so
 green means it works rather than that a mock agreed.
@@ -167,7 +167,7 @@ green means it works rather than that a mock agreed.
 | **You&nbsp;get** | a branch `ticket/42-…` whose tests went red first and then green, with the evidence kept for the PR |
 | **Done&nbsp;when** | the acceptance criteria pass at the agreed seams, and the full verify is green |
 
-<img src="docs/assets/modes.svg" width="100%" alt="Three build modes: learn, build-with-me, deliver">
+<img src="docs/assets/modes.png" width="100%" alt="Three build modes: learn, build-with-me, deliver">
 
 - **learn:** you write the code. Claude gives hints, smallest first, and its reviews teach.
 - **build-with-me:** Claude writes one block of at most about 60 lines and asks you one question about it. You reply
@@ -183,7 +183,7 @@ green means it works rather than that a mock agreed.
 
 ## 4. A small PR
 
-<img src="docs/assets/step-4.svg" width="720" alt="Step 4 of 9: a small PR">
+<img src="docs/assets/step-4.png" width="720" alt="Step 4 of 9: a small PR">
 
 **One ticket, one PR, one idea.** A small PR gets a real review; a big one gets skimmed.
 
@@ -222,7 +222,7 @@ green means it works rather than that a mock agreed.
 
 ## 5. Two reviewer agents
 
-<img src="docs/assets/step-5.svg" width="720" alt="Step 5 of 9: two reviewer agents">
+<img src="docs/assets/step-5.png" width="720" alt="Step 5 of 9: two reviewer agents">
 
 **Two reviewers who know different things.** One knows the project and checks it against what you wrote down. The other
 knows nothing about the project and checks the code against published practice. In blind-graded tests, each caught
@@ -243,7 +243,7 @@ defects the other missed.
 
 ## 6. Your review
 
-<img src="docs/assets/step-6.svg" width="720" alt="Step 6 of 9: your review">
+<img src="docs/assets/step-6.png" width="720" alt="Step 6 of 9: your review">
 
 **You understand the change before it ships.** Claude asks you questions about the change and checks your answers
 against the code. The depth depends on the risk.
@@ -272,7 +272,7 @@ against the code. The depth depends on the risk.
 
 ## 7. You merge
 
-<img src="docs/assets/step-7.svg" width="720" alt="Step 7 of 9: you merge">
+<img src="docs/assets/step-7.png" width="720" alt="Step 7 of 9: you merge">
 
 **A person decides what reaches `main`.** That's the whole point of the flow, so it's enforced rather than just
 requested.
@@ -290,7 +290,7 @@ Branch protection (step 0) adds GitHub's own check on top: no merge without a cu
 
 ## 8. GitHub Actions
 
-<img src="docs/assets/step-8.svg" width="720" alt="Step 8 of 9: GitHub Actions">
+<img src="docs/assets/step-8.png" width="720" alt="Step 8 of 9: GitHub Actions">
 
 **Machines do the repeatable part.** You never run a deploy by hand, and secrets never pass through Claude.
 
@@ -307,7 +307,7 @@ Secrets live in GitHub Environments. The deploy setup in step 9 walks you throug
 
 ## 9. Kubernetes
 
-<img src="docs/assets/step-9.svg" width="720" alt="Step 9 of 9: Kubernetes">
+<img src="docs/assets/step-9.png" width="720" alt="Step 9 of 9: Kubernetes">
 
 **Staging first, then production after your approval.** Every release follows the same steps, and a failed release
 undoes itself.

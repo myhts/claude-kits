@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/flow.svg" width="100%" alt="The flow in nine steps: 1 plan the language, 2 Event Storming, 3 test-first build with container tests, 4 a small PR, 5 two reviewer agents, 6 your review, 7 you merge, 8 GitHub Actions, 9 Kubernetes. Then keep improving with /retro.">
+  <img src="docs/assets/flow.png" width="100%" alt="The flow in nine steps: 1 plan the language, 2 Event Storming, 3 test-first build with container tests, 4 a small PR, 5 two reviewer agents, 6 your review, 7 you merge, 8 GitHub Actions, 9 Kubernetes. Then keep improving with /retro.">
 </p>
 
 **You decide, Claude builds, CI ships.** Every step is one command. Each pull request is small and has been through two
@@ -57,7 +57,7 @@ production.
 
 ## Choose how much code you write
 
-<p align="center"><img src="docs/assets/modes.svg" width="100%" alt="Three build modes. learn: you write the code; Claude teaches, hints and reviews. build-with-me: Claude writes about 60 lines at a time and you check each block. deliver: Claude builds the whole ticket and you review the PR."></p>
+<p align="center"><img src="docs/assets/modes.png" width="100%" alt="Three build modes. learn: you write the code; Claude teaches, hints and reviews. build-with-me: Claude writes about 60 lines at a time and you check each block. deliver: Claude builds the whole ticket and you review the PR."></p>
 
 Pick the default in `/setup-project`. Change it for one ticket by adding a mode: `/implement #42 deliver`.
 
