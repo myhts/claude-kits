@@ -46,3 +46,38 @@ Added:
 - `mentor` agent, `learning-loop`, `resilience-patterns` and `interview-drill` skills.
 - `docs/learning/LESSONS.md` and `PROGRESS.md` templates, `install.sh`.
 - `kit-check/`: a Spring Boot 4.1.1 project whose tests prove the code shown in the skills.
+
+Added 2026-10-25:
+- `--ai` (kit-ai/): the `llm-engineering` skill with `evals.md`, `synthetic-data.md`, `review-checklist.md` and a
+  CI eval workflow; `CLAUDE.ai.md` rules; a WireMock fake of the model for the e2e stack (`llmFake` option). Code
+  shapes proven by 23 tests in `kit-check` (`com.example.kitcheck.llm`) against a local fake API.
+- `--web` (kit-web/): a React + Vite + TanStack Query template and the `react-frontend` skill.
+- `code-reviewer`, `security-reviewer` and `blind-reviewer`: checks for code that calls a language model. The
+  before/after evaluation is prepared in `kit-check/reviewer-eval/` (`prepare-llm.sh`, fixture `llm-claims`) and
+  not yet run.
+
+Added 2026-11-01 (the stack-neutral pipeline):
+- `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock
+  (https://github.com/mattpocock/skills, commit `4ae2317`, 2026-10-31), MIT License, Copyright (c) 2026 Matt Pocock:
+  `grilling`, `grill-with-docs`, `domain-modeling`, `wayfinder`, `research`, `prototype`, `wizard`, `to-spec`,
+  `to-tickets`, `tdd`, `codebase-design`, `diagnosing-bugs`, `pr`, `retro`, `writing-for-agents`, plus the tracker and
+  domain templates from `setup-matt-pocock-skills`. The only edits are two mechanical substitutions, applied and
+  checked by `kit-check/verify-pipeline.sh`: `setup-matt-pocock-skills` → `setup-project`, and in `tdd` a pointer to the
+  `code-review` skill → the `code-reviewer` agent. The `pr` skill's summary section credits Dex Horthy's `show-me`
+  (HumanLayer); see `kit-pipeline/upstream/pr/CREDITS.md`.
+
+  MIT License text for those files: Permission is hereby granted, free of charge, to any person obtaining a copy of
+  this software and associated documentation files (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following
+  conditions: The above copyright notice and this permission notice shall be included in all copies or substantial
+  portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  DEALINGS IN THE SOFTWARE.
+- `kit-pipeline/hooks/merge-guard.sh`: adapted from `git-guardrails-claude-code` in the same repository (MIT): blocks
+  merges, pushes to main/master, force pushes and destructive git commands; lets feature-branch pushes through.
+- Our own: `setup-project`, `implement`, `human-review`, `deploy`, `event-storming`; `code-reviewer` made stack-neutral
+  with standards and spec axes (its Spring checklist moved to `kit/.claude/skills/spring-boot/review-checklist.md`);
+  `implementer` made stack-neutral with build modes; the plugin marketplace at the repository root.
