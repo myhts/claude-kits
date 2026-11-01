@@ -1,21 +1,43 @@
-# Claude toolkit handbook: agents, skills, MCP and scripts for new projects
+# claude-kits handbook: everything beyond the flow
 
-Everything in this repository for working with Claude Code, in one place: what each piece offers, step-by-step use, how to
-apply it to a new project (or a different stack), and how to improve it safely. Last updated 2026-11-01.
+**The flow** (plan the language → Event Storming → test-first build → a small PR → two reviewer agents → your review →
+you merge → GitHub Actions → Kubernetes) has its own visual guide: **[PIPELINE.md](PIPELINE.md)**. Start there.
 
-**The delivery pipeline** (plan, Event Storming, test-first build, two reviewers, your review, Kubernetes) works on
-any stack and has its own how-to: **[PIPELINE.md](PIPELINE.md)**. This handbook covers the pieces and the learning
-kit.
+This handbook covers everything else:
+- the stack packs and add-ons
+- the learning kit for practice projects
+- each agent and skill, one by one
+- the proofs
+- how Claude Code loads all this
+- how to improve the toolkit safely
+
+Last updated 2026-11-01.
 
 **Contents:** [1. What exists](#1-what-exists) · [2. Quick starts](#2-quick-starts) ·
 [3. The pieces, one by one](#3-the-pieces-one-by-one) · [4. Workflows](#4-workflows-step-by-step) ·
 [5. Applying it elsewhere](#5-applying-it-to-other-situations) · [6. Improving the toolkit](#6-improving-the-toolkit) ·
 [7. How Claude Code loads all this](#7-how-claude-code-loads-all-this-facts-worth-knowing) ·
-[8. Troubleshooting](#8-troubleshooting) · [9. Ground rules](#9-ground-rules)
+[8. Troubleshooting](#8-troubleshooting) · [9. Ground rules](#9-ground-rules) · [10. Proofs](#10-proofs) ·
+[11. What's ours and what's adopted](#11-whats-ours-and-whats-adopted)
 
 ---
 
 ## 1. What exists
+
+### The plugins
+
+| Plugin | For | Adds |
+|---|---|---|
+| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), six agents, and the merge guard |
+| `spring` | Spring Boot 4 | `spring-boot`, `testing-patterns`, `transactions`, `jpa-patterns`, `java-modern`, `java-concurrency`, `logging-patterns`, the Spring review checklist, and the build templates: Dockerfile, CI, a Kustomize base with staging and prod overlays, and the deploy workflow |
+| `e2e` | apps with a UI or flows | Playwright tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP (localhost only) |
+| `spring-ai` | Spring services that call Claude | `llm-engineering` and the review checklist the reviewers use for model calls |
+| `spring-web` | a front end for a Spring API | a React + Vite + TanStack Query template and the `react-frontend` skill |
+
+Add one to a repo with `claude plugin install <name>@kits --scope project`. For a Spring Boot repo,
+`/pipeline:setup-project` does it for you.
+
+### Everything in the repository
 
 | Piece | Where | What it's for |
 |---|---|---|
@@ -355,7 +377,7 @@ The method, step by step (details and scripts in its `README.md`):
 | **Another Spring Boot project** | `install.sh <project> [--e2e]`. Everything applies |
 | **A project with its own CLAUDE.md** | Merge `CLAUDE.learning.md` into it: keep their rules, add "How we work" and the learning files if you want them |
 | **A Java project without Spring** | Keep: `mentor`, both reviewers, `security-reviewer`, `deploy-reviewer`, `implementer`, `learning-loop`, `interview-drill`, `java-modern`, `distributed-systems`, `system-design`, `design-patterns`, `resilience-patterns` (concepts). Delete or ignore the Spring-specific skills |
-| **Another language (Go, Python, TypeScript…)** | Use the `pipeline` plugin with no pack ([PIPELINE.md §2](PIPELINE.md#2-set-up-a-project)): every stage and agent works; put the stack's rules in `CODING_STANDARDS.md`. Also portable as is: `/project-explorer`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). What a pack would add: a review checklist, testing and framework skills proved by tests, verified build and deploy templates |
+| **Another language (Go, Python, TypeScript…)** | Use the `pipeline` plugin with no pack ([PIPELINE.md, step 0](PIPELINE.md#0-set-up-once)): every stage and agent works; put the stack's rules in `CODING_STANDARDS.md`. Also portable as is: `/project-explorer`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). What a pack would add: a review checklist, testing and framework skills proved by tests, verified build and deploy templates |
 | **A project you don't own** (work, client) | Don't install anything without the owner's agreement. The least invasive option is the `blind-reviewer`, which only reads; `/project-explorer` writes an output folder and debugger configs, so ask first. Never send confidential data to an LLM: check before you start |
 | **A new machine or account** | `git clone` this repo, run `./setup.sh`. Approve project MCP servers again. A project's `CLAUDE.md` carries its rules; memory files are optional |
 
@@ -379,7 +401,10 @@ Projects get **copies** (install.sh) or **plugins** (`pipeline@kits` and a pack)
 agents and stack-neutral skills in `spring-boot-learning/kit-pipeline/`, Spring skills in `kit/`, add-ons in `kit-e2e/`,
 `kit-ai/`, `kit-web/`. Plugin projects pick the change up at their next session. Copy projects need a re-install:
 `install.sh <project> --force`, then check `git diff` in the project (`--force` overwrites). Never edit
-`kit-pipeline/upstream/`: those skills come unchanged from mattpocock/skills (see PIPELINE.md §10).
+`kit-pipeline/upstream/`: those skills come unchanged from mattpocock/skills at the commit pinned in
+`kit-pipeline/upstream.lock`, and `kit-check/verify-pipeline.sh` checks they still match. To take upstream changes:
+edit the commit in `upstream.lock`, run `verify-pipeline.sh --update-upstream`, read the diff, and commit it as its own
+PR.
 
 ### 6.3 Improve a skill
 1. Edit the skill's `SKILL.md`: `kit-pipeline/skills/<name>/` for stack-neutral skills, `kit/.claude/skills/<name>/` for
@@ -474,3 +499,44 @@ Next, Vue and Svelte shells were never run).
   anything on shared machines or other projects' containers.
 - No real personal or client data anywhere; invent test data. Secrets live in `.env` (gitignored), never in files.
 - Pin versions; prove claims with a test or a source; measure before saying "faster".
+
+## 10. Proofs
+
+| What | How it's proved | Where |
+|---|---|---|
+| Code in the Spring and AI skills | 44 tests on Spring Boot 4.1.1 with real Postgres, plus 23 for the LLM code shapes against a local fake of the API | `kit-check/` (`./mvnw verify`), §3.9 |
+| Docker, CI and Kubernetes templates | built and run; overlays validated against the Kubernetes 1.33 schemas; workflows linted. With `--kind`: a rollout, a broken release that leaves the old pods serving, and `rollout undo` | `kit-check/verify-templates.sh` |
+| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 16 dangerous commands and allows 9 safe ones; the marketplace validates; all five plugins install and load in a throwaway home | `kit-check/verify-pipeline.sh` |
+| The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version) | `kit-check/reviewer-eval/`, §3.10 |
+| e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
+
+**Not proved yet:**
+- The deploy workflow and the PR checks pass lint and a fake `gh`, but haven't run on GitHub itself.
+- The stage commands (`/implement`, `/human-review`, `/deploy`) haven't been used on a real project yet.
+- The AI pack's canned responses haven't been checked against the live API, and the LLM checks in `security-reviewer`
+  and `blind-reviewer` haven't been measured.
+
+## 11. What's ours and what's adopted
+
+**Ours:**
+- Event Storming as a step for event-driven domains, with command cards and Given/When/Then specs.
+- The three build modes, including learn and build-with-me.
+- The human gate: a review sized by risk, and a record tied to the head commit.
+- The merge guard.
+- Two reviewers, one that knows the project and one blind, compared in `kit-check/reviewer-eval`.
+- Stack packs proved by tests (kit-check).
+- One PR per ticket instead of an integration branch.
+- Kubernetes deploys through GitHub Actions.
+
+**Adopted:** 15 skills copied unchanged from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT; see
+`spring-boot-learning/NOTICE.md`): `grilling`, `grill-with-docs`, `domain-modeling`, `wayfinder`, `research`,
+`prototype`, `wizard`, `to-spec`, `to-tickets`, `tdd`, `codebase-design`, `diagnosing-bugs`, `pr`, `retro`,
+`writing-for-agents`. The merge guard is adapted from the same repository's `git-guardrails-claude-code`.
+
+**Ideas restated in our own words**, from widely used practice:
+- ubiquitous language
+- small decision records
+- planning at the right fidelity
+- review on separate axes
+- risk-based review
+- turning repeated review comments into checks

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="158" viewBox="0 0 1000 158" role="img" aria-label="Three build modes: learn, build-with-me, deliver">
+<title>Three build modes: learn, build-with-me, deliver</title>
+<rect x="4" y="4" width="310" height="150" rx="14" fill="#0969da" fill-opacity="0.10" stroke="#0969da" stroke-opacity="0.6" stroke-width="1.5"/>
+<text x="22" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700" fill="#0969da" text-anchor="start">learn</text>
+<text x="22" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#8b949e" text-anchor="start">You write the code.</text>
+<text x="22" y="81" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#8b949e" text-anchor="start">Claude teaches, hints and reviews.</text>
+<rect x="22" y="100" width="274" height="12" rx="6" fill="#8250df"/>
+<rect x="22" y="100" width="246.6" height="12" rx="6" fill="#1a7f37"/>
+<text x="22" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">who writes:</text>
+<text x="90" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1a7f37" text-anchor="start">you</text>
+<text x="116" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">/</text>
+<text x="126" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#8250df" text-anchor="start">Claude</text>
+<text x="296" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="end">practice projects</text>
+<rect x="340" y="4" width="310" height="150" rx="14" fill="#0969da" fill-opacity="0.10" stroke="#0969da" stroke-opacity="0.6" stroke-width="1.5"/>
+<text x="358" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700" fill="#0969da" text-anchor="start">build-with-me</text>
+<text x="358" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#8b949e" text-anchor="start">Claude writes ~60 lines at a time.</text>
+<text x="358" y="81" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#8b949e" text-anchor="start">You check each block and answer 1–2 questions.</text>
+<rect x="358" y="100" width="274" height="12" rx="6" fill="#8250df"/>
+<rect x="358" y="100" width="95.89999999999999" height="12" rx="6" fill="#1a7f37"/>
+<text x="358" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">who writes:</text>
+<text x="426" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1a7f37" text-anchor="start">you</text>
+<text x="452" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">/</text>
+<text x="462" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#8250df" text-anchor="start">Claude</text>
+<text x="632" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="end">learning while you ship</text>
+<rect x="676" y="4" width="310" height="150" rx="14" fill="#0969da" fill-opacity="0.10" stroke="#0969da" stroke-opacity="0.6" stroke-width="1.5"/>
+<text x="694" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700" fill="#0969da" text-anchor="start">deliver</text>
+<text x="694" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#8b949e" text-anchor="start">Claude builds the whole ticket.</text>
+<text x="694" y="81" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#8b949e" text-anchor="start">You review the PR.</text>
+<rect x="694" y="100" width="274" height="12" rx="6" fill="#8250df"/>
+<rect x="694" y="100" width="13.700000000000001" height="12" rx="6" fill="#1a7f37"/>
+<text x="694" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">who writes:</text>
+<text x="762" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1a7f37" text-anchor="start">you</text>
+<text x="788" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="start">/</text>
+<text x="798" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#8250df" text-anchor="start">Claude</text>
+<text x="968" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8b949e" text-anchor="end">small, clear tickets</text>
+</svg>

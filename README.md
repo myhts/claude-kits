@@ -1,116 +1,87 @@
-# claude-kits
+<h1 align="center">claude-kits</h1>
 
-A [Claude Code](https://claude.com/claude-code) plugin marketplace with two parts. The first is a **delivery pipeline
-for any stack**, which takes a change from the first conversation to production. The second is a set of **stack
-packs** whose advice is proved by tests. The pipeline goes:
+<p align="center">
+  <b>Plan it. Build it test-first. Have it reviewed twice. Merge it yourself. Ship it to Kubernetes.</b><br>
+  A delivery flow for <a href="https://claude.com/claude-code">Claude Code</a> that works on any stack.
+</p>
 
-```
-plan the language → Event Storming (event-driven work) → test-first build with container tests
-  → a small PR → two reviewer agents → your review → you merge → GitHub Actions → Kubernetes
-```
+<p align="center">
+  <img src="docs/assets/flow.svg" width="100%" alt="The flow in nine steps: 1 plan the language, 2 Event Storming, 3 test-first build with container tests, 4 a small PR, 5 two reviewer agents, 6 your review, 7 you merge, 8 GitHub Actions, 9 Kubernetes. Then keep improving with /retro.">
+</p>
 
-What sets it apart:
+**You decide, Claude builds, CI ships.** Every step is one command. Each pull request is small and has been through two
+reviewer agents before you see it. Claude can't merge, so nothing reaches production without your review.
 
-- **Claude never merges.** A hook blocks merges and pushes to `main`. Your review leaves a record tied to the PR's head
-  commit, and a CI check reads that record.
-- **Small PRs.** One ticket is one PR of about 400 lines, with tests at seams you agreed on before the code was written.
-- **Two reviewers that see different things.** One knows the project; the other reads only the code. A measured
-  comparison is the reason both stay ([below](#proofs)).
-- **You choose how much you write.** `learn` means you write the code and Claude teaches. `build-with-me` means Claude
-  writes about 60 lines at a time and asks you about each block. `deliver` means Claude builds the whole ticket.
-- **Proof before claims.** Code in a skill is run by a test, templates are deployed to a throwaway cluster, and a
-  changed agent is compared with its previous version before it ships.
+## Start in three minutes
 
-## Install
-
-You need Claude Code, `git`, `gh` (2.94 or later is best) and Docker. Run these from your project's folder, in any
-language:
+**1. Add the plugin** to any repository, in any language. You need Claude Code, `git`, `gh` 2.94 or later, and Docker:
 
 ```bash
 claude plugin marketplace add myhts/claude-kits --scope project
 claude plugin install pipeline@kits --scope project
-claude
-> /pipeline:setup-project
 ```
 
-`/setup-project` looks at the repo, then asks five questions in one round: the pack, the build mode, the domain layout,
-the PR budget and the CI checks. Then it shows what it will write. For a Spring Boot repo it also installs the `spring`
-pack. Every other stack runs with no pack: the stages, agents and merge guard work the same, minus the stack-specific
-checklist and templates.
+**2. Set the repo up once.** Start `claude`, then:
 
-Then `/pipeline:grill-with-docs` starts your first feature. **[PIPELINE.md](PIPELINE.md)** walks through one feature
-from start to production, with every command.
-
-## What's inside
-
-| Plugin | For | Adds |
-|---|---|---|
-| `pipeline` | every project | **Stages:** `/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`. **Skills:** `event-storming` (command cards and Given/When/Then specs), `tdd`, `codebase-design`, `diagnosing-bugs`, `system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`. **Agents:** `implementer`, `code-reviewer` (standards and spec axes), `blind-reviewer`, `security-reviewer`, `deploy-reviewer`, `mentor`. **Hook:** the merge guard |
-| `spring` | Spring Boot 4 | `spring-boot`, `testing-patterns` (Testcontainers 2), `transactions`, `jpa-patterns`, `java-modern`, `java-concurrency`, `logging-patterns`, the Spring review checklist, and build templates: Dockerfile, CI, a Kustomize base with staging and prod overlays, and the deploy workflow |
-| `e2e` | apps with a UI or flows | Playwright end-to-end tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP limited to localhost |
-| `spring-ai` | Spring services that call Claude | `llm-engineering`: structured outputs, prompt injection, stop reasons, citations checked against the source, caching and cost, PII-safe logs, evals as tests, plus a review checklist the reviewers use |
-| `spring-web` | a front end for a Spring API | a React + Vite + TanStack Query template behind nginx, and the `react-frontend` skill |
-
-A TypeScript pack is planned. Until it exists, TypeScript repos run with no pack.
-
-**Outside the marketplace:**
-- **`/project-explorer`** turns any codebase into an interactive architecture explorer, with debug walkthroughs and
-  optional scaling labs. `./setup.sh` makes it available in every project.
-- **The learning kit** is `new-project.sh` plus `install.sh`. They copy the same agents and skills into a Spring Boot
-  project, with a working agreement in which you write the code. **[GUIDE.md](GUIDE.md)** covers it.
-
-```bash
-git clone https://github.com/myhts/claude-kits.git && cd claude-kits
-./setup.sh                                  # checks your tools; links /project-explorer for every project
-./new-project.sh my-shop --e2e --pipeline   # Spring Boot 4.1.1 + Postgres + e2e tests, with the plugins enabled
+```text
+/pipeline:setup-project
 ```
 
-## Proofs
+It looks around, asks five questions in one round (each with a recommended answer), shows what it will write, then
+writes it.
 
-| What | How it's proved | Where |
-|---|---|---|
-| Code in the Spring and AI skills | 44 tests on Spring Boot 4.1.1 with real Postgres, plus 23 for the LLM code shapes against a local fake of the API | `spring-boot-learning/kit-check/` (`./mvnw verify`) |
-| Docker, CI and Kubernetes templates | built and run; overlays validated against the Kubernetes 1.33 schemas; workflows linted. With `--kind`: a rollout, a broken release that leaves the old pods serving, and `rollout undo` | `kit-check/verify-templates.sh` |
-| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 16 dangerous commands and allows 9 safe ones; the marketplace validates; all five plugins install and load in a throwaway home | `kit-check/verify-pipeline.sh` |
-| The reviewers | blind-graded comparisons on code with known defects: `code-reviewer` and `blind-reviewer` tied, each finding things the other missed, so both stay. The rewritten `code-reviewer` found all 10 planted defects in every run and scored 31.8 against 27.2 for its previous version | `kit-check/reviewer-eval/` |
-| e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
+**3. Start your first feature** by describing it in a sentence:
 
-**Not proved yet:**
-- The deploy workflow and the PR checks pass lint and a fake `gh`, but haven't run on GitHub itself. The image push,
-  environment approvals and label permissions are untested.
-- The stage skills (`/implement`, `/human-review`, `/deploy`) haven't been used on a real project yet.
-- The AI pack's canned responses haven't been checked against the live API. Neither have the LLM checks in
-  `security-reviewer` and `blind-reviewer`.
-
-## Documentation
-
-- **[PIPELINE.md](PIPELINE.md)**: how to apply the pipeline. Setup, choosing a path, one feature end to end, every
-  stage, review, small PRs, Kubernetes, troubleshooting.
-- **[GUIDE.md](GUIDE.md)**: the handbook. Every piece, the learning workflows, other stacks, how Claude Code loads all
-  this, and how to improve the toolkit safely.
-- **[spring-boot-learning/README.md](spring-boot-learning/README.md)**: the kits and their proofs, in detail.
-- **[skills/project-explorer/README.md](skills/project-explorer/README.md)**: the explorer.
-
-## Layout
-
-```
-.claude-plugin/marketplace.json   the marketplace: pipeline, spring, e2e, spring-ai, spring-web
-spring-boot-learning/
-  kit-pipeline/                   the pipeline plugin: stage skills, core skills, agents, merge guard, upstream/ (adopted skills)
-  kit/                            the spring pack, plus the learning kit's CLAUDE.md
-  kit-e2e/, kit-ai/, kit-web/     the e2e, spring-ai and spring-web plugins
-  kit-check/                      the proofs
-  install.sh                      copies the kits into a project (the learning kit's way)
-skills/project-explorer/          a personal skill, linked into ~/.claude/skills/ by setup.sh
-setup.sh, new-project.sh          one-time setup; a new Spring Boot project
+```text
+/pipeline:grill-with-docs Members want to reserve a title when every copy is out
 ```
 
-## Licence and credits
+From there, the flow below tells you what comes next.
 
-[Apache License 2.0](LICENSE). The Spring learning kit started from
-[piomin/claude-ai-spring-boot](https://github.com/piomin/claude-ai-spring-boot) (Apache-2.0). Fifteen skills come
-unchanged from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT) at a pinned commit:
-`grilling`, `grill-with-docs`, `domain-modeling`, `wayfinder`, `research`, `prototype`, `wizard`, `to-spec`,
-`to-tickets`, `tdd`, `codebase-design`, `diagnosing-bugs`, `pr`, `retro` and `writing-for-agents`. The merge guard is
-adapted from the same author's `git-guardrails-claude-code` (MIT). [spring-boot-learning/NOTICE.md](spring-boot-learning/NOTICE.md)
-lists every change.
+## The flow, one step at a time
+
+| | Step | You type | You get |
+|:-:|---|---|---|
+| **1** | [**Plan the language**](PIPELINE.md#1-plan-the-language) | `/grill-with-docs <idea>` | one agreed word per concept (`GLOSSARY.md`) and the decisions behind it (ADRs) |
+| **2** | [**Event Storming**](PIPELINE.md#2-event-storming) | *(joins step 1 for event-driven work)*, then `/to-spec`, `/to-tickets` | the events, commands and rules, then small tickets on GitHub |
+| **3** | [**Test-first build**](PIPELINE.md#3-test-first-build-with-container-tests) | `/implement #42` | code written test-first, with a real database in containers |
+| **4** | [**A small PR**](PIPELINE.md#4-a-small-pr) | *(opened by `/implement`)* | one ticket's worth of change, with before-and-after evidence |
+| **5** | [**Two reviewer agents**](PIPELINE.md#5-two-reviewer-agents) | *(run by `/implement`)* | the must-fix findings fixed before you look |
+| **6** | [**Your review**](PIPELINE.md#6-your-review) | `/human-review #57` | a few sharp questions, then a review record on the PR |
+| **7** | [**You merge**](PIPELINE.md#7-you-merge) | the Merge button | the change on `main`, decided by a person |
+| **8** | [**GitHub Actions**](PIPELINE.md#8-github-actions) | *(nothing)* | tests on every PR; an image per commit on merge |
+| **9** | [**Kubernetes**](PIPELINE.md#9-kubernetes) | approve in GitHub | staging, a smoke test, your approval, production |
+
+**[PIPELINE.md](PIPELINE.md)** walks through every step with one example feature, from the first question to
+production.
+
+## Choose how much code you write
+
+<p align="center"><img src="docs/assets/modes.svg" width="100%" alt="Three build modes. learn: you write the code; Claude teaches, hints and reviews. build-with-me: Claude writes about 60 lines at a time and you check each block. deliver: Claude builds the whole ticket and you review the PR."></p>
+
+Pick the default in `/setup-project`. Change it for one ticket by adding a mode: `/implement #42 deliver`.
+
+## Why you can trust what it ships
+
+- 🛑 **Claude can't merge.** A hook blocks merges, pushes to `main` and force pushes. Your review leaves a record tied
+  to the PR's latest commit, and a required check reads that record.
+- ✂️ **Small PRs.** One ticket is one PR of about 400 lines, tested at seams you agreed on before any code was written.
+- 👀 **Two reviewers that see different things.** One knows the project; the other reads only the code. In blind-graded
+  tests, each caught defects the other missed.
+- 🧪 **Proof before claims.** Code in the skills runs as tests, the deploy templates go through a real rollout and
+  rollback, and a changed agent ships only after it scores at least as well as the version it replaces. See
+  [what's proved, and what isn't yet](GUIDE.md#10-proofs).
+
+## Beyond the flow
+
+The **`spring`** pack adds Spring Boot 4 skills, a review checklist and verified build and deploy templates. Other add-ons cover
+end-to-end tests with a browser (an MCP), Claude in your own services, and a React front end. There's also
+`/project-explorer`, a learning kit for practice projects, and every agent and skill described one by one. All of it
+is in **[GUIDE.md](GUIDE.md)**.
+
+## Credits and licence
+
+[Apache License 2.0](LICENSE). Fifteen skills come unchanged from [mattpocock/skills](https://github.com/mattpocock/skills)
+(MIT) at a pinned commit. The Spring kit started from [piomin/claude-ai-spring-boot](https://github.com/piomin/claude-ai-spring-boot)
+(Apache-2.0). [GUIDE.md](GUIDE.md#11-whats-ours-and-whats-adopted) lists which ideas are ours and which are adopted, and
+[NOTICE.md](spring-boot-learning/NOTICE.md) records every change.
