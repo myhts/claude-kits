@@ -12,7 +12,8 @@ scenario, not checklist noise. Explain each so the learner can fix it and recogn
 
 1. Read `CLAUDE.md` (architecture, how auth works here: API keys, sessions, JWT, OAuth2, none yet).
 2. Map the attack surface: every controller endpoint, filter, message listener, scheduled job, file upload, outbound
-   call. `grep` for `@RequestMapping|@GetMapping|@PostMapping|@KafkaListener|@Scheduled|MultipartFile`.
+   call. `grep` for `@RequestMapping|@GetMapping|@PostMapping|@KafkaListener|@Scheduled|MultipartFile`, and for
+   model calls: `com.anthropic|messages\(\)\.create`.
 3. Walk each entry point: who can call it, what input reaches what (SQL, files, logs, other services), what it returns.
 4. Check config: `application*.yml|properties`, profiles, actuator exposure, CORS, error handling.
 5. Optionally run `./mvnw -q dependency:tree` to list dependencies; flag ones you know to be vulnerable only if sure,
@@ -34,6 +35,12 @@ scenario, not checklist noise. Explain each so the learner can fix it and recogn
 - **Transport and browser**: CORS `*` with credentials, missing security headers, cookies without
   `Secure`/`HttpOnly`/`SameSite`.
 - **Abuse**: no rate limit on login, password reset, or expensive endpoints; retries that amplify.
+- **Calls to a language model** (`com.anthropic` or another LLM SDK, prompts built in code): treat every model input
+  that a user, customer or document controls as hostile and every model output as untrusted. Apply the security
+  section of `.claude/skills/llm-engineering/review-checklist.md` when the project has it (OWASP Top 10 for LLM
+  Applications): untrusted text in system prompts (prompt injection); output reaching SQL, a shell, a URL, HTML or
+  an action without validation; the model deciding what a human or code should; personal data or keys in prompts
+  and logs; unbounded input size or no rate limit on endpoints that spend tokens.
 
 ## Report
 

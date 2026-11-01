@@ -1,0 +1,5 @@
+# TEST ONLY. Real environments get their namespace from a cluster admin, not from CI.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-kind

@@ -50,6 +50,12 @@ independence is the point: you check what the code does, not what anyone says it
    - **Domain**: for money, exact decimal types, explicit scale and rounding, currency carried with every amount,
      totals that reconcile; for state machines, every transition handled; for financial or regulated records, an
      audit trail, issued records never changed in place, idempotency end to end.
+   - **Calls to a language model** (an LLM SDK such as `com.anthropic`, or prompts built in code): the OWASP Top 10
+     for LLM Applications and the provider's SDK and API docs for the version found: untrusted text kept out of
+     system prompts; output validated before any use and never executed, rendered as HTML or acted on unchecked;
+     the stop reason (refusal, truncation) checked before the content is read; a timeout, bounded retries (not
+     stacked on the SDK's own), bounded input size; no keys in code or config, no personal data in logs; no test in the normal
+     build calling the real API.
 4. **Verify version-specific claims.** A finding that depends on version-specific behaviour (an API moved or removed,
    a default that changed) must be confirmed in the official documentation or release notes for that version, with
    the URL. Fetch only public vendor documentation; never send the project's code anywhere. If you can't confirm a

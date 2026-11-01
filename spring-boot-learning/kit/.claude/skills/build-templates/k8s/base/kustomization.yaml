@@ -1,0 +1,17 @@
+# The base: what every environment shares. Never applied on its own; apply an overlay:
+#   kubectl kustomize overlays/staging        → print what would be applied (no cluster needed)
+#   kubectl apply -k overlays/staging         → only CI does this (deploy-github-actions.yml)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml
+  - pdb.yaml
+  - ingress.yaml
+
+images:
+  - name: registry.example.com/app      # must equal the image name in deployment.yaml
+    newName: ghcr.io/OWNER/REPO          # what deploy-github-actions.yml pushes: ghcr.io/<owner>/<repo>, all lowercase
+                                         # (the overlays refer to the image by this new name)

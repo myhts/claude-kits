@@ -1,4 +1,5 @@
-# The app. Secrets are NOT in this repo: create them out of band, e.g.
+# The app. Secrets are NOT in this repo: the deploy workflow writes them from GitHub Environment secrets, or create
+# them out of band, e.g.
 #   kubectl create secret generic app-secrets --from-env-file=prod.env     (prod.env never committed)
 # or use External Secrets / Sealed Secrets. This file only references the Secret by name.
 apiVersion: apps/v1
@@ -7,10 +8,17 @@ metadata:
   name: app
   labels: { app.kubernetes.io/name: app }
 spec:
-  replicas: 2
+  replicas: 2                                    # the overlays set this per environment
   selector:
     matchLabels: { app.kubernetes.io/name: app }
+  # Old pods keep serving until a new one is ready (maxUnavailable: 0), so a bad version never takes traffic and a
+  # rollout that fails readiness just stalls; `kubectl rollout undo` then removes the new pods.
+  # Flyway migrates at startup, so old and new versions share one schema during the rollout and after a rollback
+  # (the old version still starts: Flyway ignores newer, "future" migrations by default). So migrations must be
+  # expand/contract: add a column → deploy code that uses it → drop the old one in a later release. Never rename
+  # or drop something the running version still reads.
   strategy:
+    type: RollingUpdate
     rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
   template:
     metadata:
@@ -24,7 +32,8 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: app
-          image: registry.example.com/app:1.0.0   # a pinned tag or digest, never :latest
+          image: registry.example.com/app:1.0.0   # placeholder: kustomization.yaml's images: sets the registry and
+                                                  # the overlays the tag (a commit SHA, never :latest)
           ports:
             - { name: http, containerPort: 8080 }
           envFrom:

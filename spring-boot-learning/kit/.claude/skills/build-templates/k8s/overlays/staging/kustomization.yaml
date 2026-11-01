@@ -1,0 +1,26 @@
+# Staging: the base with one replica, its own namespace and host. Every merge to main lands here first.
+# CI replaces the literal IMAGE_TAG with the commit SHA in its checkout, then runs kubectl apply -k on this folder.
+# IMAGE_TAG stays in git, so a deploy never needs a commit and git never holds a "current version" to fight over.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: app-staging           # created once, with CI's credentials scoped to it; CI doesn't create namespaces
+
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/OWNER/REPO      # the base's newName (kustomize matches the image as the base emits it)
+    newTag: IMAGE_TAG
+
+patches:
+  - target: { kind: Deployment, name: app }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target: { kind: Ingress, name: app }   # with TLS on, also replace /spec/tls/0/hosts/0
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: app-staging.example.com
