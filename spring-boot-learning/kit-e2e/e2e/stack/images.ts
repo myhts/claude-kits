@@ -9,7 +9,10 @@ import { STACK } from './stack.config.ts';
 const REPO = resolve(import.meta.dirname, '../..');
 
 /** Images we build ourselves, and the paths (relative to the repo root) their code comes from. */
-const OWN = [{ tag: STACK.app.image, sources: ['src', 'pom.xml', 'Dockerfile'] }];
+const OWN = [
+  { tag: STACK.app.image, sources: ['src', 'pom.xml', 'Dockerfile'] },
+  ...(STACK.web ? [{ tag: STACK.web.image, sources: ['web/src', 'web/index.html', 'web/package.json', 'web/package-lock.json', 'web/Dockerfile', 'web/nginx'] }] : []),
+];
 
 function builtAt(tag: string): Date | null {
   try {

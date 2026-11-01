@@ -1,0 +1,103 @@
+{
+  "mappings": [
+    {
+      "name": "refusal: any request whose body contains e2e-refuse",
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "url": "/v1/messages",
+        "bodyPatterns": [
+          {
+            "contains": "e2e-refuse"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "msg_e2e",
+          "type": "message",
+          "role": "assistant",
+          "model": "claude-haiku-5-5",
+          "content": [],
+          "stop_reason": "refusal",
+          "stop_sequence": null,
+          "usage": {
+            "input_tokens": 700,
+            "output_tokens": 5,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          },
+          "stop_details": {
+            "type": "refusal",
+            "category": "cyber",
+            "explanation": "declined"
+          }
+        }
+      }
+    },
+    {
+      "name": "overloaded: body contains e2e-overloaded (the SDK retries, then gives up)",
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "url": "/v1/messages",
+        "bodyPatterns": [
+          {
+            "contains": "e2e-overloaded"
+          }
+        ]
+      },
+      "response": {
+        "status": 529,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "type": "error",
+          "error": {
+            "type": "overloaded_error",
+            "message": "Overloaded"
+          }
+        }
+      }
+    },
+    {
+      "name": "default: a structured extraction",
+      "priority": 5,
+      "request": {
+        "method": "POST",
+        "url": "/v1/messages"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "msg_e2e",
+          "type": "message",
+          "role": "assistant",
+          "model": "claude-haiku-5-5",
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"claimantName\": \"Dana Okafor\", \"policyNumber\": \"POL-20481\", \"incidentDate\": \"2026-03-14\", \"lossType\": \"BAGGAGE_LOST\", \"amountClaimed\": \"1250.00\", \"currency\": \"GBP\", \"missingInformation\": [\"Receipts for the items\"]}"
+            }
+          ],
+          "stop_reason": "end_turn",
+          "stop_sequence": null,
+          "usage": {
+            "input_tokens": 812,
+            "output_tokens": 164,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          }
+        }
+      }
+    }
+  ]
+}

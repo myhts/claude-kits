@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: claims-triage
+app:
+  claude:
+    model: claude-haiku-5-5
+    api-key: claims-prod-9f2c4e1a7b3d8e60
+  payments:
+    auto-approve: true

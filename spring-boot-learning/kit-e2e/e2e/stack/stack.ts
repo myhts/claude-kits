@@ -1,6 +1,7 @@
 // The application in containers, on a private network, for one test run (or one `npm run stack:up`).
 // Only one container is published (the web front end if there is one, else the app), on a random localhost port.
 // Fresh, empty databases every time; nothing shared with any other stack on this machine.
+import { resolve } from 'node:path';
 import { GenericContainer, Network, Wait, type StartedNetwork, type StartedTestContainer } from 'testcontainers';
 import { checkImages } from './images.ts';
 import { STACK } from './stack.config.ts';
@@ -66,6 +67,19 @@ export async function startStack(log: (line: string) => void = console.log): Pro
         .withWaitStrategy(Wait.forLogMessage(/Ready to accept connections/))
         .start());
       appEnv.SPRING_DATA_REDIS_HOST = 'redis';
+    }
+    if (STACK.llmFake) {
+      infra.push(new GenericContainer(STACK.llmFake.image)
+        .withNetwork(network).withNetworkAliases('llm-fake').withLabels(LABELS)
+        .withCopyDirectoriesToContainer([{ source: resolve(import.meta.dirname, '..', STACK.llmFake.mappingsDir), target: '/home/wiremock/mappings' }])
+        .withEnvironment({ JAVA_OPTS: '-Xmx128m' })
+        .withCommand(['--disable-banner'])
+        .withResourcesQuota({ memory: 0.25 })
+        .withExposedPorts(8080)                                        // for the wait only; the app uses the network alias
+        .withWaitStrategy(Wait.forHttp('/__admin/mappings', 8080).forStatusCode(200))
+        .start());
+      appEnv[STACK.llmFake.baseUrlEnv] = 'http://llm-fake:8080';
+      appEnv.ANTHROPIC_API_KEY = 'e2e-fake-key';                      // never a real key in the e2e stack
     }
     started.push(...(await Promise.all(infra)));
     if (infra.length) log(`  infrastructure up (${since()})`);
