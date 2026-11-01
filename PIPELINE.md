@@ -29,9 +29,28 @@ The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub 
   nothing: GitHub Actions runs       8–9   test, build, staging, your approval, production
 /pipeline:deploy                     once, before the first release
 /pipeline:retro                      now and then
+/pipeline:next                       any time: where am I, and what do I type next?
 ```
 
 ### Where do I start?
+
+**Already under way?** Type `/pipeline:next`. It reads the open PRs and their review records, the ready tickets, specs
+and maps, and CI on `main`. Then it shows which step you're on and names one command. Work closest to production comes
+first, so what's in flight finishes before something new starts. It changes nothing.
+
+```text
+Step 6 of 9 · Your review · you/library on main · deliver mode
+
+Plan → Storm → Build → PR → Agents → [Your review] → Merge → Actions → K8s
+
+Next: /pipeline:human-review #57
+"Reserve a title" has no review record for its head commit 1a2b3c4 yet.
+
+Also open
+- Step 3 · /pipeline:implement #43: "Notify the member" is ready: nothing blocks it.
+```
+
+**Starting something new?**
 
 ```mermaid
 flowchart LR
@@ -418,6 +437,7 @@ opening a PR still work.
 | `/pipeline:human-review <PR>` | per PR |
 | `/pipeline:deploy` | once, before the first release |
 | `/pipeline:retro` | after a milestone, or a repeated comment |
+| `/pipeline:next` | any time: which step you're on, and the one command to type next |
 
 Skills the steps load by themselves: `event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs`, `domain-modeling`,
 `pr`, `research`, `prototype`, `wizard`. The slash menu finds every command as you type its short name.
