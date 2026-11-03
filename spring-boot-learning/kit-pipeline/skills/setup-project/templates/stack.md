@@ -50,6 +50,9 @@ wrote it; edit it by hand whenever the project changes.
 - **Base branch:** main
 - **Budget:** about 400 changed lines, not counting lockfiles, generated code or snapshots. Over budget, `/implement`
   proposes a split; CI labels any larger PR `size/large`.
+- **Checks not required:** none
+  - Checks that PRs run but `main` leaves out on purpose, separated by commas. `/setup-project protect` makes every
+    other check required, and `/next` names any that isn't yet.
 
 ## Deploy
 

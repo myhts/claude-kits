@@ -83,11 +83,13 @@ write yourself.
 | **You&nbsp;type** | `claude plugin marketplace add myhts/claude-kits --scope project` and `claude plugin install pipeline@kits --scope project` in a terminal, then `/pipeline:setup-project` in Claude Code |
 | **Claude** | looks at the repo (stack, existing commands, CI, docs), then asks **five questions in one round**: pack, build mode, domain layout, PR budget, CI checks. Each comes with a recommended answer |
 | **You** | answer, or say "yes" to take the recommendations. Then approve the list of files it will write |
-| **You&nbsp;get** | the stack card `docs/agents/stack.md` (commands, mode, budget, deploy target), `CODING_STANDARDS.md`, the tracker and domain notes, two short blocks in `CLAUDE.md`, the PR checks (`pr-size`, `human-review`, and `ci.yml` if you had none) and the labels the planning steps use |
+| **You&nbsp;get** | the stack card `docs/agents/stack.md` (commands, mode, budget, deploy target), `CODING_STANDARDS.md`, the tracker and domain notes, two short blocks in `CLAUDE.md`, the PR checks (`pr-size`, `human-review`, and `ci.yml` if you had none), the labels the planning steps use and, once the setup is on `main`, a GitHub ruleset that protects it |
 | **Done&nbsp;when** | every command in the stack card has run once, or says "not set up yet" |
 
-**Then, one thing only you can do:** protect `main` in GitHub's settings. Require the `human-review` check and the CI
-job, and allow no direct pushes. It's free on public repositories.
+**Then protect `main`.** Once the setup is merged, `/pipeline:setup-project protect` adds a GitHub ruleset: every
+change goes through a PR, the `human-review` check and CI must pass, and nobody can force-push or delete `main`, admins
+included. It's free on public repositories. When CI gains a job later, `/pipeline:next` names it and the same command
+adds it. Loosening the ruleset or switching it off stays yours, in Settings → Rules.
 
 <details>
 <summary><b>Tips and variations</b></summary>
@@ -299,11 +301,11 @@ requested.
 | | |
 |---|---|
 | **You&nbsp;type** | press **Merge** on GitHub (or `gh pr merge` in your own terminal) |
-| **Claude** | can't. The `pipeline` plugin's **merge guard** blocks merges, pushes to `main` or `master`, force pushes, and commands that throw work away. If Claude tries, it's told to ask you instead |
+| **Claude** | can't. The `pipeline` plugin's **merge guard** blocks merges, pushes to `main` or `master`, force pushes, changes to branch protection, and commands that throw work away. If Claude tries, it's told to ask you instead |
 | **You&nbsp;get** | the change on `main`, which starts step 8 |
 | **Done&nbsp;when** | merged |
 
-Branch protection (step 0) adds GitHub's own check on top: no merge without a current review record and green CI.
+The ruleset from step 0 adds GitHub's own check on top: no merge without a current review record and green CI.
 
 ---
 
@@ -401,8 +403,9 @@ You choose which changes to apply.
 
 `gh pr merge` and the merge API; pushes to `main` or `master` (including `HEAD:main` and a plain `git push` while on
 `main`); force pushes and `+` refspecs; `--delete`, `--mirror`, `--prune` and `:branch` deletions; `git reset --hard`;
-`git clean -f`; `git branch -D`; `git checkout .`; `git restore .` (unless only staged). Pushing a feature branch and
-opening a PR still work.
+`git clean -f`; `git branch -D`; `git checkout .`; `git restore .` (unless only staged); `gh api` writes to rulesets
+or branch protection, and the GraphQL mutations that change them. Pushing a feature branch, opening a PR, reading
+protection and `/setup-project protect` (which only adds) still work.
 
 </details>
 

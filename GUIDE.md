@@ -506,12 +506,13 @@ Next, Vue and Svelte shells were never run).
 |---|---|---|
 | Code in the Spring and AI skills | 44 tests on Spring Boot 4.1.1 with real Postgres, plus 23 for the LLM code shapes against a local fake of the API | `kit-check/` (`./mvnw verify`), §3.9 |
 | Docker, CI and Kubernetes templates | built and run; overlays validated against the Kubernetes 1.33 schemas; workflows linted. With `--kind`: a rollout, a broken release that leaves the old pods serving, and `rollout undo` | `kit-check/verify-templates.sh` |
-| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 16 dangerous commands and allows 9 safe ones; the marketplace validates; all five plugins install and load in a throwaway home; `/next` names the expected step for 20 repo states, with `gh` stubbed | `kit-check/verify-pipeline.sh` |
+| The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 22 dangerous commands and allows 15 safe ones; the marketplace validates; all five plugins install and load in a throwaway home; `/next` names the expected step for 26 repo states, and `protect-main.sh` sends the right ruleset in 6 cases, both with `gh` stubbed. On a real repository (myhts/lombard), `protect-main.sh` created the ruleset, then ran again and kept it unchanged | `kit-check/verify-pipeline.sh` |
 | The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version) | `kit-check/reviewer-eval/`, §3.10 |
 | e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
 
 **Not proved yet:**
-- The deploy workflow and the PR checks pass lint and a fake `gh`, but haven't run on GitHub itself.
+- The deploy workflow passes lint and a fake `gh`, but hasn't run on GitHub itself. The PR checks (`pr-size`,
+  `human-review`) have run on a real PR.
 - The stage commands (`/implement`, `/human-review`, `/deploy`) haven't been used on a real project yet.
 - The AI pack's canned responses haven't been checked against the live API, and the LLM checks in `security-reviewer`
   and `blind-reviewer` haven't been measured.

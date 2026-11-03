@@ -1,11 +1,13 @@
 ---
 name: setup-project
-description: "Set up a repository for the delivery pipeline: stack card, tracker and domain docs, coding standards, CLAUDE.md pointers, the pack plugin, labels and PR checks. Run once per repo, before the other pipeline skills."
+description: "Set up a repository for the delivery pipeline: stack card, tracker and domain docs, coding standards, CLAUDE.md pointers, the pack plugin, labels, PR checks, and a GitHub ruleset that protects main. Run once per repo, before the other pipeline skills; with the argument protect, it only adds or updates the protection."
 disable-model-invocation: true
 ---
 
 Prepare this repository so every pipeline stage knows its stack, its commands, its tracker and its build mode. The
 result is a handful of small files the other skills read; nothing here writes application code.
+
+With the argument `protect`, do only step 1's GitHub bullet and step 5.
 
 Files this skill fills in live beside it: [templates/stack.md](templates/stack.md),
 [templates/CODING_STANDARDS.md](templates/CODING_STANDARDS.md), [templates/claude-md-blocks.md](templates/claude-md-blocks.md)
@@ -84,9 +86,48 @@ once or is marked "not set up yet".
 Tell the user, in a few lines:
 
 - What was written.
-- **Branch protection:** once the repo is public (free there), protect `main`: require the `human-review` status and the
-  CI job, and allow no direct pushes. On a private repo this needs a paid GitHub plan; the merge guard still stops Claude.
+- **Protecting `main`:** if the setup files are already on the default branch, go on to step 5 now. Otherwise the human
+  commits them and merges them, then runs `/pipeline:setup-project protect`; `/pipeline:next` reminds them.
 - **`gh` older than 2.94:** suggest `brew upgrade gh`.
 - **What to run next:** `/grill-with-docs` for the first feature, or `/wayfinder` when the work is too big for one
   session. `/deploy` sets up Kubernetes when there is something to ship. From then on, `/next` reads the repo and
   names the next command whenever they're unsure.
+
+## 5. Protect `main`
+
+A GitHub ruleset makes the flow binding on GitHub's side too: no direct or force pushes to the default branch, every
+change through a PR, and the required checks green before the merge button works. It's free on public repositories; a
+private one needs GitHub Pro, Team or Enterprise (if so, say that the merge guard still stops Claude, and stop). In the
+repo, at most one line of the stack card changes.
+
+1. **Ready?** `git fetch`, then `.github/workflows/human-review.yml` must be on the default branch
+   (`git ls-tree --name-only origin/<base> .github/workflows/`). A required check whose workflow isn't there yet would
+   block every PR, so if it's missing, stop: the setup gets merged first.
+2. **Choose the required checks** from the workflows on the default branch:
+   - always `human-review`, the status its workflow sets;
+   - each job that runs on `pull_request` and must pass (lint, build, tests). Its check is named by the job's `name:`,
+     or by its key when there is none; a matrix job reports one check per combination, `name (value)`;
+   - not the `pr-size` or `human-review` workflows' own jobs: they never block a merge;
+   - not a job whose workflow filters `pull_request` by `paths`, `paths-ignore` or `branches`: a PR the filter skips
+     never reports the check, and waits for it forever. Say so, and suggest removing the filter;
+   - not a check under **Checks not required** in the stack card.
+
+   When a recent PR exists, compare with its real check names (`gh pr checks <n>`): one typo blocks every PR.
+3. **Show and wait for an OK:** the checks, and what the ruleset `claude-kits: main` does:
+   - a PR for every change, with no approvals required: a solo owner can't approve their own PR, and `human-review` is
+     the gate;
+   - each check must pass, set by GitHub Actions; a status posted any other way doesn't count;
+   - no force pushes, no deleting the branch, and no bypass, admins included;
+   - branches needn't be up to date with `main`, unless the human wants that (`--strict`). The cost: each merge makes
+     the other open PRs update, and every update needs a new review record.
+
+   A check the human leaves out on purpose goes under **Checks not required** in the stack card, so `/next` stops
+   suggesting it.
+4. **Apply:** `bash "${CLAUDE_SKILL_DIR}/protect-main.sh" [--strict] <check>...`. Running it again only adds checks
+   and never loosens anything. Removing a check, or switching the ruleset off, is the human's, in Settings → Rules →
+   Rulesets; the merge guard stops Claude doing it with `gh api`.
+5. **Report** what the script printed: the ruleset's link, its checks, and any note about a classic branch protection
+   rule, which the human can delete in Settings → Branches once the ruleset looks right.
+
+Done when the script has printed the ruleset, or the human has chosen to wait. When CI gains a job later, `/next` names
+it and this step runs again.
