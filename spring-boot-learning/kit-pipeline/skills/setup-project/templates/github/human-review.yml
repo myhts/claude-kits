@@ -3,8 +3,9 @@
 # This workflow sets the commit status "human-review" on the PR's head commit: success when a record for that exact
 # SHA exists, written by someone with write access (OWNER, MEMBER or COLLABORATOR); failure otherwise. A new push
 # moves the head to a commit with no record, so the check turns red again until the new code is reviewed.
-# Branch protection: require the status "human-review" (free on public repos). It's a commit status rather than this
-# job's own check because a comment-triggered run is attached to the default branch, not to the PR.
+# Protection: /setup-project protect requires the status "human-review" in a ruleset (free on public repos). It's a
+# commit status rather than this job's own check because a comment-triggered run is attached to the default branch,
+# not to the PR.
 # On pull_request, PRs from forks get a read-only token, so their status is set when the record comment arrives.
 name: human-review
 

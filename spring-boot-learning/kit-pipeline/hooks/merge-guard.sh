@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Merge guard: only the human merges, pushes to main or master, or throws work away.
+# Merge guard: only the human merges, pushes to main or master, throws work away, or changes branch protection.
 # A PreToolUse hook on Bash. Exit 2 blocks the command and shows the reason to Claude; exit 0 lets it run.
-# Pushing a feature branch and opening a PR stay allowed: that is how work reaches the human.
+# Pushing a feature branch and opening a PR stay allowed: that is how work reaches the human. So does reading
+# protection, and /setup-project's protect-main.sh, which only ever adds to it.
 # Adapted from git-guardrails-claude-code in mattpocock/skills (MIT, see NOTICE.md). Written for macOS bash 3.2.
 set -uo pipefail
 
@@ -46,12 +47,32 @@ check_push() {   # arguments: the words after "push"
   return 0
 }
 
+check_api() {   # arguments: the words after "gh api". A write to a ruleset or branch protection is blocked.
+  local w prev= target=no method= fields=no
+  for w in "$@"; do
+    case "$w" in *repos/*/rulesets*|*orgs/*/rulesets*|*/branches/*/protection*) target=yes ;; esac
+    case "$prev" in -X|--method) method=$w ;; esac
+    case "$w" in
+      -X?*) method=${w#-X} ;;
+      --method=*) method=${w#--method=} ;;
+      -f|-F|--field|--raw-field|--input|-f?*|-F?*|--field=*|--raw-field=*|--input=*) fields=yes ;;
+    esac
+    prev=$w
+  done
+  [ "$target" = yes ] || return 0
+  # gh api sends GET unless told otherwise, and POST when it has fields and no method.
+  if [ -n "$method" ]; then [[ "$method" =~ ^(GET|get)$ ]] && return 0
+  else [ "$fields" = no ] && return 0; fi
+  block "changing branch protection or a ruleset"
+}
+
 check_segment() {   # one simple command, already split into words
   local words=("$@") n=$# i j sub w
   for ((i = 0; i < n; i++)); do
     case "${words[$i]}" in
       gh)
         [ "${words[$((i + 1))]:-}" = pr ] && [ "${words[$((i + 2))]:-}" = merge ] && block "merging a pull request"
+        [ "${words[$((i + 1))]:-}" = api ] && check_api "${words[@]:$((i + 2))}"
         ;;
       git)
         j=$((i + 1))
@@ -86,6 +107,7 @@ check_segment() {   # one simple command, already split into words
 set -f   # words like * must not expand while we inspect them
 while IFS= read -r seg; do
   [[ "$seg" =~ pulls/[0-9]+/merge ]] && block "merging a pull request through the API"
+  [[ "$seg" =~ mutation.*(RepositoryRuleset|BranchProtectionRule) ]] && block "changing branch protection or a ruleset through GraphQL"
   seg=${seg//\"/ }; seg=${seg//\'/ }; seg=${seg//(/ }; seg=${seg//)/ }
   read -ra parts <<< "$seg"
   [ "${#parts[@]}" -gt 0 ] && check_segment "${parts[@]}"

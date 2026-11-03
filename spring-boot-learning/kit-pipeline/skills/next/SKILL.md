@@ -20,19 +20,21 @@ Run `bash "${CLAUDE_SKILL_DIR}/where.sh"` from the repository. It prints tab-sep
 
 The script checks from production back to planning, so work in flight finishes before new work starts:
 
-1. a deploy waiting for approval
-2. a red `main`
-3. a PR ready to merge
-4. a PR waiting for review
-5. a PR to fix
-6. work on a branch with no PR
-7. a ready ticket
-8. a delivered spec
-9. a spec with no tickets
-10. an open wayfinder map
-11. otherwise, a new idea
+1. `main` not protected yet, once the setup is on it (a minute's work, so it goes first)
+2. a deploy waiting for approval
+3. a red `main`
+4. a PR ready to merge
+5. a PR waiting for review
+6. a PR to fix
+7. work on a branch with no PR
+8. a ready ticket
+9. a delivered spec
+10. a spec with no tickets
+11. an open wayfinder map
+12. otherwise, a new idea
 
-The first match is NEXT. Merged code that nothing deploys is only ever an ALSO, because not every project ships.
+The first match is NEXT. Two things are only ever an ALSO: merged code that nothing deploys, because not every project
+ships, and a check that PRs run but `main` doesn't require yet, which `/pipeline:setup-project protect` adds.
 
 ## 2. Show it
 

@@ -47,7 +47,7 @@ q() {   # q <variable> <gh arguments...>: sets the variable to the JSON, or to [
 }
 if ! command -v gh >/dev/null; then
   hit 0 "Install gh 2.94 or later" "Specs, tickets and pull requests live on GitHub, and the flow reaches them through gh."
-elif ! info=$(gh repo view --json nameWithOwner,defaultBranchRef 2>/dev/null); then
+elif ! info=$(gh repo view --json nameWithOwner,defaultBranchRef,visibility 2>/dev/null); then
   warn "gh can't read a GitHub repository here (try gh auth status), so only local state was checked"
 else
   repo=$(jq -r .nameWithOwner <<< "$info")
@@ -59,7 +59,25 @@ else
   q maps issue list --state open --label wayfinder:map --limit 20 --json number,title,subIssuesSummary
 fi
 base=${base:-main}
+since=$base; git rev-parse -q --verify "origin/$base" >/dev/null && since=origin/$base   # a local base can be behind
 [ "$repo" = - ] || q runs run list --branch "$base" --limit 30 --json databaseId,workflowName,status,conclusion,event,url
+
+# The checks the base requires, from classic branch protection and from rulesets. Empty when it couldn't be read.
+required=
+if [ "$repo" != - ]; then
+  if classic=$(gh api "repos/$repo/branches/$base" --jq '[.protection.required_status_checks.contexts[]?]' 2>/dev/null) \
+     && ruled=$(gh api "repos/$repo/rules/branches/$base" \
+          --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context]' 2>/dev/null) \
+     && required=$(jq -cs 'add | unique' <<< "$classic$ruled" 2>/dev/null); then :
+  else required=; warn "gh couldn't read the protection of $base, so it wasn't checked"; fi
+fi
+requires() { [ -n "$required" ] && jq -e --arg c "$1" 'any(. == $c)' <<< "$required" >/dev/null; }
+
+# ---- 0: the base isn't protected yet. Once the setup is on it, this comes first: it takes a minute -------------------
+if [ -n "$required" ] && ! requires human-review && [ "$(jq -r '.visibility // ""' <<< "$info")" != PRIVATE ] \
+   && git cat-file -e "$since:.github/workflows/human-review.yml" 2>/dev/null; then
+  hit 0 "/pipeline:setup-project protect" "$base doesn't require the human-review check yet, so a PR can merge without your review. This adds GitHub's protection."
+fi
 
 # ---- 9 and 8: what is on its way to production ----------------------------------------------------------------------
 row=$(jq -r '[.[] | select(.status == "waiting")] | first // empty | [.workflowName, .url] | @tsv' <<< "$runs")
@@ -117,7 +135,6 @@ done
 # ---- 3: work on a branch with no pull request yet ---------------------------------------------------------------------
 heads=$(jq -r '.[].headRefName' <<< "$allprs")
 ticket_of() { sed -n 's#^ticket/\([0-9][0-9]*\).*#\1#p' <<< "$1"; }
-since=$base; git rev-parse -q --verify "origin/$base" >/dev/null && since=origin/$base   # a local base can be behind
 ahead() { git rev-list --count "$since..$1" 2>/dev/null || echo 0; }
 dirty=$(git status --porcelain | grep -c .)
 if [ "$branch" = "$base" ]; then
@@ -205,5 +222,18 @@ fi
 merged=$(jq '[.[] | select(.state == "MERGED")] | length' <<< "$allprs")
 if [ "$merged" -gt 0 ] && [ ! -f .github/workflows/deploy.yml ] && [ ! -f .github/workflows/deploy.yaml ]; then
   hit 9 /pipeline:deploy "Code is merged, but nothing deploys it yet. Run this once, before the first release."
+fi
+
+# ---- 0: a check PRs run that the base doesn't require. Never first: it matters before the next merge, not now ------
+# The kit's own pr-size and human-review jobs never gate a merge, and the stack card can list checks left out on purpose.
+if requires human-review; then
+  optional=$(sed -n 's/^- \*\*Checks not required:\*\* *//p' "$card" | head -1)
+  loose=$(jq -r --argjson req "$required" --arg opt "$optional" '
+    ($opt | split(",") | map(gsub("^ +| +$"; ""))) as $skip
+    | [.[].statusCheckRollup[]? | select(.__typename == "CheckRun")
+       | select(.workflowName // "" | IN("pr-size", "human-review") | not)
+       | .name | select(IN($req[]) | not) | select(IN($skip[]) | not)] | unique | join(", ")' <<< "$prs")
+  [ -z "$loose" ] || hit 0 "/pipeline:setup-project protect" \
+    "PRs run $loose, which $base doesn't require yet, so a PR could merge with it red. To leave it out on purpose, list it under Checks not required in $card."
 fi
 report "$repo"

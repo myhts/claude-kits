@@ -5,6 +5,7 @@
 #   3. plugins: `claude plugin validate` passes for the marketplace at the repo root
 #   4. every plugin installs and loads its parts
 #   5. /next: its script names the right next step for each state of a repo (gh is stubbed, so it runs offline)
+#   6. protecting main: protect-main.sh sends the right ruleset, and only adds to one that exists (gh is stubbed too)
 # Nothing is installed or changed; step 1 only downloads public files into a temp folder.
 #   ./verify-pipeline.sh                    run all checks
 #   ./verify-pipeline.sh --update-upstream  rewrite kit-pipeline/upstream/ from the commit pinned in upstream.lock
@@ -63,6 +64,12 @@ blocked=(
   "git branch -D old"
   "git checkout ."
   "git restore ."
+  "gh api -X DELETE repos/o/r/rulesets/5"
+  "gh api -X PUT repos/o/r/rulesets/5 --input ruleset.json"
+  "gh api --method=PATCH repos/o/r/branches/main/protection/required_status_checks -F strict=false"
+  "gh api repos/o/r/rulesets -f name=x"
+  "gh api -XDELETE repos/o/r/branches/main/protection"
+  "gh api graphql -f query='mutation { deleteRepositoryRuleset(input: {repositoryRulesetId: \"x\"}) { clientMutationId } }'"
 )
 allowed=(
   "git push -u origin feature/42-borrow-a-copy"
@@ -73,6 +80,12 @@ allowed=(
   "git commit -m 'Merge main into feature' "
   "git log --oneline main..HEAD"
   "echo main"
+  "gh api repos/o/r/rulesets"
+  "gh api repos/o/r/rules/branches/main"
+  "gh api -X GET repos/o/r/rulesets -f per_page=100"
+  "gh api repos/o/r/branches/main/protection --jq .required_status_checks"
+  "gh api repos/o/r/issues/7/comments -f body=done"
+  "gh api -X POST repos/o/r/issues/7/comments -f body='the rulesets and branch protection docs'"
 )
 guard() {   # $1 = command; prints the hook's exit code. Runs against a throwaway repo on branch $branch.
   local rc=0
@@ -122,15 +135,21 @@ cat > "$bin/gh" <<'GH'
 #!/usr/bin/env bash
 # Stands in for gh: answers each query where.sh makes from a fixture file.
 case "$1 $2" in
-  "repo view")  echo '{"nameWithOwner":"o/r","defaultBranchRef":{"name":"main"}}' ;;
+  "repo view")  cat "$FIX/repo" ;;
   "pr list")    case "$*" in *"--state all"*) cat "$FIX/allprs" ;; *) cat "$FIX/prs" ;; esac ;;
   "issue list") case "$*" in *wayfinder:map*) cat "$FIX/maps" ;; *) cat "$FIX/issues" ;; esac ;;
   "run list")   cat "$FIX/runs" ;;
+  "api repos/o/r/branches/main")       jq -c "$4" "$FIX/branch" ;;   # $3 is --jq, $4 its filter
+  "api repos/o/r/rules/branches/main") jq -c "$4" "$FIX/rules" ;;
   *) exit 1 ;;
 esac
 GH
 chmod +x "$bin/gh"
-clear_fix() { local f; for f in prs allprs issues maps runs; do echo '[]' > "$fix/$f"; done; }
+public='{"nameWithOwner":"o/r","defaultBranchRef":{"name":"main"},"visibility":"PUBLIC"}'
+protected() {   # protected <check...>: the checks classic branch protection requires on main
+  jq -n '{protection: {required_status_checks: {contexts: $ARGS.positional}}}' --args "$@" > "$fix/branch"; }
+clear_fix() { local f; for f in prs allprs issues maps runs rules; do echo '[]' > "$fix/$f"; done
+  echo "$public" > "$fix/repo"; protected human-review verify; }
 cases=0 out=
 next_is() {   # next_is <case> <step><TAB><start of the NEXT line's what-to-do>; leaves the whole output in $out
   local got; out=$(cd "$proj" && PATH="$bin:$PATH" FIX="$fix" "$W")
@@ -152,6 +171,17 @@ next_is "not set up" $'0\t/pipeline:setup-project'
 mkdir -p "$proj/docs/agents" && printf -- '- **Default:** deliver\n- **Base branch:** main\n' > "$proj/docs/agents/stack.md"
 git -C "$proj" add -A && git -C "$proj" commit -q -m card
 next_is "nothing open" $'1\t/pipeline:grill-with-docs'
+protected
+next_is "not protected, before the setup reaches main" $'1\t/pipeline:grill-with-docs'
+mkdir -p "$proj/.github/workflows" && touch "$proj/.github/workflows/human-review.yml"
+git -C "$proj" add -A && git -C "$proj" commit -q -m checks
+next_is "main not protected" $'0\t/pipeline:setup-project protect'
+jq -c '.visibility = "PRIVATE"' <<< "$public" > "$fix/repo"
+next_is "a private repo, not protected" $'1\t/pipeline:grill-with-docs'
+echo "$public" > "$fix/repo"
+echo '[{"type":"required_status_checks","parameters":{"required_status_checks":[{"context":"human-review","integration_id":15368}]}}]' > "$fix/rules"
+next_is "main protected by a ruleset" $'1\t/pipeline:grill-with-docs'
+clear_fix
 jq -n "[$spec | .subIssuesSummary.total = 0]" > "$fix/issues"
 next_is "a spec with no tickets" $'2\t/pipeline:to-tickets #40'
 jq -n "[$spec | .subIssuesSummary.completed = 2]" > "$fix/issues"
@@ -167,6 +197,14 @@ jq -n "[$spec, $t42, $t43]" > "$fix/issues"
 jq -n "[$pr]" > "$fix/prs"
 next_is "a PR to review" $'6\t/pipeline:human-review #57'
 if grep -q 'implement #42' <<< "$out"; then fail "/next suggested a ticket that already has a PR"; fi
+protected human-review
+next_is "a PR check main doesn't require" $'6\t/pipeline:human-review #57'
+grep -q $'^ALSO\t0\t/pipeline:setup-project protect\tPRs run verify,' <<< "$out" || fail "/next: an unrequired PR check isn't listed: $out"
+printf -- '- **Checks not required:** e2e, verify\n' >> "$proj/docs/agents/stack.md"
+next_is "a PR check left out on purpose" $'6\t/pipeline:human-review #57'
+if grep -q 'PRs run verify' <<< "$out"; then fail "/next suggested a check the stack card leaves out"; fi
+git -C "$proj" checkout -q docs/agents/stack.md
+protected human-review verify
 jq -n "[$pr | .comments = $(record OWNER 2222222)]" > "$fix/prs"
 next_is "new commits since the review" $'6\t/pipeline:human-review #57'
 grep -q 'new commits' <<< "$out" || fail "/next: a stale record didn't say 'new commits'"
@@ -199,5 +237,79 @@ echo "garbage" > "$fix/prs"
 next_is "gh returns something other than JSON" $'3\tMove the changes on main'
 grep -q '^WARN' <<< "$out" || fail "/next: bad JSON from gh didn't produce a WARN line"
 echo "   $cases repo states, each with the expected next step"
+
+echo "== 6. protect-main.sh"
+P="$(cd "$K" && pwd)/skills/setup-project/protect-main.sh"
+pt=$(mktemp -d); trap 'rm -rf "$tmp" "$repo" "$sandbox" "$nt" "$pt"' EXIT
+mkdir -p "$pt/bin" "$pt/fix"
+cat > "$pt/bin/gh" <<'GH'
+#!/usr/bin/env bash
+# Stands in for gh: answers protect-main.sh from fixture files, and keeps what it sends in $FIX/sent.
+case "$*" in
+  "repo view"*)               cat "$FIX/repo" ;;
+  "api apps/github-actions"*) echo 15368 ;;
+  "api -X "*)                 echo "$3 $4" > "$FIX/sent.to"; cat > "$FIX/sent"
+                              jq '. + {id: 7, _links: {html: {href: "https://github.com/o/r/rules/7"}}}' "$FIX/sent" ;;
+  *"/rulesets?"*)             cat "$FIX/rulesets" ;;
+  *"/rulesets/7")             cat "$FIX/ruleset" ;;
+  *"/protection")             [ -f "$FIX/classic" ] && echo '{}' ;;
+  *) exit 1 ;;
+esac
+GH
+chmod +x "$pt/bin/gh"
+protect() { rm -f "$pt/fix/sent" "$pt/fix/sent.to"; (cd "$pt" && PATH="$pt/bin:$PATH" FIX="$pt/fix" "$P" "$@"); }
+sent() { jq -c "$1" "$pt/fix/sent"; }
+expect_sent() {   # expect_sent <case> <jq filter> <expected compact JSON>
+  [ "$(sent "$2")" = "$3" ] || fail "protect-main, $1: $2 gave $(sent "$2"), expected $3"; }
+admin='{"nameWithOwner":"o/r","viewerPermission":"ADMIN","defaultBranchRef":{"name":"main"}}'
+echo "$admin" > "$pt/fix/repo"; echo '[]' > "$pt/fix/rulesets"
+pin='"integration_id":15368'
+
+out=$(protect --dry-run human-review) || fail "protect-main --dry-run failed: $out"
+grep -q '^Would send: POST repos/o/r/rulesets$' <<< "$out" || fail "protect-main --dry-run printed: $out"
+[ ! -f "$pt/fix/sent" ] || fail "protect-main --dry-run sent something"
+
+out=$(protect verify human-review) || fail "protect-main failed: $out"
+[ "$(cat "$pt/fix/sent.to")" = "POST repos/o/r/rulesets" ] || fail "protect-main sent to $(cat "$pt/fix/sent.to")"
+expect_sent "new" '[.name, .target, .enforcement, .conditions.ref_name.include, .bypass_actors]' \
+  '["claude-kits: main","branch","active",["~DEFAULT_BRANCH"],[]]'
+expect_sent "new" '[.rules[].type]' '["deletion","non_fast_forward","pull_request","required_status_checks"]'
+expect_sent "new" '.rules[] | select(.type == "pull_request") | .parameters.required_approving_review_count' 0
+expect_sent "new" '.rules[] | select(.type == "required_status_checks") | .parameters' \
+  '{"required_status_checks":[{"context":"human-review",'"$pin"'},{"context":"verify",'"$pin"'}],"strict_required_status_checks_policy":false}'
+grep -q '^Required checks: human-review, verify$' <<< "$out" || fail "protect-main printed: $out"
+if grep -q 'classic' <<< "$out"; then fail "protect-main mentioned a classic rule that isn't there"; fi
+
+protect --strict human-review >/dev/null || fail "protect-main --strict failed"
+expect_sent "strict" '.rules[] | select(.type == "required_status_checks") | .parameters.strict_required_status_checks_policy' true
+
+# A ruleset that exists, which a human tightened: one approval, linear history, branches up to date.
+echo '[{"id":8,"name":"something else"},{"id":7,"name":"claude-kits: main"}]' > "$pt/fix/rulesets"
+cat > "$pt/fix/ruleset" <<'JSON'
+{"id":7,"name":"claude-kits: main","target":"branch","enforcement":"active","source_type":"Repository",
+ "conditions":{"ref_name":{"include":["~DEFAULT_BRANCH"],"exclude":[]}},"bypass_actors":[],
+ "rules":[{"type":"pull_request","parameters":{"required_approving_review_count":1,"dismiss_stale_reviews_on_push":true,
+   "require_code_owner_review":false,"require_last_push_approval":false,"required_review_thread_resolution":false}},
+  {"type":"required_status_checks","parameters":{"required_status_checks":[{"context":"human-review","integration_id":15368}],
+   "strict_required_status_checks_policy":true}},
+  {"type":"required_linear_history"}]}
+JSON
+touch "$pt/fix/classic"
+out=$(protect human-review verify) || fail "protect-main on an existing ruleset failed: $out"
+[ "$(cat "$pt/fix/sent.to")" = "PUT repos/o/r/rulesets/7" ] || fail "protect-main sent to $(cat "$pt/fix/sent.to")"
+expect_sent "existing" '[.rules[].type]' \
+  '["pull_request","required_status_checks","required_linear_history","deletion","non_fast_forward"]'
+expect_sent "existing" '.rules[] | select(.type == "pull_request") | .parameters.required_approving_review_count' 1
+expect_sent "existing" '.rules[] | select(.type == "required_status_checks") | .parameters' \
+  '{"required_status_checks":[{"context":"human-review",'"$pin"'},{"context":"verify",'"$pin"'}],"strict_required_status_checks_policy":true}'
+expect_sent "existing" 'has("id") or has("source_type")' false
+grep -q 'classic branch protection rule' <<< "$out" || fail "protect-main didn't mention the classic rule: $out"
+
+jq -c '.viewerPermission = "WRITE"' <<< "$admin" > "$pt/fix/repo"
+if out=$(protect human-review 2>&1); then fail "protect-main ran without admin rights"; fi
+grep -q 'needs admin rights' <<< "$out" || fail "protect-main without admin rights said: $out"
+[ ! -f "$pt/fix/sent" ] || fail "protect-main sent something without admin rights"
+if protect >/dev/null 2>&1; then fail "protect-main ran with no checks"; fi
+echo "   6 cases: dry run, new, strict, an existing ruleset, no admin rights, no checks"
 
 echo "OK: pipeline plugin verified"
