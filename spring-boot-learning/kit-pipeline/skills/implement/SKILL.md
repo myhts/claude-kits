@@ -18,10 +18,22 @@ a ticket or spec reference, and optionally a mode (`learn`, `build-with-me`, `de
    whose blockers are all closed). In deliver mode, run steps 2–8 for every frontier ticket in parallel, each with its
    own implementer, worktree and PR. In the other modes, ask which frontier ticket comes first and work one at a time.
    A blocked ticket waits until its blockers' PRs merge; run `/implement <spec>` again then.
-3. **Seams:** take the testing seams from the ticket or its spec. If none are written, propose them (the public
+3. **Read it cold:** for each ticket you'll build, start a `general-purpose` subagent, which has none of this
+   conversation, and give it only the ticket and spec references and `docs/agents/issue-tracker.md`. It reads those and
+   the code, then reports:
+   - in its own words, what the ticket asks for, and how the code works today according to the spec (2–5 sentences
+     each);
+   - each decision the ticket leaves to the implementer: a name, a data shape, an edge case, a library;
+   - each claim about today's code that the code contradicts, with `file:line`.
+
+   Show the human the paraphrase, to compare with what they meant, and settle each open decision with them. Post the
+   answers as one comment on the ticket, where an implementer will read them. Skip this step when the human calls the
+   ticket tiny.
+4. **Seams:** take the testing seams from the ticket or its spec. If none are written, propose them (the public
    interface, and what each seam catches and misses) and get them confirmed. The `tdd` skill tests only at agreed seams.
 
-Done when the title, the mode, the seams and the base branch are stated and agreed.
+Done when the title, the mode, the seams and the base branch are stated and agreed, and the ticket's open decisions
+are settled.
 
 ## 2. Build, in the chosen mode
 
@@ -61,16 +73,34 @@ Start these in parallel, each in a fresh context, and give each only what its br
 | `security-reviewer` | the diff command | the diff touches input handling, authentication, secrets or model calls |
 | `deploy-reviewer` | the changed build and deploy files | the diff touches a Dockerfile, compose, CI or Kubernetes files |
 
-Keep the reports separate; never merge them into one ranking.
+Keep the reports separate; never merge them into one ranking. A reviewer that fails or returns no report hasn't
+reviewed: start it once more, and if it fails again, report it as **not run**, never as clean.
 
 ## 5. Fix
 
-- **deliver and build-with-me:** a fresh `implementer` fixes every must-fix finding, plus the should-fix ones it can
-  fix within the ticket, then reruns the full verify. In build-with-me, each fix is a block like any other.
+Sort the findings first. You hold the ticket, the spec and the seams; the fixer won't.
+
+- **Confirm** each must-fix against the code, with a test that fails or the path traced from an input to the wrong
+  result. Only confirmed findings get fixed.
+- **Contest** a finding the code shows is wrong, and cite the `file:line` that shows it. "It's intended" isn't
+  evidence, and neither is having written the code: if the code alone doesn't show why it's fine, it's a judgement
+  call.
+- **Pre-existing:** a finding on lines this diff didn't change becomes a proposed follow-up ticket, not part of this
+  PR, unless the change makes it reachable or worse.
+
+Then fix:
+
+- **deliver and build-with-me:** a fresh `implementer` fixes the confirmed must-fix findings, plus the should-fix ones
+  it can fix within the ticket, then reruns the full verify. Each fix covers every place the same mistake appears, not
+  only the line cited. In build-with-me, each fix is a block like any other.
 - **learn:** the findings go to the learner, who fixes them.
 
-Collect the **judgement calls** (smells, trade-offs, anything a reviewer marked as a matter of taste) into one list for
-the human. Done when no must-fix finding is open and the verify is green.
+Then review once more, and only once: each reviewer whose findings were fixed reads only the commits made since its
+first review. Whatever is still open after that goes to the human, with no third round.
+
+Collect the **judgement calls** into one list for the human: smells, trade-offs, anything a reviewer marked as a matter
+of taste, contested findings with their evidence, and the proposed follow-up tickets. Done when the confirmed must-fix
+findings are fixed, the second review is done, whatever it left open is on the list, and the verify is green.
 
 ## 6. Keep the PR small
 

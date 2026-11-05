@@ -4,13 +4,13 @@
 # SHA exists, written by someone with write access (OWNER, MEMBER or COLLABORATOR); failure otherwise. A new push
 # moves the head to a commit with no record, so the check turns red again until the new code is reviewed.
 # Protection: /setup-project protect requires the status "human-review" in a ruleset (free on public repos). It's a
-# commit status rather than this job's own check because a comment-triggered run is attached to the default branch,
-# not to the PR.
-# On pull_request, PRs from forks get a read-only token, so their status is set when the record comment arrives.
+# commit status rather than this job's own check because both triggers run on the default branch, not on the PR.
+# pull_request_target, not pull_request: GitHub runs this file as it is on the default branch, so a PR can't edit it to
+# pass its own check. That's safe only while this workflow never checks out or runs the PR's code; keep it that way.
 name: human-review
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
   issue_comment:
     types: [created, edited]
@@ -26,7 +26,8 @@ concurrency:                     # every run rechecks from scratch, so the newes
 
 jobs:
   check:
-    if: github.event_name == 'pull_request' || github.event.issue.pull_request   # issue comments aren't PR comments
+    # Issue comments aren't all PR comments; only a PR's comments run the check.
+    if: github.event_name == 'pull_request_target' || github.event.issue.pull_request
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:

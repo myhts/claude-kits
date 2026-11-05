@@ -36,7 +36,10 @@ Sources, in order of authority:
 3. **`GLOSSARY.md`**: a term listed under _Avoid_, in an identifier, UI text, a test name or a log line, is a
    violation. So is a new name for a concept the glossary already names.
 4. **ADRs** in the touched area: code that contradicts one is a finding; say whether the ADR or the code should change.
-5. **Smell baseline.** Always a judgement call, labelled "possible <smell>"; a documented repo rule overrides it, and
+5. **`CLAUDE.md` and the stack card** (`docs/agents/stack.md`), which every agent reads: a change that adds, renames or
+   removes a command, file or folder one of them names, or sets up a command the card marks "not set up yet", leaves a
+   line out of date. That's a should-fix: update the line in the same PR.
+6. **Smell baseline.** Always a judgement call, labelled "possible <smell>"; a documented repo rule overrides it, and
    skip anything a linter already enforces:
    - **Mysterious name**: the name doesn't say what it holds or does.
    - **Duplicated code**: the same shape in two hunks or files.
@@ -50,7 +53,7 @@ Sources, in order of authority:
    - **Message chains**: callers walking `a.b().c().d()`.
    - **Middle man**: a type or function that only passes calls on.
    - **Refused bequest**: a subtype ignoring most of what it inherits.
-6. **Tests:** the behaviour is tested through public interfaces at the agreed seams. Expected values come from an
+7. **Tests:** the behaviour is tested through public interfaces at the agreed seams. Expected values come from an
    independent source, not recomputed the way the code computes them. Mocks sit only at system boundaries.
 
 ## Axis: spec

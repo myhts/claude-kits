@@ -183,8 +183,8 @@ green means it works rather than that a mock agreed.
 | | |
 |---|---|
 | **You&nbsp;type** | `/pipeline:implement #42` (add a mode to change it for this ticket: `/implement #42 deliver`) |
-| **Claude** | restates the ticket and proposes the seams to test at. Then it builds one vertical slice at a time: **red, then green**. Tests go through public interfaces with Testcontainers, and mocks sit only at the system's edges. It finishes with lint and the full verify |
-| **You** | agree the seams; that's the one decision. What else you do depends on the mode (below) |
+| **Claude** | restates the ticket, and a fresh agent that wasn't in the planning reads it cold: what it thinks the ticket asks, and the decisions the ticket leaves open. Then Claude proposes the seams to test at, and builds one vertical slice at a time: **red, then green**. Tests go through public interfaces with Testcontainers, and mocks sit only at the system's edges. It finishes with lint and the full verify |
+| **You** | settle the open decisions (the answers go on the ticket) and agree the seams. What else you do depends on the mode (below) |
 | **You&nbsp;get** | a branch `ticket/42-…` whose tests went red first and then green, with the evidence kept for the PR |
 | **Done&nbsp;when** | the acceptance criteria pass at the agreed seams, and the full verify is green |
 
@@ -252,9 +252,9 @@ defects the other missed.
 | | |
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
-| **Claude** | **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** and **`deploy-reviewer`** join when the change touches their area. A fresh implementer then fixes every must-fix finding |
-| **You&nbsp;get** | a PR you see only after its must-fix findings are fixed, plus a list of **judgement calls** left for you |
-| **Done&nbsp;when** | no must-fix finding is left |
+| **Claude** | **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
+| **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
+| **Done&nbsp;when** | the fixes have had their one re-review, and anything still open is on your list |
 
 > 📚 **In the example:** `code-reviewer` (standards) flags `HoldQueue`, because "hold" is on the glossary's avoid list,
 > so it becomes `ReservationQueue`. `blind-reviewer` finds that two simultaneous reservations can both get position 1;
@@ -281,6 +281,7 @@ against the code. The depth depends on the risk.
 |---|---|
 | on a learning project | full, always |
 | a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: impact report and 5–8 questions |
+| a change to the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` | full: green checks can't vouch for a PR that changes them |
 | a two-way door with a small blast radius | quick: check the evidence, 2 questions |
 
 > 📚 **In the example:** a two-way door with a small blast radius, so a quick review. *Predict:* "two members reserve the
