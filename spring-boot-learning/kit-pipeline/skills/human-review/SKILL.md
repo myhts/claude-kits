@@ -28,6 +28,7 @@ Read **Merge Danger** in the PR body. If it's missing or looks wrong, judge it y
 |---|---|
 | Learning project (stack card mode `learn` or `build-with-me`) | **Full**, always |
 | One-way door, or a large blast radius | **Full** |
+| Changes the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` (green checks can't vouch for a PR that changes them) | **Full** |
 | Two-way door with a small blast radius | **Quick** |
 
 State the depth and the reason in one line. The human can always ask for full.
