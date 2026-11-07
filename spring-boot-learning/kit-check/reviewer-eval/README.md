@@ -49,9 +49,10 @@ said so and stopped. Not yet measured: the spec axis itself, and a fixture with 
 blinded reports, the grades and the mapping are in `results/2026-11-01-code-reviewer/`: `python3 score.py
 results/2026-11-01-code-reviewer` reproduces the totals.
 
-## Pending: the LLM checks in `security-reviewer` and `blind-reviewer` (prepared 2026-10-25, not run)
+## Pending: the LLM checks in `spring-security-reviewer` and `blind-reviewer` (prepared 2026-10-25, not run)
 
-`code-reviewer`, `security-reviewer` and `blind-reviewer` gained checks for code that calls a model (the first two
+`code-reviewer`, `spring-security-reviewer` (called `security-reviewer` until 2026-11-05, when that name went to a
+stack-neutral reviewer) and `blind-reviewer` gained checks for code that calls a model (the first two
 point at `llm-engineering/review-checklist.md`; the blind one at the OWASP Top 10 for LLM Applications). By the
 kit's rule, a changed agent is compared with its previous version before the change is trusted. `code-reviewer` has
 been (above); the other two are ready to run:
@@ -65,7 +66,8 @@ been (above); the other two are ready to run:
 - **Setup**: `./prepare-llm.sh [commit]` builds `work/base` with the kit and the `--ai` layer installed, plus each
   agent's previous version from git as `<name>-before` (default `HEAD`; after the change is committed, pass the
   commit before it). Both versions see the same skill files: only the agent text differs.
-- **Runs**: `for n in 1 2 3; do ./run.sh security-reviewer $n & ./run.sh security-reviewer-before $n & done; wait`,
+- **Runs**: `for n in 1 2 3; do ./run.sh spring-security-reviewer $n & ./run.sh spring-security-reviewer-before $n &
+  done; wait`,
   then the same for `blind-reviewer`; then steps 5–8 below. 12 headless reviews in all. Pass `prepare-llm.sh` the
   commit before the LLM checks were added, now that they're committed.
   `run.sh` runs on your Claude Code subscription (it unsets any API key, so nothing is billed to the API) with

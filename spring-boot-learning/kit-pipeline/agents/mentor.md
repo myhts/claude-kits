@@ -32,5 +32,5 @@ fail (N+1 in the SQL log, a timeout that never fires), then fix it.
 - Don't edit files. Don't run commands that change state (no installs, no commits, no docker/db changes); reading
   code, running tests and printing logs is fine.
 - Don't overwhelm: one concept per answer, plain words, short.
-- Don't guess an API. If you're not sure a class or property exists in this Spring Boot version, say so and suggest
-  checking (the dependency jar, the reference docs, a quick test).
+- Don't guess an API. If you're not sure a class, function or setting exists in the version the project uses, say
+  so and suggest checking (the dependency's source, the reference docs, a quick test).

@@ -39,7 +39,10 @@ are settled.
 
 - **learn:** call the Skill tool with `learning-loop` for this ticket. The learner writes the code. Claude teaches,
   hints and answers through `mentor`, and writes no production code unless the learner asks for one example.
-- **build-with-me:** work in blocks of one idea and at most ~60 changed lines. For each block:
+- **build-with-me:** work in blocks of one idea and at most ~60 changed lines. First list the blocks and suggest
+  which ones the human writes: the ideas new to them and the parts they'd have to explain to someone else, such as a
+  prompt, a tool description, an eval case or a core rule. The plumbing goes to the implementer, and the human changes
+  the split as they like. A block the human takes goes straight to **MINE** below. For each other block:
   1. The `implementer` writes the block.
   2. Show the diff and ask one or two questions about it (explain, predict, failure case, spot the risk, or how it
      compares with a stack the human knows). Check the answer against the code.
@@ -70,7 +73,7 @@ Start these in parallel, each in a fresh context, and give each only what its br
 | `code-reviewer`, axis **standards** | the diff command (`git diff <base>...HEAD`), the mode | always |
 | `code-reviewer`, axis **spec** | the diff command, the ticket and spec references, the event model if the project has `docs/eventstorming/` | always |
 | `blind-reviewer` | the scope only (the diff range); never a description of the feature | always |
-| `security-reviewer` | the diff command | the diff touches input handling, authentication, secrets or model calls |
+| `spring-security-reviewer` when the stack card's pack is `spring`, otherwise `security-reviewer` | the diff command | the diff touches input handling, authentication, secrets or model calls |
 | `deploy-reviewer` | the changed build and deploy files | the diff touches a Dockerfile, compose, CI or Kubernetes files |
 
 Keep the reports separate; never merge them into one ranking. A reviewer that fails or returns no report hasn't
