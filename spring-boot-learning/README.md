@@ -11,7 +11,8 @@ project yourself. An improved, learning-focused edition of
 | Agent | `mentor` | Explains with your own code, hint ladder when you're stuck, exercises, checks understanding. Doesn't edit. |
 | Agent | `code-reviewer` | Reviews your diff after each feature on two axes: the project's standards (including this pack's `spring-boot/review-checklist.md`) and the ticket's spec. Teaches in learn mode: scenario, how to see it, principle, hint. Runs tests. Read-only. |
 | Agent | `blind-reviewer` | Independent review with **no project knowledge**: reads only code, build files and config, works out the language, versions, architecture and domain, and checks against that stack's published best practices (cites the source). Read-only. Tied with `code-reviewer` in a measured comparison (`kit-check/reviewer-eval/`); they miss different things. |
-| Agent | `security-reviewer` | Attack-scenario audit (access control first). Read-only. |
+| Agent | `spring-security-reviewer` | Attack-scenario audit of a Spring Boot app (access control first). Read-only. |
+| Agent | `security-reviewer` | The same audit for an app in any other language or framework. Read-only. |
 | Agent | `deploy-reviewer` | Explains and reviews Dockerfile, compose, CI, Kubernetes manifests. Never builds or applies. |
 | Agent | `implementer` | **Does the work when you ask**: features, fixes, review findings, Dockerfile/compose/CI/K8s files. Tests and verifies, then hands over with an explanation and a sibling task. Only on explicit request. |
 | Skill | `learning-loop` | The method: plan → primer → you build → see it work → review → explain back → record. `/learning-loop` |
@@ -40,7 +41,7 @@ project yourself. An improved, learning-focused edition of
 
 ```
 claude-kits/spring-boot-learning/      ← this folder: the source, kept outside any project
-  kit-pipeline/                        ← the 6 agents and 6 core skills every install gets (and the pipeline plugin)
+  kit-pipeline/                        ← the 7 agents and 6 core skills every install gets (and the pipeline plugin)
   kit/                                 ← the Spring skills, CLAUDE.md and learning files copied into a project
   kit-e2e/                             ← added with --e2e: e2e/ template, e2e-testing skill, e2e-tester agent, .mcp.json
   kit-ai/                              ← added with --ai: llm-engineering skill, CLAUDE.ai.md, e2e/llm-fake (with --e2e)
@@ -55,7 +56,7 @@ otherwise load in every project you open.
 ```
 your-project/
   CLAUDE.md                     working agreement (fill in the last section)
-  .claude/agents/*.md           6 agents
+  .claude/agents/*.md           7 agents
   .claude/skills/*/SKILL.md     14 skills (build-templates also has its template files)
   docs/learning/LESSONS.md, PROGRESS.md
 ```
@@ -82,7 +83,7 @@ Re-running the installer adds only what's missing (`--force` overwrites, after y
 - **Stuck or curious:** "ask the mentor why my query runs 4 times" (or just ask; Claude picks the skill).
 - **Feature done:** "use the code-reviewer agent on my changes". For an independent view: "use the blind-reviewer
   on my changes" (give it only the scope; it ignores any description). For important changes, run both.
-- **Before a release / after adding auth:** "use the security-reviewer agent".
+- **Before a release / after adding auth:** "use the spring-security-reviewer agent".
 - **Wrote a Dockerfile or manifests:** "use the deploy-reviewer agent".
 - **Want it done for you:** "use the implementer to add the compose file", "use the implementer to apply review
   finding 2". It only runs when you name it, and lists what it built in `docs/learning/PROGRESS.md`.
@@ -131,9 +132,9 @@ Playwright (create through the form, a problem detail on a blank field, the prox
 the SPA fallback, no console errors).
 
 Agents are measured, not unit-tested, with the reviewer evaluation (`kit-check/reviewer-eval/`). The rewritten
-`code-reviewer` was compared with its previous version on 2026-11-01. The LLM checks added to `security-reviewer` and
-`blind-reviewer` are still waiting for their run. Not covered at all: the prose advice in `java-modern` and
-`interview-drill`.
+`code-reviewer` was compared with its previous version on 2026-11-01. The LLM checks added to
+`spring-security-reviewer` and `blind-reviewer` are still waiting for their run. Not covered at all: the prose
+advice in `java-modern` and `interview-drill`.
 
 ## Sharing
 

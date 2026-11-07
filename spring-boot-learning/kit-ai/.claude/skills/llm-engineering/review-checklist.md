@@ -1,6 +1,6 @@
 # Review checklist for code that calls a model
 
-Used by the `code-reviewer` and `security-reviewer` agents when a change touches an LLM call (the code uses
+Used by the `code-reviewer` and `spring-security-reviewer` agents when a change touches an LLM call (the code uses
 `com.anthropic`, another model SDK, or builds prompts). Each item: what to look for, how to find it, and why it
 matters. The OWASP Top 10 for LLM Applications (2025, genai.owasp.org) ids are given where they apply.
 Report only what you can point to at `file:line`.

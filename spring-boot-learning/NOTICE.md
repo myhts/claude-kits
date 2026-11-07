@@ -17,7 +17,8 @@ Removed:
 Changed:
 - `code-reviewer`: read-only; teaches through findings (scenario, how to see it, principle, hint); respects the
   project's chosen architecture; checks data integrity and concurrency; knows the Boot 4 test packages.
-- `security-engineer` → `security-reviewer`: read-only, attack-scenario based, access control first.
+- `security-engineer` → `spring-security-reviewer`, and its stack-neutral version `security-reviewer`: read-only,
+  attack-scenario based, access control first.
 - `docker-expert` + `kubernetes-specialist` → `deploy-reviewer`: read-only, explains runtime behaviour, never
   builds or applies.
 - `spring-boot`, `testing-patterns`: fixed for Boot 4 (`@MockitoBean` instead of the removed `@MockBean`, new test
@@ -52,7 +53,7 @@ Added 2026-10-25:
   CI eval workflow; `CLAUDE.ai.md` rules; a WireMock fake of the model for the e2e stack (`llmFake` option). Code
   shapes proven by 23 tests in `kit-check` (`com.example.kitcheck.llm`) against a local fake API.
 - `--web` (kit-web/): a React + Vite + TanStack Query template and the `react-frontend` skill.
-- `code-reviewer`, `security-reviewer` and `blind-reviewer`: checks for code that calls a language model. The
+- `code-reviewer`, `spring-security-reviewer` and `blind-reviewer`: checks for code that calls a language model. The
   before/after evaluation is prepared in `kit-check/reviewer-eval/` (`prepare-llm.sh`, fixture `llm-claims`) and
   not yet run.
 

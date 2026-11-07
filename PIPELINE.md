@@ -191,7 +191,9 @@ green means it works rather than that a mock agreed.
 <img src="docs/assets/modes.png" width="100%" alt="Three build modes: learn, build-with-me, deliver">
 
 - **learn:** you write the code. Claude gives hints, smallest first, and its reviews teach.
-- **build-with-me:** Claude writes one block of at most about 60 lines and asks you one question about it. You reply
+- **build-with-me:** Claude first suggests which blocks you write yourself: the ideas new to you, such as a prompt, a
+  tool description or an eval case. Then it writes the others, one block of at most about 60 lines at a time, and asks
+  you one question about each. You reply
   **OK**, **CHANGE** (say what), **MINE** (you write it, and it's reviewed in teaching mode) or **WHY** (the mentor
   explains).
 - **deliver:** a fresh implementer builds the whole ticket in its own worktree.
@@ -252,7 +254,7 @@ defects the other missed.
 | | |
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
-| **Claude** | **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
+| **Claude** | **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
 | **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
 | **Done&nbsp;when** | the fixes have had their one re-review, and anything still open is on your list |
 

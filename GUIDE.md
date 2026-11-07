@@ -28,7 +28,7 @@ Last updated 2026-11-01.
 
 | Plugin | For | Adds |
 |---|---|---|
-| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`, `/next`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), six agents, and the merge guard |
+| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`, `/next`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), seven agents, and the merge guard |
 | `spring` | Spring Boot 4 | `spring-boot`, `testing-patterns`, `transactions`, `jpa-patterns`, `java-modern`, `java-concurrency`, `logging-patterns`, the Spring review checklist, and the build templates: Dockerfile, CI, a Kustomize base with staging and prod overlays, and the deploy workflow |
 | `e2e` | apps with a UI or flows | Playwright tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP (localhost only) |
 | `spring-ai` | Spring services that call Claude | `llm-engineering` and the review checklist the reviewers use for model calls |
@@ -44,8 +44,8 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **`setup.sh`** | repo root | One-time: checks your tools, links `skills/` into `~/.claude/skills/` |
 | **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
 | **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
-| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents and 6 core skills; the merge guard hook |
-| **The learning kit** | `spring-boot-learning/` | 6 agents and 6 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
+| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 6 core skills; the merge guard hook |
+| **The learning kit** | `spring-boot-learning/` | 7 agents and 6 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
 | **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
@@ -61,7 +61,8 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | `mentor` | No | Read, Grep, Glob, Bash | You're stuck or curious; you want an explanation with your own code, a hint, an exercise |
 | `code-reviewer` | No | Read, Grep, Glob, Bash | A feature is done: a review on two axes, the project's standards (coding standards, the pack's checklist, the glossary, code smells) and the ticket's spec. Uses the project's context; teaches in learn mode (scenario, how to see it, principle, hint) |
 | `blind-reviewer` | No | Read, Grep, Glob, Bash, WebFetch, WebSearch | You want an **independent** review: no project docs or CLAUDE.md, only code; checks against the stack's published best practices with sources |
-| `security-reviewer` | No | Read, Grep, Glob, Bash | Before a release or after adding auth: attack scenarios, access control first |
+| `security-reviewer` | No | Read, Grep, Glob, Bash | Before a release or after adding auth, in any language: attack scenarios, access control first |
+| `spring-security-reviewer` | No | Read, Grep, Glob, Bash | The same for a Spring Boot app: knows its annotations, configuration and actuator |
 | `deploy-reviewer` | No | Read, Grep, Glob | You wrote a Dockerfile, compose, CI or Kubernetes files |
 | `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files |
 | `e2e-tester` (`--e2e`) | Tests only, when asked | all (inherits the MCP browser) | Plan, write, repair or de-flake end-to-end tests; explore the running app in a browser |
@@ -201,7 +202,7 @@ its own tools, and hands back a report.
 | "ask the mentor for an exercise on optimistic locking" | an exercise sized to one session |
 | "use the code-reviewer agent on my changes" | ≤ 8 findings per axis (standards, then spec if there's a ticket), each with a scenario, the rule it breaks, and a hint (learn mode) or the change to make; tests run |
 | "use the blind-reviewer on my changes" (or "…on src/main/…/orders") | a fingerprint of the stack, then findings with a cited standard. **Give only the scope**; it ignores descriptions |
-| "use the security-reviewer agent" | attack scenarios, access control first |
+| "use the security-reviewer agent" (in a Spring app, the spring-security-reviewer) | attack scenarios, access control first |
 | "use the deploy-reviewer agent on my Dockerfile" | what the file does at runtime, and what will bite |
 | "use the implementer to add docker compose with Postgres" | the change, tests, `./mvnw verify`, an explanation, a sibling task for you; logged in PROGRESS.md |
 | "use the e2e-tester agent to plan scenarios for the order API" | a scenario list from exploring the running app; code only when asked |
@@ -364,7 +365,7 @@ The method, step by step (details and scripts in its `README.md`):
 
 ### 4.6 Reviewing before a release
 1. "use the blind-reviewer on <range>" and "use the code-reviewer agent on <range>".
-2. "use the security-reviewer agent".
+2. "use the security-reviewer agent" (in a Spring app, the spring-security-reviewer).
 3. "use the deploy-reviewer agent on the Dockerfile and CI".
 4. Fix or record each finding; rerun the tests and the e2e suite.
 
@@ -458,8 +459,8 @@ Next, Vue and Svelte shells were never run).
 - A **CI workflow for the kit itself** running kit-check on every change.
 - A **TypeScript pack** (testing, framework and build templates proved the way kit-check proves the Spring ones). When
   it lands, move the stack-neutral parts of the deploy templates (the workflow, the Kustomize shape) into `pipeline`.
-- Run the **LLM checks** of `security-reviewer` and `blind-reviewer` through the reviewer evaluation (prepared in its
-  README).
+- Run the **LLM checks** of `spring-security-reviewer` and `blind-reviewer` through the reviewer evaluation
+  (prepared in its README).
 - A `jpa-patterns` exercise for `IDENTITY` vs `SEQUENCE` batching, with a statement-count test.
 
 ---
@@ -514,8 +515,11 @@ Next, Vue and Svelte shells were never run).
 - The deploy workflow passes lint and a fake `gh`, but hasn't run on GitHub itself. The PR checks (`pr-size`,
   `human-review`) have run on a real PR.
 - The stage commands (`/implement`, `/human-review`, `/deploy`) haven't been used on a real project yet.
-- The AI pack's canned responses haven't been checked against the live API, and the LLM checks in `security-reviewer`
-  and `blind-reviewer` haven't been measured.
+- The AI pack's canned responses haven't been checked against the live API, and the LLM checks in
+  `spring-security-reviewer` and `blind-reviewer` haven't been measured. The stack-neutral `security-reviewer` has had
+  one trial run, on a small TypeScript sample (2026-11-05): it found all 6 planted problems, flagged nothing on the
+  safe query, and never opened `.env`. One run isn't a measured comparison. The agent checks in both security
+  reviewers (who keeps the conversation, approvals, memory, MCP tools) came after that run and haven't been tried.
 
 ## 11. What's ours and what's adopted
 
