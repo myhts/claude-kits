@@ -13,7 +13,7 @@ project yourself. An improved, learning-focused edition of
 | Agent | `blind-reviewer` | Independent review with **no project knowledge**: reads only code, build files and config, works out the language, versions, architecture and domain, and checks against that stack's published best practices (cites the source). Read-only. Tied with `code-reviewer` in a measured comparison (`kit-check/reviewer-eval/`); they miss different things. |
 | Agent | `spring-security-reviewer` | Attack-scenario audit of a Spring Boot app (access control first). Read-only. |
 | Agent | `security-reviewer` | The same audit for an app in any other language or framework. Read-only. |
-| Agent | `deploy-reviewer` | Explains and reviews Dockerfile, compose, CI, Kubernetes manifests. Never builds or applies. |
+| Agent | `deploy-reviewer` | Explains and reviews Dockerfile, compose, CI, Kubernetes manifests, for any runtime, with the JVM and Node specifics built in. Never builds or applies. |
 | Agent | `implementer` | **Does the work when you ask**: features, fixes, review findings, Dockerfile/compose/CI/K8s files. Tests and verifies, then hands over with an explanation and a sibling task. Only on explicit request. |
 | Skill | `learning-loop` | The method: plan → primer → you build → see it work → review → explain back → record. `/learning-loop` |
 | Skill | `spring-boot` | Boot 4 essentials and what changed from Boot 3 |

@@ -63,7 +63,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | `blind-reviewer` | No | Read, Grep, Glob, Bash, WebFetch, WebSearch | You want an **independent** review: no project docs or CLAUDE.md, only code; checks against the stack's published best practices with sources |
 | `security-reviewer` | No | Read, Grep, Glob, Bash | Before a release or after adding auth, in any language: attack scenarios, access control first |
 | `spring-security-reviewer` | No | Read, Grep, Glob, Bash | The same for a Spring Boot app: knows its annotations, configuration and actuator |
-| `deploy-reviewer` | No | Read, Grep, Glob | You wrote a Dockerfile, compose, CI or Kubernetes files |
+| `deploy-reviewer` | No | Read, Grep, Glob, Bash | You wrote a Dockerfile, compose, CI or Kubernetes files, in any language: memory, shutdown and probes per runtime |
 | `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files |
 | `e2e-tester` (`--e2e`) | Tests only, when asked | all (inherits the MCP browser) | Plan, write, repair or de-flake end-to-end tests; explore the running app in a browser |
 
@@ -520,6 +520,10 @@ Next, Vue and Svelte shells were never run).
   one trial run, on a small TypeScript sample (2026-11-05): it found all 6 planted problems, flagged nothing on the
   safe query, and never opened `.env`. One run isn't a measured comparison. The agent checks in both security
   reviewers (who keeps the conversation, approvals, memory, MCP tools) came after that run and haven't been tried.
+- `deploy-reviewer` became stack-neutral on 2026-11-08. One trial run, on a small Node sample: it found all 11 planted
+  problems (image, signals, compose, CI, probes, grace period, memory) and didn't flag the safe one, a readiness probe
+  that checks the database. It ran with Read alone, as builds without Grep and Glob tools would give it, which is why
+  it now has Bash for finding files.
 
 ## 11. What's ours and what's adopted
 
