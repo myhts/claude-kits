@@ -35,6 +35,7 @@ The page is generated from a data file by a fixed, tested engine. You write **da
 | `reference/guides.md` | the pathways and how to write steps |
 | `reference/ui-shells.md` | standalone HTML vs framework page |
 | `reference/safety.md` | confidential data, shared resources, what needs asking. **Read first** |
+| `reference/survey.md` | the survey on a big repository: readers on Sonnet, their fact sheet, merging and checking |
 
 Tools need Node 22+; `check-explorer.mjs` also needs Chrome or Chromium. If Node is missing, ask before installing.
 
@@ -47,6 +48,7 @@ docs/explorer/                    (or the folder agreed at gate 1)
   src/explorer.css                copied from the skill: don't edit
   src/explorer-data.js            the project's data (may import src/data/*.js)
   tools/                          copies of the five tools, so teammates without this skill can rebuild
+  survey.json                     big repositories: what each service exposes, calls and stores, with file:line
   TOUR.md  FLOWS.md  LABS.md  MEASURED.md  PROGRESS.md
 ```
 
@@ -60,8 +62,10 @@ After every phase, update `PROGRESS.md` (phase checklist, decisions, constraints
 what's next). **If PROGRESS.md already exists, read it first and resume from it.** Say in one line which phase
 you're starting.
 
-For a big repository, fan the survey out to Explore subagents (one per service/module) and keep the conclusions,
-not the file dumps.
+**Who does what.** The judgement stays in this session, on Opus: the map, the flows, the explanations, the gates, the
+screenshots. On a big repository the reading doesn't: survey with one Explore subagent per service or module, each
+started with `model: "sonnet"`, as `reference/survey.md` says, and keep their fact sheets, not the file dumps. Start
+any other subagent with `model: "opus"`. If this session isn't on Opus, say so in one line at the start.
 
 ### Phase 0: Safety and setup
 
@@ -74,7 +78,8 @@ not the file dumps.
 
 1. Find the stack(s), the entry points (HTTP routes, message consumers, schedulers, CLIs, UI pages), the runtime
    dependencies (DBs, brokers, caches, external partners) and how the project is normally run (README, scripts,
-   compose files, Makefile).
+   compose files, Makefile). On a big repository, the readers find these and you merge and check their sheets into
+   `survey.json` (`reference/survey.md`).
 2. **Run it** if you can, the normal way. A flow can only be captured from a running system. If it can't run here,
    say why; flows then come from reading code and are marked "traced from code, not run".
 3. Draft the map: lanes top to bottom (client → edge → services/API → async → workers → data → external); 8–30 boxes,

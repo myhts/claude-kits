@@ -106,7 +106,9 @@ its flows are traced from the code and marked that way.
 <details>
 <summary><b>Tips and variations</b></summary>
 
-- **A big codebase:** it surveys each service with its own subagent and keeps only the conclusions. Start with 4–6
+- **A big codebase:** it surveys each service with its own subagent on Sonnet, which only reads, and keeps the
+  judgement (the map, the flows, the explanations) on Opus, so run your session on Opus. Measured: the same findings
+  at about half the cost ([kit-check/explorer-eval](spring-boot-learning/kit-check/explorer-eval/)). Start with 4–6
   flows; `PROGRESS.md` lets a later session resume and add more.
 - **A new project:** run it once there's something to walk through, such as the first working slice, and again after
   each phase to keep the map current.

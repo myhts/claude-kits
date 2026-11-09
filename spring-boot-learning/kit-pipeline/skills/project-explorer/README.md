@@ -27,6 +27,10 @@ You can add what you care about: `/project-explorer focus on the payments servic
 
 Progress is kept in `docs/explorer/PROGRESS.md`, so a later session picks up where the last one stopped.
 
+**Run it on Opus.** On a big repository it hands the reading to one subagent per service on Sonnet and keeps the
+judgement (the map, the flows, the explanations) in your session. Measured in claude-kits
+`kit-check/explorer-eval/`: Sonnet readers found what Opus readers did, at about half the cost of the run.
+
 ## What you get in the project
 
 `docs/explorer/explorer.html` (open from disk; code links jump to the line in your editor), `TOUR.md`, `FLOWS.md`,
