@@ -289,7 +289,7 @@ It works in phases and **stops at three gates**:
 | Phase | What happens | Gate |
 |---|---|---|
 | 0 Safety | checks for confidential data, secrets, shared infrastructure | asks at once if anything sensitive turns up |
-| 1 Survey | stack, entry points, dependencies; runs the app; drafts the map and flow list | **Gate 1**: which flows; standalone HTML or inside your React/Next/Vue/Svelte app; output folder |
+| 1 Survey | stack, entry points, dependencies (on a big repository, one Sonnet reader per service, checked by the Opus session); runs the app; drafts the map and flow list | **Gate 1**: which flows; standalone HTML or inside your React/Next/Vue/Svelte app; output folder |
 | 2 Debuggers | detects or adds run/debug configs; proves a breakpoint hits per role | **Gate 2**: before adding dependencies or plugins |
 | 3 Flows | runs each flow, captures and scrubs data, verifies breakpoints, builds and checks the page | |
 | 4 Pathways | writes TOUR.md, generates FLOWS.md | |
