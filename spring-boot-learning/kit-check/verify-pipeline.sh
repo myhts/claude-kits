@@ -121,7 +121,7 @@ expect() {   # expect <plugin> <pattern...>: each pattern must appear in `claude
 (cd "$sandbox/proj" && HOME="$sandbox/home" claude plugin marketplace add "$root" --scope project >/dev/null \
   && for p in pipeline spring e2e spring-ai spring-web; do HOME="$sandbox/home" claude plugin install "$p@kits" --scope project >/dev/null || exit 1; done) \
   || fail "a plugin did not install"
-expect pipeline 'Skills \(2[6-9]|[3-9][0-9]\)' 'Agents \(7\)' 'Hooks \(1\)' 'implement' 'next' 'event-storming' 'tdd'
+expect pipeline 'Skills \(2[6-9]|[3-9][0-9]\)' 'Agents \(7\)' 'Hooks \(1\)' 'implement' 'next' 'event-storming' 'tdd' 'project-explorer'
 expect spring 'Skills \(8\)' 'spring-boot' 'build-templates'
 expect e2e 'Agents \(1\)' 'e2e-tester' 'playwright'
 expect spring-ai 'llm-engineering'

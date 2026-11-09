@@ -6,10 +6,13 @@ the tools.
 
 ## Use it in a project
 
+It comes with the `pipeline` plugin of claude-kits, and copy installs of the learning kit put it in
+`.claude/skills/`:
+
 ```
 cd ~/code/some-project
 claude                      # or open the project in VS Code with Claude Code
-> /project-explorer
+> /pipeline:project-explorer      # with the plugin; /project-explorer in a copy install
 ```
 
 You can add what you care about: `/project-explorer focus on the payments service` or
@@ -34,12 +37,12 @@ node docs/explorer/tools/bundle-html.mjs docs/explorer/src/explorer-data.js docs
 node docs/explorer/tools/check-explorer.mjs docs/explorer/explorer.html
 ```
 
-## Install elsewhere / share
+## Without the plugin
 
-- **Your other machines**: copy this folder to `~/.claude/skills/project-explorer/`.
-- **One repo, for the whole team**: copy it to `<repo>/.claude/skills/project-explorer/` and commit; everyone who
-  opens that repo in Claude Code gets `/project-explorer`.
-- **Versioned**: keep this folder in its own git repo and clone it into `~/.claude/skills/`.
+- **One repo, for the whole team**: copy this folder to `<repo>/.claude/skills/project-explorer/` and commit; everyone
+  who opens that repo in Claude Code gets `/project-explorer`.
+- **Every repo on your machine**: copy it to `~/.claude/skills/project-explorer/`. A repo that also has the plugin then
+  lists it twice, so prefer the plugin where you can.
 
 Requirements: Node 22+, and Chrome or Chromium for the visual check.
 

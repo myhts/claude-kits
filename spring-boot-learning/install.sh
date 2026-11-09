@@ -16,7 +16,7 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KIT="$HERE/kit" KIT_E2E="$HERE/kit-e2e" KIT_AI="$HERE/kit-ai" KIT_WEB="$HERE/kit-web" KIT_PIPELINE="$HERE/kit-pipeline"
-CORE_SKILLS="system-design distributed-systems design-patterns resilience-patterns interview-drill learning-loop"
+CORE_SKILLS="system-design distributed-systems design-patterns resilience-patterns interview-drill learning-loop project-explorer"
 TARGET="" DRY=0 FORCE=0 E2E=0 AI=0 WEB=0 PLUGINS=0
 for a in "$@"; do
   case "$a" in

@@ -41,7 +41,7 @@ project yourself. An improved, learning-focused edition of
 
 ```
 claude-kits/spring-boot-learning/      ← this folder: the source, kept outside any project
-  kit-pipeline/                        ← the 7 agents and 6 core skills every install gets (and the pipeline plugin)
+  kit-pipeline/                        ← the 7 agents and 7 core skills every install gets (and the pipeline plugin)
   kit/                                 ← the Spring skills, CLAUDE.md and learning files copied into a project
   kit-e2e/                             ← added with --e2e: e2e/ template, e2e-testing skill, e2e-tester agent, .mcp.json
   kit-ai/                              ← added with --ai: llm-engineering skill, CLAUDE.ai.md, e2e/llm-fake (with --e2e)
@@ -88,7 +88,7 @@ Re-running the installer adds only what's missing (`--force` overwrites, after y
 - **Want it done for you:** "use the implementer to add the compose file", "use the implementer to apply review
   finding 2". It only runs when you name it, and lists what it built in `docs/learning/PROGRESS.md`.
 - **Practice:** `/interview-drill`.
-- **Go deeper once it runs:** `/project-explorer` (your personal skill) for the map, debugging flows and labs.
+- **Go deeper once it runs:** `/project-explorer` for the map, debugging flows and labs.
 
 ## Verified, and how to re-check
 

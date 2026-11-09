@@ -21,6 +21,11 @@ claude plugin marketplace add myhts/claude-kits --scope project
 claude plugin install pipeline@kits --scope project
 ```
 
+**Bringing in a codebase that already exists?** Start `claude` and run `/pipeline:project-explorer` before step 2. It
+maps how the code works and walks each important request through it under the debugger, with real data. It explains
+and doesn't build: it writes its own folder and debugger configs, and asks before touching anything else. See
+[An existing project](PIPELINE.md#an-existing-project).
+
 **2. Set the repo up once.** Start `claude`, then:
 
 ```text
@@ -76,9 +81,8 @@ Pick the default in `/setup-project`. Change it for one ticket by adding a mode:
 ## Beyond the flow
 
 The **`spring`** pack adds Spring Boot 4 skills, a review checklist and verified build and deploy templates. Other add-ons cover
-end-to-end tests with a browser (an MCP), Claude in your own services, and a React front end. There's also
-`/project-explorer`, a learning kit for practice projects, and every agent and skill described one by one. All of it
-is in **[GUIDE.md](GUIDE.md)**.
+end-to-end tests with a browser (an MCP), Claude in your own services, and a React front end. There's also a learning
+kit for practice projects, and every agent and skill described one by one. All of it is in **[GUIDE.md](GUIDE.md)**.
 
 ## Credits and licence
 
