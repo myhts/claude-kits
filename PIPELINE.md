@@ -10,7 +10,7 @@ how you know it's done. One **example feature** runs through all nine steps:
 
 The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub Actions).
 
-**Jump to:** [0 Set up](#0-set-up-once) ·
+**Jump to:** [An existing project](#an-existing-project) · [0 Set up](#0-set-up-once) ·
 [1 Plan](#1-plan-the-language) · [2 Event Storming](#2-event-storming) · [3 Build](#3-test-first-build-with-container-tests) ·
 [4 PR](#4-a-small-pr) · [5 Reviewers](#5-two-reviewer-agents) · [6 Your review](#6-your-review) ·
 [7 Merge](#7-you-merge) · [8 Actions](#8-github-actions) · [9 Kubernetes](#9-kubernetes) ·
@@ -30,6 +30,7 @@ The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub 
 /pipeline:deploy                     once, before the first release
 /pipeline:retro                      now and then
 /pipeline:next                       any time: where am I, and what do I type next?
+/pipeline:project-explorer           any time: how does this code work? (first, in an existing project)
 ```
 
 ### Where do I start?
@@ -49,6 +50,9 @@ Next: /pipeline:human-review #57
 Also open
 - Step 3 · /pipeline:implement #43: "Notify the member" is ready: nothing blocks it.
 ```
+
+**Bringing in a codebase that already exists?** Understand it first, then set it up: see
+[An existing project](#an-existing-project) below.
 
 **Starting something new?**
 
@@ -70,6 +74,47 @@ flowchart LR
 **Tiny** means one idea that's quick to review and cheap to redo, like fixing a label or a failing test. **Event-driven**
 means several actors, things that happen over time, and background reactions. **More than a session** means more fog
 than one conversation can clear, or a need to research or prototype before deciding.
+
+### An existing project
+
+**Understand the code before you change it.** Every later step builds on that: the glossary starts from the words the
+code already uses, and the tickets start with any reshaping the code needs. In a codebase that's new to you:
+
+1. **See how it works** with `/pipeline:project-explorer` (the card below).
+2. **Set it up** as in [step 0](#0-set-up-once). `/pipeline:setup-project` reads the commands, CI and docs you already
+   have, fills the stack card from them, and edits existing files in place. It adds a `ci.yml` only if there's no CI.
+3. **Take one small change through the whole flow,** from [step 1](#1-plan-the-language). Where the code's words and
+   the glossary disagree, the rename lands as its own small PR first.
+
+| | |
+|---|---|
+| **You&nbsp;type** | `/pipeline:project-explorer`, optionally with a focus: `/pipeline:project-explorer focus on loans` |
+| **Claude** | first checks for confidential data, secrets and shared infrastructure. Then it surveys the stack, entry points and dependencies, runs the app the normal way, and drafts a map. For each flow you pick, it runs the flow, captures and scrubs the data at every step, and proves that a breakpoint hits there |
+| **You** | choose the flows (it recommends 4–8) and where the page lives: a file you open from disk, or a page inside your own front end. Later you decide whether you want concept pages and scaling labs |
+| **You&nbsp;get** | `docs/explorer/explorer.html`: the architecture map, and each flow step by step with real data. Debugger configs for every part of the system. `TOUR.md`, a first hour in the debugger, and `FLOWS.md`, checkbox guides from "run it" to "break it" |
+| **Done&nbsp;when** | you can follow a request through the code under the debugger, and every view on the page passes its check |
+
+**It explains; it doesn't build.** It writes only its own folder and the debugger configs, and asks before anything
+else, such as a dependency for the debugger or a dev-only failure switch for a lab. Bugs it finds are reported with a
+way to reproduce them, not fixed: each fix goes through the flow as a ticket. If the app can't run on your machine,
+its flows are traced from the code and marked that way.
+
+> 📚 **In the example:** the library app already lets members borrow and return copies. The explorer traces *Borrow a
+> copy* and *Return a copy*, so you watch the loan row change under the debugger before planning reservations, which
+> start when a copy comes back.
+
+<details>
+<summary><b>Tips and variations</b></summary>
+
+- **A big codebase:** it surveys each service with its own subagent and keeps only the conclusions. Start with 4–6
+  flows; `PROGRESS.md` lets a later session resume and add more.
+- **A new project:** run it once there's something to walk through, such as the first working slice, and again after
+  each phase to keep the map current.
+- **Not your repository** (work, a client): install nothing without the owner's agreement, and check for confidential
+  data before any of it reaches a model.
+- **It needs** Node 22+, and Chrome or Chromium for the page check.
+
+</details>
 
 ---
 
@@ -427,6 +472,7 @@ protection and `/setup-project protect` (which only adds) still work.
 | `.github/workflows/pr-size.yml`, `human-review.yml`, `ci.yml`, `deploy.yml` | `/setup-project`, `/deploy` | GitHub Actions |
 | `k8s/base`, `k8s/overlays/*` | `/deploy` | CI |
 | `docs/learning/LESSONS.md`, `PROGRESS.md` | learning projects | `/implement`, the implementer |
+| `docs/explorer/` (the page, `TOUR.md`, `FLOWS.md`, `PROGRESS.md`), debugger configs | `/project-explorer` | you, and anyone new to the code |
 
 </details>
 
@@ -444,6 +490,7 @@ protection and `/setup-project protect` (which only adds) still work.
 | `/pipeline:deploy` | once, before the first release |
 | `/pipeline:retro` | after a milestone, or a repeated comment |
 | `/pipeline:next` | any time: which step you're on, and the one command to type next |
+| `/pipeline:project-explorer` | first in an existing project, then whenever you need to see how the code works |
 
 Skills the steps load by themselves: `event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs`, `domain-modeling`,
 `pr`, `research`, `prototype`, `wizard`. The slash menu finds every command as you type its short name.

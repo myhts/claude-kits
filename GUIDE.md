@@ -28,7 +28,7 @@ Last updated 2026-11-01.
 
 | Plugin | For | Adds |
 |---|---|---|
-| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`, `/next`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`), seven agents, and the merge guard |
+| `pipeline` | every project | The flow's commands (`/setup-project`, `/grill-with-docs`, `/wayfinder`, `/to-spec`, `/to-tickets`, `/implement`, `/human-review`, `/deploy`, `/retro`, `/next`), the skills they load (`event-storming`, `tdd`, `codebase-design`, `diagnosing-bugs` and more), the core skills (`system-design`, `distributed-systems`, `design-patterns`, `resilience-patterns`, `learning-loop`, `interview-drill`, `project-explorer`), seven agents, and the merge guard |
 | `spring` | Spring Boot 4 | `spring-boot`, `testing-patterns`, `transactions`, `jpa-patterns`, `java-modern`, `java-concurrency`, `logging-patterns`, the Spring review checklist, and the build templates: Dockerfile, CI, a Kustomize base with staging and prod overlays, and the deploy workflow |
 | `e2e` | apps with a UI or flows | Playwright tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP (localhost only) |
 | `spring-ai` | Spring services that call Claude | `llm-engineering` and the review checklist the reviewers use for model calls |
@@ -41,17 +41,17 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 
 | Piece | Where | What it's for |
 |---|---|---|
-| **`setup.sh`** | repo root | One-time: checks your tools, links `skills/` into `~/.claude/skills/` |
+| **`setup.sh`** | repo root | One-time: checks your tools, and removes the `/project-explorer` link older versions put in `~/.claude/skills/` |
 | **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
 | **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
-| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 6 core skills; the merge guard hook |
-| **The learning kit** | `spring-boot-learning/` | 7 agents and 6 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
+| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 7 core skills, `project-explorer` among them; the merge guard hook |
+| **The learning kit** | `spring-boot-learning/` | 7 agents and 7 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
 | **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
 | **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (35 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
 | **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
-| **`/project-explorer`** | `skills/project-explorer/` (linked into `~/.claude/skills/` by `setup.sh`, so it works in every project) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
+| **`/project-explorer`** | `spring-boot-learning/kit-pipeline/skills/project-explorer/` (in the `pipeline` plugin as `/pipeline:project-explorer`; copy installs get it too) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
 | **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here, and not public |
 
 ### The agents (6 in the kit, plus 1 with `--e2e`)
@@ -67,12 +67,13 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files |
 | `e2e-tester` (`--e2e`) | Tests only, when asked | all (inherits the MCP browser) | Plan, write, repair or de-flake end-to-end tests; explore the running app in a browser |
 
-### The skills (14 in the kit, plus 1 with `--e2e`)
+### The skills (15 in the kit, plus 1 with `--e2e`)
 
 | Skill | Covers | Proof |
 |---|---|---|
 | `/learning-loop` | The method: plan → primer → you build → see it work → review → explain back → record | |
 | `/interview-drill` | Interview questions about your own code, senior/staff feedback, scored | |
+| `/project-explorer` | Any codebase as an interactive map: request flows step by step with real data and verified breakpoints, debugger configs, guides, optional scaling labs ([3.8](#38-project-explorer)) | its README says what was tested |
 | `spring-boot` | Boot 4 essentials and what changed from Boot 3 | kit-check |
 | `testing-patterns` | Which test for what; slices; Testcontainers 2; RestTestClient | kit-check |
 | `jpa-patterns` | N+1, fetching, optimistic locking, self-invocation, with query counting | kit-check (5 tests) |
@@ -101,7 +102,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 
 ```bash
 git clone https://github.com/myhts/claude-kits.git && cd claude-kits
-./setup.sh                            # once: checks tools, installs /project-explorer for every project
+./setup.sh                            # once: checks your tools
 ./new-project.sh my-shop --e2e        # Boot 4.1.1, Java 21, Postgres, JPA, Flyway, Testcontainers + e2e
 cd my-shop
 # 1. open CLAUDE.md, fill in "This project" at the end (what it is, architecture, what you want to learn)
@@ -113,7 +114,10 @@ claude
 Options: `--java 25`, `--boot 4.0.8`, `--group com.yourname`, `--deps "web,validation,data-jpa,postgresql,flyway,actuator,testcontainers,kafka"`.
 Needs the internet (start.spring.io).
 
-### An existing project
+### The learning kit in an existing project
+
+For the delivery flow in an existing project, in any language, see
+[PIPELINE.md, An existing project](PIPELINE.md#an-existing-project). To add the learning kit instead:
 
 ```bash
 ./spring-boot-learning/install.sh ~/code/their-project --dry-run   # from this repo: see what would be added
@@ -131,6 +135,7 @@ cd ~/code/any-repo
 claude plugin marketplace add myhts/claude-kits --scope project
 claude plugin install pipeline@kits --scope project
 claude
+> /pipeline:project-explorer          # in a codebase that already exists: see how it works first
 > /pipeline:setup-project
 ```
 
@@ -140,8 +145,11 @@ Then follow [PIPELINE.md](PIPELINE.md).
 
 ```bash
 cd ~/code/any-repo && claude
-> /project-explorer
+> /pipeline:project-explorer          # with the pipeline plugin; in a copy install, /project-explorer
 ```
+
+Without either, copy `spring-boot-learning/kit-pipeline/skills/project-explorer/` into the repo's `.claude/skills/`.
+Where it fits in the flow: [PIPELINE.md, An existing project](PIPELINE.md#an-existing-project).
 
 ### Only an independent review (any project)
 
@@ -266,6 +274,9 @@ security boundary.
 
 ### 3.8 `/project-explorer`
 
+It comes with the `pipeline` plugin (`/pipeline:project-explorer`) and with copy installs. In an existing project it's
+the first step, before `/setup-project` ([PIPELINE.md](PIPELINE.md#an-existing-project)).
+
 **Offers:** for any repository:
 - an interactive page with an architecture map (8–30 boxes), request flows step by step with real captured data and a
   **verified breakpoint** per step, and debugger configs for every process;
@@ -378,7 +389,7 @@ The method, step by step (details and scripts in its `README.md`):
 | **Another Spring Boot project** | `install.sh <project> [--e2e]`. Everything applies |
 | **A project with its own CLAUDE.md** | Merge `CLAUDE.learning.md` into it: keep their rules, add "How we work" and the learning files if you want them |
 | **A Java project without Spring** | Keep: `mentor`, both reviewers, `security-reviewer`, `deploy-reviewer`, `implementer`, `learning-loop`, `interview-drill`, `java-modern`, `distributed-systems`, `system-design`, `design-patterns`, `resilience-patterns` (concepts). Delete or ignore the Spring-specific skills |
-| **Another language (Go, Python, TypeScript…)** | Use the `pipeline` plugin with no pack ([PIPELINE.md, step 0](PIPELINE.md#0-set-up-once)): every stage and agent works; put the stack's rules in `CODING_STANDARDS.md`. Also portable as is: `/project-explorer`, the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). What a pack would add: a review checklist, testing and framework skills proved by tests, verified build and deploy templates |
+| **Another language (Go, Python, TypeScript…)** | Use the `pipeline` plugin with no pack ([PIPELINE.md, step 0](PIPELINE.md#0-set-up-once)): every stage and agent works, and so does `/project-explorer`; put the stack's rules in `CODING_STANDARDS.md`. Also portable as is: the e2e approach (point `stack.config.ts` at any image with an HTTP health URL). What a pack would add: a review checklist, testing and framework skills proved by tests, verified build and deploy templates |
 | **A project you don't own** (work, client) | Don't install anything without the owner's agreement. The least invasive option is the `blind-reviewer`, which only reads; `/project-explorer` writes an output folder and debugger configs, so ask first. Never send confidential data to an LLM: check before you start |
 | **A new machine or account** | `git clone` this repo, run `./setup.sh`. Approve project MCP servers again. A project's `CLAUDE.md` carries its rules; memory files are optional |
 
@@ -388,12 +399,13 @@ The method, step by step (details and scripts in its `README.md`):
 
 ### 6.1 Version control
 
-Everything is in **this one repository**, so every improvement is a commit you can inspect or undo: the kit (`spring-boot-learning/`), the personal skills (`skills/`), the
-scripts and this guide. Ignored: build output (`target/`, `node_modules/`), `reviewer-eval/work/`, and **every project
-folder** you create here with `new-project.sh` (each new project is its own repository).
+Everything is in **this one repository**, so every improvement is a commit you can inspect or undo: the kit
+(`spring-boot-learning/`), the scripts and this guide. Ignored: build output (`target/`, `node_modules/`),
+`reviewer-eval/work/`, and **every project folder** you create here with `new-project.sh` (each new project is its own
+repository).
 
-`setup.sh` links `skills/*` into `~/.claude/skills/`, so a `git pull` updates them everywhere; projects get **copies**
-of the kit (§6.2). Before changing anything: `git status` (clean?), then make the change, run the proofs (§6.3–6.7),
+Projects with the plugins get a new version with `claude plugin update`; copy installs get **copies** of the kit
+(§6.2). Before changing anything: `git status` (clean?), then make the change, run the proofs (§6.3–6.7),
 and commit with a message that says why. `git log --since=2026-11-01 --stat` shows what changed since a date.
 
 ### 6.2 The rule: edit the kit, not the copies
@@ -449,9 +461,9 @@ in the real shape (copy from a recorded live response when you have one). Pin th
 releases at least two weeks old.
 
 ### 6.9 Improve `/project-explorer`
-Edit `skills/project-explorer/` (`SKILL.md`, `reference/*.md`, `template/`, `tools/`). Test on a small repo
-end to end: survey → one flow → bundle → `check-explorer.mjs` clean. Its README lists what was and wasn't tested (the
-Next, Vue and Svelte shells were never run).
+Edit `spring-boot-learning/kit-pipeline/skills/project-explorer/` (`SKILL.md`, `reference/*.md`, `template/`,
+`tools/`). Test on a small repo end to end: survey → one flow → bundle → `check-explorer.mjs` clean. Its README lists
+what was and wasn't tested (the Next, Vue and Svelte shells were never run). Then run `kit-check/verify-pipeline.sh`.
 
 ### 6.10 Ideas for next improvements
 - A **Kafka/Redis kit-check module** so `distributed-systems` is proven inside the kit, not only in the private example project.
