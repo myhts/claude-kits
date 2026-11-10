@@ -10,6 +10,11 @@ good; the human decides. Run this in the main session: it starts the subagents, 
 Agents named here are the pipeline plugin's (`pipeline:implementer`, `pipeline:code-reviewer`, and so on). Arguments:
 a ticket or spec reference, and optionally a mode (`learn`, `build-with-me`, `deliver`) that overrides the stack card.
 
+**One ticket, one session.** If this conversation already holds other work (planning, another ticket, a review), say
+so in one line before step 1 and suggest `/clear`, then the same command again. Nothing is lost: everything this
+skill needs is on GitHub and in the repo. An old conversation is re-read on every turn and fills the context sooner.
+Carry on if the human says so.
+
 ## 1. Load the work
 
 1. Read `docs/agents/stack.md` (commands, mode, PR budget) and fetch the ticket with the commands in
@@ -122,5 +127,5 @@ through `/to-tickets`.
 
 ## 8. Stop
 
-Report the PR link, the reviewer summaries, the judgement calls, and the next step: `/human-review <PR>`. The human
-merges; this skill never does, and the merge guard blocks it anyway.
+Report the PR link, the reviewer summaries, the judgement calls, and the next step: `/human-review <PR>`, in a fresh
+session (`/clear` first). The human merges; this skill never does, and the merge guard blocks it anyway.

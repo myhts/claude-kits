@@ -7,6 +7,10 @@ disable-model-invocation: true
 The human's understanding is the gate; agent reviews are evidence. This skill makes that understanding fast and leaves
 a record CI can check. It asks and checks; it doesn't grade. Argument: the PR number.
 
+**A fresh session.** If this conversation already holds other work, building this PR included, say so in one line and
+suggest `/clear`, then the same command again. Everything the review needs is on the PR, and it goes better without
+the builder's reasoning in view. Carry on if the human says so.
+
 ## 1. Load the pull request
 
 - `gh pr view <n> --json title,body,headRefOid,baseRefName,files,additions,deletions,comments` and `gh pr diff <n>`.
@@ -99,4 +103,5 @@ coding standard, so no comment needs leaving twice.
 
 ## 7. Stop
 
-Tell the human the PR is ready for them to merge, or what is still open. The human merges; this skill never does.
+Tell the human the PR is ready for them to merge, or what is still open. After the merge, the next ticket starts in a
+fresh session: `/clear`, then `/pipeline:next`. The human merges; this skill never does.
