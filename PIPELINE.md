@@ -33,6 +33,10 @@ The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub 
 /pipeline:project-explorer           any time: how does this code work? (first, in an existing project)
 ```
 
+**One ticket, one session.** Start `/implement` and `/human-review` in a fresh session: `/clear`, or a new tab after a
+plugin update. Everything they need is on GitHub and in the repo, not in the last conversation, and both remind you
+if you forget.
+
 ### Where do I start?
 
 **Already under way?** Type `/pipeline:next`. It reads the open PRs and their review records, the ready tickets, specs

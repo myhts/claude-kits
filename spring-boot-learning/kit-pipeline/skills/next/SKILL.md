@@ -58,6 +58,8 @@ Plan → Storm → Build → PR → Agents → **Your review** → Merge → Act
 - Put a command in backticks. A URL or a plain instruction (press Merge, approve production) stays plain text.
 - Leave out "deliver mode" when the mode is `-`. Leave out "Also open" when there are no ALSO lines.
 - Show each WARN line last, as "Couldn't check: …".
+- When this conversation already holds other work and **Next** is a command, end with: "Type it in a fresh session
+  (`/clear` first)."
 
 ## 3. Stop
 
