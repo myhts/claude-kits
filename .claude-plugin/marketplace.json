@@ -7,7 +7,7 @@
       "name": "pipeline",
       "source": "./spring-boot-learning/kit-pipeline",
       "description": "The delivery pipeline for any stack: /setup-project, /grill-with-docs, /wayfinder, /to-spec, /to-tickets, /implement, /human-review, /deploy, /retro, /next, /project-explorer, the event-storming discipline, the core skills, seven agents, the merge guard and a ruleset that protects main.",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "author": { "name": "Aseem Pareek" },
       "license": "Apache-2.0",
       "keywords": ["pipeline", "tdd", "event-storming", "code-review", "kubernetes"],

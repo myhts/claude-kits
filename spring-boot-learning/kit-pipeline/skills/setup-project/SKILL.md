@@ -9,6 +9,10 @@ result is a handful of small files the other skills read; nothing here writes ap
 
 With the argument `protect`, do only step 1's GitHub bullet and step 5.
 
+**A fresh session.** If this conversation already holds other work (the explorer, say), mention it in one line and
+suggest `/clear`, then the same command again: the setup reads the repository, not the conversation. Carry on if the
+human says so.
+
 Files this skill fills in live beside it: [templates/stack.md](templates/stack.md),
 [templates/CODING_STANDARDS.md](templates/CODING_STANDARDS.md), [templates/claude-md-blocks.md](templates/claude-md-blocks.md)
 and [templates/github/](templates/github/). The tracker and domain doc templates come from the upstream skills:
@@ -89,9 +93,9 @@ Tell the user, in a few lines:
 - **Protecting `main`:** if the setup files are already on the default branch, go on to step 5 now. Otherwise the human
   commits them and merges them, then runs `/pipeline:setup-project protect`; `/pipeline:next` reminds them.
 - **`gh` older than 2.94:** suggest `brew upgrade gh`.
-- **What to run next:** `/grill-with-docs` for the first feature, or `/wayfinder` when the work is too big for one
-  session. `/deploy` sets up Kubernetes when there is something to ship. From then on, `/next` reads the repo and
-  names the next command whenever they're unsure.
+- **What to run next,** in a fresh session (`/clear` first): `/grill-with-docs` for the first feature, or
+  `/wayfinder` when the work is too big for one session. `/deploy` sets up Kubernetes when there is something to
+  ship. From then on, `/next` reads the repo and names the next command whenever they're unsure.
 
 ## 5. Protect `main`
 

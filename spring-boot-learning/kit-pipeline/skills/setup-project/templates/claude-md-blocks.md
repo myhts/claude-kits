@@ -27,4 +27,4 @@ Stack, commands and build mode: `docs/agents/stack.md`. Choose the path by size:
 - **Bigger than one session, or foggy:** `/wayfinder`, then `/to-spec` and `/to-tickets`.
 - **Each ticket:** `/implement <ticket>`. **Each PR:** `/human-review <PR>`, then the human merges.
 - **Between phases:** continue if the next phase needs this one's reasoning; otherwise clear, hand off, use a subagent
-  or compact, in that order.
+  or compact, in that order. End each phase by naming the next command, and whether to `/clear` first.

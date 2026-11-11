@@ -105,4 +105,4 @@ Tell the human, briefly:
 ## 5. Stop
 
 The first real deploy happens when the next PR merges. Claude doesn't run `kubectl apply`, push images or change
-environments; CI and the human do.
+environments; CI and the human do. Next: `/pipeline:next`, in a fresh session (`/clear` first).

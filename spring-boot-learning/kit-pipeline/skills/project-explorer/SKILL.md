@@ -60,7 +60,8 @@ tools stay in `docs/explorer/`. The data file still has one home; the bundler an
 Work in phases. **Stop at every gate** and ask with AskUserQuestion; don't continue past a gate on assumptions.
 After every phase, update `PROGRESS.md` (phase checklist, decisions, constraints, verified breakpoints, bugs found,
 what's next). **If PROGRESS.md already exists, read it first and resume from it.** Say in one line which phase
-you're starting.
+you're starting. If this conversation already holds other work, say so first and suggest `/clear`: the explorer needs
+the room, and PROGRESS.md carries everything between sessions.
 
 **Who does what.** The judgement stays in this session, on Opus: the map, the flows, the explanations, the gates, the
 screenshots. On a big repository the reading doesn't: survey with one Explore subagent per service or module, each
@@ -155,7 +156,9 @@ never `measured`. Generate `LABS.md` with `gen-guides.mjs`. Validate, bundle and
    - what's on it (flows, concepts, labs), and the debugger configs added;
    - what was verified and how (breakpoints, measurements), and what wasn't, with the reason;
    - bugs or doc mismatches found (not fixed), each with a repro;
-   - anything that needs their decision.
+   - anything that needs their decision;
+   - with the pipeline plugin, the next step, to type in a fresh session (`/clear` first):
+     `/pipeline:setup-project` when the repository has no `docs/agents/stack.md` yet, otherwise `/pipeline:next`.
 
 ## Rules that keep the result trustworthy
 
