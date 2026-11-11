@@ -33,9 +33,11 @@ The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub 
 /pipeline:project-explorer           any time: how does this code work? (first, in an existing project)
 ```
 
-**One ticket, one session.** Start `/implement` and `/human-review` in a fresh session: `/clear`, or a new tab after a
-plugin update. Everything they need is on GitHub and in the repo, not in the last conversation, and both remind you
-if you forget.
+**One step, one session.** Start each command in a fresh session: `/clear`, or a new tab after a plugin update. The
+exception is planning: `/to-spec` writes the spec from the grilling conversation, so `/grill-with-docs`, `/to-spec`
+and `/to-tickets` run in one session. Everything else a step needs is on GitHub and in the repo, not in the last
+conversation. Each step ends by naming the next command, and `/project-explorer`, `/setup-project`, `/implement` and
+`/human-review` remind you if you start one in a busy session.
 
 ### Where do I start?
 
