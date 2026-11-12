@@ -84,6 +84,9 @@ The **`spring`** pack adds Spring Boot 4 skills, a review checklist and verified
 end-to-end tests with a browser (an MCP), Claude in your own services, and a React front end. There's also a learning
 kit for practice projects, and every agent and skill described one by one. All of it is in **[GUIDE.md](GUIDE.md)**.
 
+**An interview that allows AI?** The `interview` plugin runs a timed round with you in six phases, from Orient to Wrap:
+you lead, and Claude assists. See **[INTERVIEW.md](INTERVIEW.md)**.
+
 ## Credits and licence
 
 [Apache License 2.0](LICENSE). Fifteen skills come unchanged from [mattpocock/skills](https://github.com/mattpocock/skills)

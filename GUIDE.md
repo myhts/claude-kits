@@ -33,6 +33,7 @@ Last updated 2026-11-01.
 | `e2e` | apps with a UI or flows | Playwright tests against the app and its databases in Testcontainers, the `e2e-tester` agent, and the Playwright MCP (localhost only) |
 | `spring-ai` | Spring services that call Claude | `llm-engineering` and the review checklist the reviewers use for model calls |
 | `spring-web` | a front end for a Spring API | a React + Vite + TanStack Query template and the `react-frontend` skill |
+| `interview` | interview rounds that allow AI | `/interview:start`: a timed round in six phases, Orient to Wrap, in run or guide mode. Installed at user scope, not per project. See [INTERVIEW.md](INTERVIEW.md) |
 
 Add one to a repo with `claude plugin install <name>@kits --scope project`. For a Spring Boot repo,
 `/pipeline:setup-project` does it for you.
@@ -43,7 +44,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 |---|---|---|
 | **`setup.sh`** | repo root | One-time: checks your tools, and removes the `/project-explorer` link older versions put in `~/.claude/skills/` |
 | **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
-| **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
+| **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`, `interview`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
 | **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 7 core skills, `project-explorer` among them; the merge guard hook |
 | **The learning kit** | `spring-boot-learning/` | 7 agents and 7 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |

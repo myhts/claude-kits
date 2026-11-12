@@ -6,6 +6,7 @@
 #   4. every plugin installs and loads its parts
 #   5. /next: its script names the right next step for each state of a repo (gh is stubbed, so it runs offline)
 #   6. protecting main: protect-main.sh sends the right ruleset, and only adds to one that exists (gh is stubbed too)
+#   7. interview: its runner and INTERVIEW.md agree on the phases, the prompt sheet and the files they link
 # Nothing is installed or changed; step 1 only downloads public files into a temp folder.
 #   ./verify-pipeline.sh                    run all checks
 #   ./verify-pipeline.sh --update-upstream  rewrite kit-pipeline/upstream/ from the commit pinned in upstream.lock
@@ -119,13 +120,14 @@ expect() {   # expect <plugin> <pattern...>: each pattern must appear in `claude
   echo "   $p: $(grep -E '^  (Skills|Agents)' <<< "$out" | sed -E 's/^  ([A-Za-z]+ \([0-9]+\)).*/\1/' | tr '\n' ' ')"
 }
 (cd "$sandbox/proj" && HOME="$sandbox/home" claude plugin marketplace add "$root" --scope project >/dev/null \
-  && for p in pipeline spring e2e spring-ai spring-web; do HOME="$sandbox/home" claude plugin install "$p@kits" --scope project >/dev/null || exit 1; done) \
+  && for p in pipeline spring e2e spring-ai spring-web interview; do HOME="$sandbox/home" claude plugin install "$p@kits" --scope project >/dev/null || exit 1; done) \
   || fail "a plugin did not install"
 expect pipeline 'Skills \(2[6-9]|[3-9][0-9]\)' 'Agents \(7\)' 'Hooks \(1\)' 'implement' 'next' 'event-storming' 'tdd' 'project-explorer'
 expect spring 'Skills \(8\)' 'spring-boot' 'build-templates'
 expect e2e 'Agents \(1\)' 'e2e-tester' 'playwright'
 expect spring-ai 'llm-engineering'
 expect spring-web 'react-frontend'
+expect interview 'Skills \(1\)' 'start'
 
 echo "== 5. /next names the right step"
 W="$(cd "$K" && pwd)/skills/next/where.sh"
@@ -311,5 +313,18 @@ grep -q 'needs admin rights' <<< "$out" || fail "protect-main without admin righ
 [ ! -f "$pt/fix/sent" ] || fail "protect-main sent something without admin rights"
 if protect >/dev/null 2>&1; then fail "protect-main ran with no checks"; fi
 echo "   6 cases: dry run, new, strict, an existing ruleset, no admin rights, no checks"
+
+echo "== 7. interview: the runner and INTERVIEW.md agree"
+I=../kit-interview/skills/start; D=../../INTERVIEW.md
+[ "$(wc -l < "$I/SKILL.md")" -le 150 ] || fail "interview: SKILL.md is over 150 lines"
+for f in phases.md bar.md checklists.md prompts.md; do grep -q "]($f)" "$I/SKILL.md" || fail "interview: SKILL.md doesn't link $f"; done
+for ph in Orient Reproduce Diagnose Fix Review Wrap; do
+  grep -q "^## $ph\$" "$I/phases.md" || fail "interview: phases.md has no '## $ph'"
+  grep -q "^| \*\*$ph\*\* |" "$D" || fail "interview: INTERVIEW.md has no row for $ph"
+done
+diff <(grep '^| [0-9]' "$I/prompts.md") <(grep '^| [0-9]' "$D") >/dev/null || fail "interview: the prompt sheet differs between prompts.md and INTERVIEW.md"
+grep -o '](spring-boot-learning/[^)#]*' "$D" | cut -c3- | sort -u | while read -r f; do [ -e "../../$f" ] || fail "interview: INTERVIEW.md links a missing file: $f"; done
+grep -q '/interview:start' "$D" && [ "$(sed -n 's/^name: //p' "$I/SKILL.md")" = start ] || fail "interview: the command in INTERVIEW.md doesn't match the skill's name"
+echo "   six phases, $(grep -c '^| [0-9]' "$I/prompts.md") prompts and every linked file match"
 
 echo "OK: pipeline plugin verified"

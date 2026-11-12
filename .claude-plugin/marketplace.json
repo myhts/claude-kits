@@ -65,6 +65,17 @@
       "keywords": ["react", "vite", "tanstack-query"],
       "dependencies": ["spring"],
       "skills": ["./.claude/skills"]
+    },
+    {
+      "name": "interview",
+      "source": "./spring-boot-learning/kit-interview",
+      "description": "Timed interview rounds where AI is allowed, in six phases: Orient, Reproduce, Diagnose, Fix, Review, Wrap. /interview:start fix|build [minutes] [guide]: run mode assists with a card per step; guide mode coaches you to do it yourself. The guides read on their own, for rounds without plugins.",
+      "version": "0.1.0",
+      "author": { "name": "Aseem Pareek" },
+      "license": "Apache-2.0",
+      "keywords": ["interview", "tdd", "debugging", "code-review"],
+      "dependencies": ["pipeline"],
+      "skills": ["./skills"]
     }
   ]
 }
