@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="772" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" viewBox="0 0 760 772" role="img" aria-label="Inside /implement, fresh reviewers judge the work, not the builder" font-size="13">
+  <title>Inside /implement, fresh reviewers judge the work, not the builder</title>
+  <style>svg { --ink: #1f2328; --quiet: #59636e; --edge: #818b98; --grid: #d1d9e0; --accent: #0969da; --tint: rgba(129, 139, 152, 0.12); --paper: #ffffff; }</style>
+  <defs>
+    <marker id="build-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="var(--edge)"/>
+    </marker>
+  </defs>
+  <text x="24" y="30" font-size="15" font-weight="600" fill="var(--ink)">Inside /implement, fresh reviewers judge the work, not the builder</text>
+  <g fill="none" stroke="var(--edge)" stroke-width="1.25">
+    <path d="M380 108V132" marker-end="url(#build-arrow)"/>
+    <path d="M380 188V212" marker-end="url(#build-arrow)"/>
+    <path d="M380 268V292" marker-end="url(#build-arrow)"/>
+    <path d="M380 412V436" marker-end="url(#build-arrow)"/>
+    <path d="M136 492V516" marker-end="url(#build-arrow)"/>
+    <path d="M380 492V516" marker-end="url(#build-arrow)"/>
+    <path d="M624 492V516" marker-end="url(#build-arrow)"/>
+    <path d="M136 588V612" marker-end="url(#build-arrow)"/>
+    <path d="M380 668V692" marker-end="url(#build-arrow)"/>
+  </g>
+  <g>
+    <rect x="24" y="52" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="76" font-weight="600" fill="var(--ink)">1. Read the ticket cold</text>
+    <text x="720" y="76" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--quiet)">YOU DECIDE</text>
+    <text x="40" y="94" font-size="11.5" fill="var(--quiet)">A fresh agent says in its own words what the ticket asks. You settle anything left open.</text>
+  </g>
+  <g>
+    <rect x="24" y="132" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="156" font-weight="600" fill="var(--ink)">2. Build test-first</text>
+    <text x="720" y="156" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--quiet)">RED, THEN GREEN</text>
+    <text x="40" y="174" font-size="11.5" fill="var(--quiet)">Write one failing test, then just enough code to pass it. Repeat, one small slice at a time.</text>
+  </g>
+  <g>
+    <rect x="24" y="212" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="236" font-weight="600" fill="var(--ink)">3. Run every check</text>
+    <text x="40" y="254" font-size="11.5" fill="var(--quiet)">Lint and the full test run, with a real database in containers. Anything red is fixed first.</text>
+  </g>
+  <g>
+    <rect x="24" y="292" width="712" height="120" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="40" y="314" font-weight="600" fill="var(--ink)">4. Fresh reviewers, all at once</text>
+    <text x="720" y="314" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--ink)">NONE OF THEM WROTE THE CODE</text>
+    <rect x="40" y="324" width="216" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="272" y="324" width="216" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="504" y="324" width="216" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="52" y="348" font-weight="600" fill="var(--ink)">Project reviewer: rules</text>
+    <text x="52" y="366" font-size="11.5" fill="var(--quiet)">Knows your standards,</text>
+    <text x="52" y="382" font-size="11.5" fill="var(--quiet)">glossary and decisions</text>
+    <text x="284" y="348" font-weight="600" fill="var(--ink)">Project reviewer: ticket</text>
+    <text x="284" y="366" font-size="11.5" fill="var(--quiet)">Looks for anything missing,</text>
+    <text x="284" y="382" font-size="11.5" fill="var(--quiet)">extra or wrong for the ticket</text>
+    <text x="516" y="348" font-weight="600" fill="var(--ink)">Blind reviewer</text>
+    <text x="516" y="366" font-size="11.5" fill="var(--quiet)">Sees only the code. Never</text>
+    <text x="516" y="382" font-size="11.5" fill="var(--quiet)">told what the code is for</text>
+  </g>
+  <g>
+    <rect x="24" y="436" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="460" font-weight="600" fill="var(--ink)">5. Check each finding against the code</text>
+    <text x="720" y="460" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--quiet)">PROOF NEEDED</text>
+    <text x="40" y="478" font-size="11.5" fill="var(--quiet)">Claude must show a finding is real, or point to the line that proves it wrong.</text>
+  </g>
+  <g>
+    <rect x="24" y="516" width="224" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="540" font-weight="600" fill="var(--ink)">Confirmed</text>
+    <text x="40" y="558" font-size="11.5" fill="var(--quiet)">A fresh builder fixes it.</text>
+    <text x="40" y="574" font-size="11.5" fill="var(--quiet)">Reviewers look once more.</text>
+  </g>
+  <g>
+    <rect x="268" y="516" width="224" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="284" y="540" font-weight="600" fill="var(--ink)">Disputed, or taste</text>
+    <text x="284" y="558" font-size="11.5" fill="var(--quiet)">Goes on a list for you</text>
+    <text x="284" y="574" font-size="11.5" fill="var(--quiet)">to decide in your review</text>
+  </g>
+  <g>
+    <rect x="512" y="516" width="224" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="528" y="540" font-weight="600" fill="var(--ink)">Old bug, untouched code</text>
+    <text x="528" y="558" font-size="11.5" fill="var(--quiet)">Becomes a new ticket,</text>
+    <text x="528" y="574" font-size="11.5" fill="var(--quiet)">not a quiet extra fix</text>
+  </g>
+  <g>
+    <rect x="24" y="612" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="636" font-weight="600" fill="var(--ink)">6. Count the size</text>
+    <text x="40" y="654" font-size="11.5" fill="var(--quiet)">Over about 400 changed lines, Claude proposes a split before anything is opened.</text>
+  </g>
+  <g>
+    <rect x="24" y="692" width="712" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="716" font-weight="600" fill="var(--ink)">7. Open the pull request, then stop</text>
+    <text x="720" y="716" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--quiet)">CLAUDE NEVER MERGES</text>
+    <text x="40" y="734" font-size="11.5" fill="var(--quiet)">It shows the change as pseudo-code, the test that failed then passed, and how risky the merge is.</text>
+  </g>
+</svg>

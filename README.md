@@ -12,6 +12,10 @@
 **You decide, Claude builds, CI ships.** Every step is one command. Each pull request is small and has been through two
 reviewer agents before you see it. Claude can't merge, so nothing reaches production without your review.
 
+**Want to understand how it works first?** **[HOW-IT-WORKS.md](HOW-IT-WORKS.md)** explains every command in plain
+words, with diagrams: what it does, why it exists, how it differs from just typing a request to Claude, and what stops
+an agent from changing things you didn't ask for.
+
 ## Start in three minutes
 
 **1. Add the plugin** to any repository, in any language. You need Claude Code, `git`, `gh` 2.94 or later, `jq` and Docker:
@@ -59,7 +63,7 @@ command to type next.
 | **9** | [**Kubernetes**](PIPELINE.md#9-kubernetes) | approve in GitHub | staging, a smoke test, your approval, production |
 
 **[PIPELINE.md](PIPELINE.md)** walks through every step with one example feature, from the first question to
-production.
+production. For the short version in plain words, read **[HOW-IT-WORKS.md](HOW-IT-WORKS.md)** first.
 
 ## Choose how much code you write
 
