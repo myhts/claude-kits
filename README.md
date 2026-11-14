@@ -80,13 +80,15 @@ Pick the default in `/setup-project`. Change it for one ticket by adding a mode:
   tests, each caught defects the other missed.
 - 🧪 **Proof before claims.** Code in the skills runs as tests, the deploy templates go through a real rollout and
   rollback, and a changed agent ships only after it scores at least as well as the version it replaces. See
-  [what's proved, and what isn't yet](GUIDE.md#10-proofs).
+  [what's proved, and how](GUIDE.md#10-proofs).
 
 ## Beyond the flow
 
 The **`spring`** pack adds Spring Boot 4 skills, a review checklist and verified build and deploy templates. Other add-ons cover
 end-to-end tests with a browser (an MCP), Claude in your own services, and a React front end. There's also a learning
 kit for practice projects, and every agent and skill described one by one. All of it is in **[GUIDE.md](GUIDE.md)**.
+For the short version in plain words, with diagrams, read
+**[BEYOND-THE-FLOW.md](BEYOND-THE-FLOW.md)** first.
 
 **An interview that allows AI?** The `interview` plugin runs a timed round with you in six phases, from Orient to Wrap:
 you lead, and Claude assists. See **[INTERVIEW.md](INTERVIEW.md)**.

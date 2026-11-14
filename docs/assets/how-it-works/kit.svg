@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="584" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" viewBox="0 0 760 584" role="img" aria-label="One plugin runs the flow, and the rest plug into it" font-size="13">
+  <title>One plugin runs the flow, and the rest plug into it</title>
+  <style>svg { --ink: #1f2328; --quiet: #59636e; --edge: #818b98; --grid: #d1d9e0; --accent: #0969da; --tint: rgba(129, 139, 152, 0.12); --paper: #ffffff; }</style>
+  <defs>
+    <marker id="kit-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="var(--edge)"/>
+    </marker>
+  </defs>
+  <text x="24" y="30" font-size="15" font-weight="600" fill="var(--ink)">One plugin runs the flow, and the rest plug into it</text>
+  <g>
+    <rect x="24" y="44" width="14" height="14" rx="3" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="46" y="56" font-size="11.5" fill="var(--quiet)">Every project needs it</text>
+    <rect x="206" y="44" width="14" height="14" rx="3" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="228" y="56" font-size="11.5" fill="var(--quiet)">Add when the project needs it</text>
+    <rect x="432" y="44" width="14" height="14" rx="3" fill="var(--tint)" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="454" y="56" font-size="11.5" fill="var(--quiet)">Not a plugin</text>
+  </g>
+  <g fill="none" stroke="var(--edge)" stroke-width="1.25">
+    <path d="M196 244V204" marker-end="url(#kit-arrow)"/>
+    <path d="M654 244V204" marker-end="url(#kit-arrow)"/>
+    <path d="M106 364V332" marker-end="url(#kit-arrow)"/>
+    <path d="M286 364V332" marker-end="url(#kit-arrow)"/>
+  </g>
+  <text x="204" y="228" font-size="11.5" fill="var(--quiet)">needs</text>
+  <text x="662" y="228" font-size="11.5" fill="var(--quiet)">needs</text>
+  <text x="114" y="352" font-size="11.5" fill="var(--quiet)">needs</text>
+  <text x="294" y="352" font-size="11.5" fill="var(--quiet)">needs</text>
+  <g>
+    <rect x="24" y="76" width="712" height="128" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="40" y="100" font-weight="600" fill="var(--ink)">pipeline: the whole flow, for any language</text>
+    <text x="720" y="100" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--ink)">RUNS ON ITS OWN</text>
+    <rect x="40" y="116" width="158" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="214" y="116" width="158" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="388" y="116" width="158" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="562" y="116" width="158" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="52" y="140" font-weight="600" fill="var(--ink)">The commands</text>
+    <text x="52" y="156" font-size="11.5" fill="var(--quiet)">The steps of the flow,</text>
+    <text x="52" y="172" font-size="11.5" fill="var(--quiet)">in HOW-IT-WORKS.md</text>
+    <text x="226" y="140" font-weight="600" fill="var(--ink)">Helper skills</text>
+    <text x="226" y="156" font-size="11.5" fill="var(--quiet)">Loaded by a command</text>
+    <text x="226" y="172" font-size="11.5" fill="var(--quiet)">when it needs one</text>
+    <text x="400" y="140" font-weight="600" fill="var(--ink)">Seven agents</text>
+    <text x="400" y="156" font-size="11.5" fill="var(--quiet)">A builder, a mentor</text>
+    <text x="400" y="172" font-size="11.5" fill="var(--quiet)">and five reviewers</text>
+    <text x="574" y="140" font-weight="600" fill="var(--ink)">The merge guard</text>
+    <text x="574" y="156" font-size="11.5" fill="var(--quiet)">A script that refuses</text>
+    <text x="574" y="172" font-size="11.5" fill="var(--quiet)">merges and deletes</text>
+  </g>
+  <g>
+    <rect x="24" y="244" width="344" height="88" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="268" font-weight="600" fill="var(--ink)">spring: the stack pack</text>
+    <text x="40" y="286" font-size="11.5" fill="var(--quiet)">Skills for Spring Boot 4, a review checklist,</text>
+    <text x="40" y="302" font-size="11.5" fill="var(--quiet)">and files to build and deploy the app</text>
+  </g>
+  <g>
+    <rect x="392" y="244" width="164" height="88" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="404" y="268" font-weight="600" fill="var(--ink)">e2e</text>
+    <text x="544" y="268" text-anchor="end" font-size="10.5" font-weight="600" fill="var(--quiet)">STANDS ALONE</text>
+    <text x="404" y="286" font-size="11.5" fill="var(--quiet)">The real app in</text>
+    <text x="404" y="302" font-size="11.5" fill="var(--quiet)">containers, a tester</text>
+    <text x="404" y="318" font-size="11.5" fill="var(--quiet)">agent and a browser</text>
+  </g>
+  <g>
+    <rect x="572" y="244" width="164" height="88" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="584" y="268" font-weight="600" fill="var(--ink)">interview</text>
+    <text x="584" y="286" font-size="11.5" fill="var(--quiet)">A timed practice</text>
+    <text x="584" y="302" font-size="11.5" fill="var(--quiet)">round, on its own</text>
+    <text x="584" y="318" font-size="11.5" fill="var(--quiet)">page: INTERVIEW.md</text>
+  </g>
+  <g>
+    <rect x="24" y="364" width="164" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="36" y="388" font-weight="600" fill="var(--ink)">spring-ai</text>
+    <text x="36" y="404" font-size="11.5" fill="var(--quiet)">Rules for a service</text>
+    <text x="36" y="420" font-size="11.5" fill="var(--quiet)">that calls Claude</text>
+  </g>
+  <g>
+    <rect x="204" y="364" width="164" height="72" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="216" y="388" font-weight="600" fill="var(--ink)">spring-web</text>
+    <text x="216" y="404" font-size="11.5" fill="var(--quiet)">A React front end</text>
+    <text x="216" y="420" font-size="11.5" fill="var(--quiet)">for a Spring API</text>
+  </g>
+  <g>
+    <rect x="24" y="460" width="712" height="44" rx="8" fill="var(--tint)" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="487" fill="var(--ink)">The learning kit: the same agents and skills, copied into a practice project as files</text>
+  </g>
+  <g>
+    <rect x="24" y="516" width="712" height="44" rx="8" fill="var(--tint)" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="543" fill="var(--ink)">kit-check: the tests that prove the kit, kept in the kit repository</text>
+  </g>
+</svg>

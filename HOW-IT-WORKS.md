@@ -1,7 +1,9 @@
 # How it works, in plain words
 
 Every pipeline command, explained simply: what it does, why it exists, how it works, and which agent mistake it stops.
-Read this first. [PIPELINE.md](PIPELINE.md) then walks through every step in full, with one example feature.
+Read this first. [PIPELINE.md](PIPELINE.md) then walks through every step in full, with one example feature. The parts
+around the flow (the stack pack, the add-ons, the agents and the learning kit) are in
+[BEYOND-THE-FLOW.md](BEYOND-THE-FLOW.md).
 
 **Jump to:** [The problem](#the-problem-these-commands-solve) · [One picture](#the-whole-pipeline-in-one-picture) ·
 [A command versus just typing](#a-command-versus-just-typing) · [Set up](#set-up-once-pipelinesetup-project) ·
