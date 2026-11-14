@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" viewBox="0 0 760 300" role="img" aria-label="In the learning loop you build it, and you explain it back" font-size="13">
+  <title>In the learning loop you build it, and you explain it back</title>
+  <style>svg { --ink: #1f2328; --quiet: #59636e; --edge: #818b98; --grid: #d1d9e0; --accent: #0969da; --tint: rgba(129, 139, 152, 0.12); --paper: #ffffff; }</style>
+  <defs>
+    <marker id="loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="var(--edge)"/>
+    </marker>
+  </defs>
+  <text x="24" y="30" font-size="15" font-weight="600" fill="var(--ink)">In the learning loop you build it, and you explain it back</text>
+  <g>
+    <rect x="24" y="44" width="14" height="14" rx="3" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="46" y="56" font-size="11.5" fill="var(--quiet)">You do this</text>
+    <rect x="140" y="44" width="14" height="14" rx="3" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="162" y="56" font-size="11.5" fill="var(--quiet)">Claude does this, or both of you</text>
+  </g>
+  <g fill="none" stroke="var(--edge)" stroke-width="1.25">
+    <path d="M160 120H200" marker-end="url(#loop-arrow)"/>
+    <path d="M360 120H388" marker-end="url(#loop-arrow)"/>
+    <path d="M548 120H576" marker-end="url(#loop-arrow)"/>
+    <path d="M656 156V204" marker-end="url(#loop-arrow)"/>
+    <path d="M576 240H548" marker-end="url(#loop-arrow)"/>
+    <path d="M388 240H360" marker-end="url(#loop-arrow)"/>
+    <path d="M280 204V156" marker-end="url(#loop-arrow)"/>
+  </g>
+  <text x="290" y="184" font-size="11.5" fill="var(--quiet)">next step</text>
+  <g>
+    <rect x="24" y="84" width="136" height="72" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="36" y="108" font-weight="600" fill="var(--ink)">Plan</text>
+    <text x="36" y="124" font-size="11.5" fill="var(--quiet)">8 to 15 small</text>
+    <text x="36" y="140" font-size="11.5" fill="var(--quiet)">steps, made once</text>
+  </g>
+  <g>
+    <rect x="200" y="84" width="160" height="72" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="212" y="108" font-weight="600" fill="var(--ink)">1. Primer</text>
+    <text x="212" y="124" font-size="11.5" fill="var(--quiet)">The problem this step</text>
+    <text x="212" y="140" font-size="11.5" fill="var(--quiet)">solves, in 5 minutes</text>
+  </g>
+  <g>
+    <rect x="388" y="84" width="160" height="72" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="400" y="108" font-weight="600" fill="var(--ink)">2. You build</text>
+    <text x="400" y="124" font-size="11.5" fill="var(--quiet)">Claude gives hints,</text>
+    <text x="400" y="140" font-size="11.5" fill="var(--quiet)">not the solution</text>
+  </g>
+  <g>
+    <rect x="576" y="84" width="160" height="72" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="588" y="108" font-weight="600" fill="var(--ink)">3. See it work</text>
+    <text x="588" y="124" font-size="11.5" fill="var(--quiet)">Tests, then a log or</text>
+    <text x="588" y="140" font-size="11.5" fill="var(--quiet)">breakpoint shows it</text>
+  </g>
+  <g>
+    <rect x="576" y="204" width="160" height="72" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="588" y="228" font-weight="600" fill="var(--ink)">4. Review</text>
+    <text x="588" y="244" font-size="11.5" fill="var(--quiet)">A reviewer agent</text>
+    <text x="588" y="260" font-size="11.5" fill="var(--quiet)">reads your change</text>
+  </g>
+  <g>
+    <rect x="388" y="204" width="160" height="72" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="400" y="228" font-weight="600" fill="var(--ink)">5. Explain back</text>
+    <text x="400" y="244" font-size="11.5" fill="var(--quiet)">You say what changed</text>
+    <text x="400" y="260" font-size="11.5" fill="var(--quiet)">and why, out loud</text>
+  </g>
+  <g>
+    <rect x="200" y="204" width="160" height="72" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="212" y="228" font-weight="600" fill="var(--ink)">6. Record</text>
+    <text x="212" y="244" font-size="11.5" fill="var(--quiet)">Progress ticked, any</text>
+    <text x="212" y="260" font-size="11.5" fill="var(--quiet)">mistake made a rule</text>
+  </g>
+</svg>

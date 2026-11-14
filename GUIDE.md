@@ -3,6 +3,9 @@
 **The flow** (plan the language → Event Storming → test-first build → a small PR → two reviewer agents → your review →
 you merge → GitHub Actions → Kubernetes) has its own visual guide: **[PIPELINE.md](PIPELINE.md)**. Start there.
 
+**New to the kit?** **[BEYOND-THE-FLOW.md](BEYOND-THE-FLOW.md)** covers the same ground as this handbook in plain words,
+with diagrams. Read it first.
+
 This handbook covers everything else:
 - the stack packs and add-ons
 - the learning kit for practice projects
@@ -11,7 +14,7 @@ This handbook covers everything else:
 - how Claude Code loads all this
 - how to improve the toolkit safely
 
-Last updated 2026-11-01.
+Last updated 2026-11-14.
 
 **Contents:** [1. What exists](#1-what-exists) · [2. Quick starts](#2-quick-starts) ·
 [3. The pieces, one by one](#3-the-pieces-one-by-one) · [4. Workflows](#4-workflows-step-by-step) ·
@@ -50,7 +53,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
 | **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
-| **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (35 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
+| **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (44 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
 | **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
 | **The explorer evaluation** | `spring-boot-learning/kit-check/explorer-eval/` | Which model should read the code for `/project-explorer`: an answer key taken from the code, a scoring script, usage per model, and its first result |
 | **`/project-explorer`** | `spring-boot-learning/kit-pipeline/skills/project-explorer/` (in the `pipeline` plugin as `/pipeline:project-explorer`; copy installs get it too) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
@@ -313,7 +316,7 @@ checklist. (The private example project has one; its data sits between `PATH-DAT
 
 ```bash
 cd spring-boot-learning/kit-check
-./mvnw verify               # 35 tests: catalog/JPA, transactions (18), outbox, resilience, API (Docker needed)
+./mvnw verify               # 44 tests: catalog/JPA, transactions (18), concurrency (9), outbox, resilience, API; plus 23 for the LLM shapes (Docker needed)
 ./verify-templates.sh       # builds, runs and validates the Docker, compose, CI and Kubernetes templates, then cleans up
 ./verify-e2e.sh             # installs --e2e into a copy, runs Playwright against Testcontainers, checks the stale-image guard
 ./verify-ai.sh              # LLM unit tests; installs --e2e --ai into a copy; the app against the WireMock model fake; lints the eval workflow
@@ -525,20 +528,6 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
 | The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version) | `kit-check/reviewer-eval/`, §3.10 |
 | The explorer's readers | on a copy of Google's Online Boutique (11 services, 5 languages), readers on Opus, Sonnet and Haiku each found all 23 entry points, 14 calls and the store in an answer key taken from the code, with no broken references and no invented calls. Sonnet readers halved the cost of a run; Haiku's readers made 3 to 4 times the tool calls and cost no less. So the readers use Sonnet, and the map, the flows and the explanations stay on Opus | `kit-check/explorer-eval/` |
 | e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
-
-**Not proved yet:**
-- The deploy workflow passes lint and a fake `gh`, but hasn't run on GitHub itself. The PR checks (`pr-size`,
-  `human-review`) have run on a real PR.
-- The stage commands (`/implement`, `/human-review`, `/deploy`) haven't been used on a real project yet.
-- The AI pack's canned responses haven't been checked against the live API, and the LLM checks in
-  `spring-security-reviewer` and `blind-reviewer` haven't been measured. The stack-neutral `security-reviewer` has had
-  one trial run, on a small TypeScript sample (2026-11-05): it found all 6 planted problems, flagged nothing on the
-  safe query, and never opened `.env`. One run isn't a measured comparison. The agent checks in both security
-  reviewers (who keeps the conversation, approvals, memory, MCP tools) came after that run and haven't been tried.
-- `deploy-reviewer` became stack-neutral on 2026-11-08. One trial run, on a small Node sample: it found all 11 planted
-  problems (image, signals, compose, CI, probes, grace period, memory) and didn't flag the safe one, a readiness probe
-  that checks the database. It ran with Read alone, as builds without Grep and Glob tools would give it, which is why
-  it now has Bash for finding files.
 
 ## 11. What's ours and what's adopted
 

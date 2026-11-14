@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="472" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" viewBox="0 0 760 472" role="img" aria-label="Wayfinder settles one decision at a time until the way is clear" font-size="13">
+  <title>Wayfinder settles one decision at a time until the way is clear</title>
+  <style>svg { --ink: #1f2328; --quiet: #59636e; --edge: #818b98; --grid: #d1d9e0; --accent: #0969da; --tint: rgba(129, 139, 152, 0.12); --paper: #ffffff; }</style>
+  <defs>
+    <marker id="way-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="var(--edge)"/>
+    </marker>
+  </defs>
+  <text x="24" y="30" font-size="15" font-weight="600" fill="var(--ink)">Wayfinder settles one decision at a time until the way is clear</text>
+  <g fill="none" stroke="var(--edge)" stroke-width="1.25">
+    <path d="M154 108V132" marker-end="url(#way-arrow)"/>
+    <path d="M154 368V392" marker-end="url(#way-arrow)"/>
+  </g>
+  <g>
+    <rect x="24" y="52" width="260" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="76" font-weight="600" fill="var(--ink)">A big, unclear idea</text>
+    <text x="40" y="92" font-size="11.5" fill="var(--quiet)">Too large to plan in one session</text>
+    <text x="316" y="76" font-size="11.5" fill="var(--quiet)">One session draws the map and stops.</text>
+    <text x="316" y="92" font-size="11.5" fill="var(--quiet)">Each later session settles one open ticket.</text>
+  </g>
+  <g>
+    <rect x="24" y="132" width="712" height="236" rx="8" fill="var(--tint)" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="156" font-weight="600" fill="var(--ink)">The map: one GitHub issue, with a ticket under it for each open question</text>
+    <path d="M40 348H720" fill="none" stroke="var(--edge)" stroke-width="1.25" marker-end="url(#way-arrow)"/>
+    <text x="380" y="340" text-anchor="middle" font-size="11.5" fill="var(--quiet)">each answer moves the edge of the map to the right</text>
+  </g>
+  <g>
+    <text x="40" y="184" font-size="11.5" font-weight="600" fill="var(--ink)">Decided</text>
+    <rect x="40" y="196" width="158" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="40" y="268" width="158" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="52" y="220" font-weight="600" fill="var(--ink)">Closed ticket</text>
+    <text x="52" y="236" font-size="11.5" fill="var(--quiet)">Its answer is on file</text>
+    <text x="52" y="292" font-weight="600" fill="var(--ink)">Closed ticket</text>
+    <text x="52" y="308" font-size="11.5" fill="var(--quiet)">Linked from the map</text>
+  </g>
+  <g>
+    <text x="214" y="184" font-size="11.5" font-weight="600" fill="var(--ink)">Open now</text>
+    <rect x="214" y="196" width="158" height="56" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <rect x="214" y="268" width="158" height="56" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+    <text x="226" y="220" font-weight="600" fill="var(--ink)">Research</text>
+    <text x="226" y="236" font-size="11.5" fill="var(--quiet)">Agent reads the docs</text>
+    <text x="226" y="292" font-weight="600" fill="var(--ink)">Grilling</text>
+    <text x="226" y="308" font-size="11.5" fill="var(--quiet)">You answer questions</text>
+  </g>
+  <g>
+    <text x="388" y="184" font-size="11.5" font-weight="600" fill="var(--ink)">Waiting on an answer</text>
+    <rect x="388" y="196" width="158" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <rect x="388" y="268" width="158" height="56" rx="8" fill="none" fill-opacity="1" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="400" y="220" font-weight="600" fill="var(--ink)">Prototype</text>
+    <text x="400" y="236" font-size="11.5" fill="var(--quiet)">Needs an answer first</text>
+    <text x="400" y="292" font-weight="600" fill="var(--ink)">Manual task</text>
+    <text x="400" y="308" font-size="11.5" fill="var(--quiet)">Like getting access</text>
+  </g>
+  <g>
+    <text x="562" y="184" font-size="11.5" font-weight="600" fill="var(--ink)">Not yet specified</text>
+    <rect x="562" y="196" width="158" height="128" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25" stroke-dasharray="4 3"/>
+    <text x="574" y="220" font-size="11.5" fill="var(--quiet)">Too unclear to write</text>
+    <text x="574" y="236" font-size="11.5" fill="var(--quiet)">as a ticket yet.</text>
+    <text x="574" y="260" font-size="11.5" fill="var(--quiet)">Turns into tickets</text>
+    <text x="574" y="276" font-size="11.5" fill="var(--quiet)">as answers arrive</text>
+  </g>
+  <g>
+    <rect x="24" y="392" width="420" height="56" rx="8" fill="none" stroke="var(--edge)" stroke-width="1.25"/>
+    <text x="40" y="416" font-weight="600" fill="var(--ink)">The way is clear</text>
+    <text x="40" y="432" font-size="11.5" fill="var(--quiet)">Nothing is left to decide, so you go on to /to-spec</text>
+  </g>
+</svg>
