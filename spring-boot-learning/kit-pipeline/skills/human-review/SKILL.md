@@ -24,18 +24,24 @@ Done when you can state, in one line, what the PR changes and why.
 
 Read **Merge Danger** in the PR body. If it's missing or looks wrong, judge it yourself:
 
-- **One-way or two-way door:** can the merge be walked back cleanly? Data loss, a sent message, a published contract or
-  a destructive migration make it one-way.
-- **Blast radius:** how much breaks if it's wrong.
+- **One-way or two-way door:** can the merge be walked back cleanly? Data loss, a sent message, a published contract, a
+  destructive migration or an exposed secret make it one-way.
+- **Blast radius:** how much breaks if it's wrong, and for whom. It's small when a fault would show at once and reach
+  no real users, data, money or access.
+
+Then read how the change was built: the first line of the comment `/implement` posted (`Built in: <mode>`). A PR
+opened without `/implement`, such as a tiny change, counts as `deliver`. If a PR from `/implement` doesn't say, ask
+the human in one line whether this is code they want to go through closely.
 
 | Situation | Depth |
 |---|---|
-| Learning project (stack card mode `learn` or `build-with-me`) | **Full**, always |
 | One-way door, or a large blast radius | **Full** |
 | Changes the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` (green checks can't vouch for a PR that changes them) | **Full** |
-| Two-way door with a small blast radius | **Quick** |
+| Built in `learn` or `build-with-me`: code the human chose to write or to follow block by block | **Full** |
+| Two-way door with a small blast radius, built in `deliver` | **Quick** |
 
-State the depth and the reason in one line. The human can always ask for full.
+State the depth and the reason in one line. The human can ask for the other depth; the record then says they chose
+it.
 
 ## 3. Show what changed
 

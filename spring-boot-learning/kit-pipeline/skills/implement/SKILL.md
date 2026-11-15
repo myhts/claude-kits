@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Build one ticket, or the ready tickets of a spec, into a reviewed pull request: test-first in the project's build mode (learn, build-with-me or deliver), then automated checks, two reviewers, fixes and a PR body. Never merges."
+description: "Build one ticket, or the ready tickets of a spec, into a reviewed pull request: test-first in the project's build mode (learn, build-with-me or deliver), then automated checks, a review sized by the merge danger, fixes and a PR body. Never merges."
 disable-model-invocation: true
 ---
 
@@ -71,15 +71,31 @@ Run the stack card's lint and full verify on the branch. Fix red before any revi
 
 ## 4. Automated review
 
-Start these in parallel, each in a fresh context, and give each only what its brief says:
+**Size the review first.** Judge the change's merge danger from the diff, and state it in one line with the reason:
+
+- **Door:** two-way if the merge can be walked back cleanly. One-way if it can't: data loss, a sent message, a
+  published contract, a destructive migration, an exposed secret.
+- **Blast radius:** how much breaks if the change is wrong, and for whom. It's small when a fault would show at once
+  and reach no real users, data, money or access.
+
+| Review | When | Who runs |
+|---|---|---|
+| **Light** | a two-way door with a small blast radius, built in `deliver`, that doesn't change the checks themselves (`.github/workflows/`, or the hooks and settings in `.claude/`) | `code-reviewer` on both axes, and nobody else |
+| **Full** | everything else: a one-way door, a large blast radius, a change to the checks, or code built in `learn` or `build-with-me` | every row below whose "Runs when" applies |
+
+Code built in `learn` or `build-with-me` is the code the human chose to write or to follow block by block, so it gets
+the full review whatever its danger. The human can ask for the other review on any ticket ("full review", "light
+review"); say which one ran and who chose it.
+
+Start the reviewers in parallel, each in a fresh context, and give each only what its brief says:
 
 | Reviewer | Give it | Runs when |
 |---|---|---|
 | `code-reviewer`, axis **standards** | the diff command (`git diff <base>...HEAD`), the mode | always |
 | `code-reviewer`, axis **spec** | the diff command, the ticket and spec references, the event model if the project has `docs/eventstorming/` | always |
-| `blind-reviewer` | the scope only (the diff range); never a description of the feature | always |
-| `spring-security-reviewer` when the stack card's pack is `spring`, otherwise `security-reviewer` | the diff command | the diff touches input handling, authentication, secrets or model calls |
-| `deploy-reviewer` | the changed build and deploy files | the diff touches a Dockerfile, compose, CI or Kubernetes files |
+| `blind-reviewer` | the scope only (the diff range); never a description of the feature | a full review |
+| `spring-security-reviewer` when the stack card's pack is `spring`, otherwise `security-reviewer` | the diff command | a full review whose diff touches input handling, authentication, secrets or model calls |
+| `deploy-reviewer` | the changed build and deploy files | a full review whose diff touches a Dockerfile, compose, CI or Kubernetes files |
 
 Keep the reports separate; never merge them into one ranking. A reviewer that fails or returns no report hasn't
 reviewed: start it once more, and if it fails again, report it as **not run**, never as clean.
@@ -103,12 +119,14 @@ Then fix:
   only the line cited. In build-with-me, each fix is a block like any other.
 - **learn:** the findings go to the learner, who fixes them.
 
-Then review once more, and only once: each reviewer whose findings were fixed reads only the commits made since its
-first review. Whatever is still open after that goes to the human, with no third round.
+Then, in a full review, review once more, and only once: each reviewer whose findings were fixed reads only the
+commits made since its first review. Whatever is still open after that goes to the human, with no third round. A
+light review has no second round: the full verify checks the fixes.
 
 Collect the **judgement calls** into one list for the human: smells, trade-offs, anything a reviewer marked as a matter
 of taste, contested findings with their evidence, and the proposed follow-up tickets. Done when the confirmed must-fix
-findings are fixed, the second review is done, whatever it left open is on the list, and the verify is green.
+findings are fixed, a full review has had its second round, whatever is still open is on the list, and the verify is
+green.
 
 ## 6. Keep the PR small
 
@@ -123,7 +141,9 @@ through `/to-tickets`.
    `e2e-tester` take a screenshot of the running app with the Playwright MCP.
 3. Push the branch (`git push -u origin <branch>`) and open the PR with `gh pr create`, its body ending in
    `Closes #<ticket>`.
-4. Post the judgement calls and a one-line summary per reviewer as a PR comment.
+4. Post the judgement calls and a one-line summary per reviewer as a PR comment. Its first line says how the change
+   was built and reviewed, because `/human-review` sizes itself from it:
+   `Built in: <mode> · Automated review: <light | full> (<reason>)`.
 
 ## 8. Stop
 

@@ -276,6 +276,8 @@ one by name in plain words: "use the blind-reviewer on my changes".
   whatever anyone claimed. Its weakness is that it does not know your rules.
 - **The measurement.** In a blind-graded comparison the two tied on points, and each found defects the other missed. So
   both are kept.
+- **When both run.** On a change that is hard to undo or touches a lot, and on code you wrote yourself or built block
+  by block. A small change that is easy to undo, built whole by the agent, gets the project reviewer only.
 
 ### What "read-only" really means here
 
@@ -439,7 +441,7 @@ hands a learning step to the builder without asking you.
 | The goal | You can explain every line | A reviewed change in production |
 | Who writes the code | You | Claude, in blocks or whole tickets |
 | The unit of work | One step of your plan | One ticket, one pull request |
-| Who reviews | The project reviewer, and its findings come as hints | Two reviewers, then you |
+| Who reviews | The project reviewer, and its findings come as hints | Reviewers sized by the risk, then you |
 | Where the record lives | `PROGRESS.md` and `LESSONS.md` | GitHub issues, pull requests and review records |
 | Installed as | A copy | A plugin |
 
