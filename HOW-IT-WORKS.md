@@ -179,7 +179,7 @@ goes to you.
   reviewers are other agents again. None shares a memory with the others, so nobody defends their own work.
 - **In a normal team:** a developer builds test-first, opens a pull request, and colleagues review it.
 
-### The four ideas inside it
+### The five ideas inside it
 
 1. **Read it cold.** An agent that never saw the planning restates the ticket. If its version differs from what you
    meant, the ticket is unclear, and you fix that before any code exists.
@@ -188,7 +188,11 @@ goes to you.
 3. **Two reviewers who know different things.** The project reviewer knows your rules and your ticket. The blind
    reviewer reads no documentation and is never told what the feature is for, so it judges what the code does. In
    blind-graded tests, each caught defects the other missed.
-4. **Findings need proof.** A reviewer can be wrong too. Claude confirms each must-fix in the code before anyone fixes
+4. **The review is sized by the risk.** A change that is easy to undo, touches little and was built whole by the agent
+   gets the project reviewer only, and one round. A change that is hard to undo or touches a lot gets both reviewers,
+   the security and deploy reviewers where they apply, and a second look at the fixes. So does any code you wrote
+   yourself or built block by block.
+5. **Findings need proof.** A reviewer can be wrong too. Claude confirms each must-fix in the code before anyone fixes
    it, and "it was intended" does not count as evidence.
 
 ### Three build modes
@@ -235,8 +239,9 @@ The dashed boxes are the point of the whole pipeline: at every step, the wrong t
   shows whether you really know what is about to ship.
 - **How it works.** It checks each answer against the code and says what you missed, with the file and line. For a
   prediction, it runs the test so you see whether you were right.
-- **How deep it goes.** A change that is easy to undo and touches little gets 2 questions. A change that is hard to
-  undo, touches a lot, or edits the checks themselves gets a full report and 5 to 8 questions.
+- **How deep it goes.** A change that is easy to undo, touches little and was built whole by the agent gets 2
+  questions. A change that is hard to undo, touches a lot, or edits the checks themselves gets a full report and 5 to 8
+  questions. So does code you wrote yourself or built block by block.
 - **What you get.** A review record posted on the pull request, naming the exact commit. Any new commit makes it stale,
   and the check goes red until you review again.
 - **In a normal team:** the senior engineer's sign-off.

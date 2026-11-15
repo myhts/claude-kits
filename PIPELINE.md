@@ -23,7 +23,7 @@ The pills on each card say **who acts**: **YOU**, **CLAUDE**, or **CI** (GitHub 
 /pipeline:grill-with-docs <idea>     1     plan the language (step 2 joins in for event-driven work)
 /pipeline:to-spec                    2     the plan becomes a spec issue
 /pipeline:to-tickets                 2     ...and the spec becomes small tickets
-/pipeline:implement #42              3–5   build test-first, open a small PR, two reviewers
+/pipeline:implement #42              3–5   build test-first, open a small PR, automated review
 /pipeline:human-review #57           6     your review
   press Merge on GitHub              7     only you can
   nothing: GitHub Actions runs       8–9   test, build, staging, your approval, production
@@ -307,13 +307,28 @@ defects the other missed.
 | | |
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
-| **Claude** | **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
+| **Claude** | first sizes the review by the change's merge danger (the table below). In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
 | **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
-| **Done&nbsp;when** | the fixes have had their one re-review, and anything still open is on your list |
+| **Done&nbsp;when** | the confirmed must-fix findings are fixed (and re-reviewed once, in a full review), and anything still open is on your list |
 
-> 📚 **In the example:** `code-reviewer` (standards) flags `HoldQueue`, because "hold" is on the glossary's avoid list,
-> so it becomes `ReservationQueue`. `blind-reviewer` finds that two simultaneous reservations can both get position 1;
-> the fix adds a unique constraint and a test. One judgement call goes to you: show queue positions to members, or not?
+**The review is sized by the risk,** so the reviewers' time and yours go where a mistake would hurt. Two questions
+decide it. Can the merge be undone cleanly (a **two-way door**), or not (a **one-way door**: data loss, a sent message,
+a published contract, a destructive migration, an exposed secret)? And how much breaks if it's wrong (the **blast
+radius**)?
+
+| The change is… | Automated review |
+|---|---|
+| a two-way door with a small blast radius, built in `deliver` | **light:** `code-reviewer` on standards and on spec, and one round |
+| a one-way door, or has a large blast radius | **full:** every reviewer above whose area the change touches, and one re-review of the fixes |
+| a change to the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` | full |
+| built in `learn` or `build-with-me`: code you chose to write, or to follow block by block | full |
+
+Say "full review" or "light review" to choose yourself. [Step 6](#6-your-review) sizes your own review the same way.
+
+> 📚 **In the example:** the ticket was built in build-with-me, so the review is full. `code-reviewer` (standards)
+> flags `HoldQueue`, because "hold" is on the glossary's avoid list, so it becomes `ReservationQueue`. `blind-reviewer`
+> finds that two simultaneous reservations can both get position 1; the fix adds a unique constraint and a test. One
+> judgement call goes to you: show queue positions to members, or not?
 
 ---
 
@@ -322,7 +337,7 @@ defects the other missed.
 <img src="docs/assets/step-6.png" width="720" alt="Step 6 of 9: your review">
 
 **You understand the change before it ships.** Claude asks you questions about the change and checks your answers
-against the code. The depth depends on the risk.
+against the code. The depth depends on the risk, and on whether it's code you chose to follow closely.
 
 | | |
 |---|---|
@@ -334,14 +349,14 @@ against the code. The depth depends on the risk.
 
 | The PR is… | Review |
 |---|---|
-| on a learning project | full, always |
 | a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: impact report and 5–8 questions |
 | a change to the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` | full: green checks can't vouch for a PR that changes them |
-| a two-way door with a small blast radius | quick: check the evidence, 2 questions |
+| built in `learn` or `build-with-me`: code you wrote, or followed block by block | full |
+| a two-way door with a small blast radius, built in `deliver` (or a tiny change you opened yourself) | quick: check the evidence, 2 questions |
 
-> 📚 **In the example:** a two-way door with a small blast radius, so a quick review. *Predict:* "two members reserve the
-> last copy at once: what does the second one get?" You say "position 2". Claude runs the concurrency test, and it
-> agrees.
+> 📚 **In the example:** #57 was built in build-with-me, so the review is full. One of its questions is a *Predict*:
+> "two members reserve the last copy at once: what does the second one get?" You say "position 2". Claude runs the
+> concurrency test, and it agrees.
 
 **A new commit needs a new record:** the check goes red again until you review the latest commit.
 
