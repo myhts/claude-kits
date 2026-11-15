@@ -1,6 +1,6 @@
 ---
 name: human-review
-description: "Walk the human through a pull request before they merge it: an impact report and questions sized by the PR's merge danger, each answer checked against the code, then a review record tied to the head commit. Never merges."
+description: "Walk the human through a pull request before they merge it: a plain-words walkthrough of every changed file, then questions sized by the PR's merge danger, each answer checked against the code, then a review record tied to the head commit. Never merges."
 disable-model-invocation: true
 ---
 
@@ -45,8 +45,31 @@ it.
 
 ## 3. Show what changed
 
-- **Quick:** the PR body's summary and evidence, and whether the evidence convinces (a test that failed before and
-  passes after, or a screenshot).
+**Start with a walkthrough, at every depth.** The human may not have watched this change being built. Tell it so they
+can follow it without opening the diff:
+
+1. **The goal**, in one or two sentences: what the PR is for.
+2. **Every changed file, in the order the change works**, not the order of the diff: the code that does the job
+   first, then its tests, then config, CI and docs. Put the files under two or three plain headings. For each file,
+   give its path and one or two sentences: what it does, and why this change needs it. Files that changed for the
+   same small reason share a line. Lockfiles, snapshots and generated code get one line together.
+3. **What the tests prove**, as a short table: the situation, and the result the tests expect.
+4. **The critical places:** the few lines where a mistake would cost the most, such as a rule, a limit, a security
+   check, a query, a migration or a contract. At most three in a quick review and six in a full one. For each, give
+   `path:line`, a snippet of at most ~8 lines copied from the diff, one sentence on what it does and one on what goes
+   wrong if it's wrong. A PR with none says so.
+
+Write it in plain words:
+
+- Short sentences, one idea each. Say what the code does before how it does it.
+- Explain a term the first time it appears, unless the glossary has it.
+- Describe only what the diff shows. If a file's purpose isn't clear from the code, say so; don't guess.
+- Leave out praise, the review's history and anything the human doesn't need in order to follow the change.
+
+Then let the human ask about any part before the questions start. After the walkthrough, add what the depth calls
+for:
+
+- **Quick:** whether the PR body's evidence convinces (a test that failed before and passes after, or a screenshot).
 - **Full:** an impact report, in this order:
   1. modules or contexts touched
   2. contracts changed (endpoints, events and topics, schema)
@@ -58,7 +81,8 @@ it.
 
 ## 4. Ask, then check
 
-Ask **2 questions** for quick and **5–8** for full, mixing these kinds:
+Ask **2 questions** for quick and **5–8** for full, mixing these kinds. Don't ask for something the walkthrough
+already said word for word: ask what follows from it.
 
 | Kind | Asks |
 |---|---|
