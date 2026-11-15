@@ -342,17 +342,17 @@ against the code. The depth depends on the risk, and on whether it's code you ch
 | | |
 |---|---|
 | **You&nbsp;type** | `/pipeline:human-review #57` |
-| **Claude** | shows what changed and what it touches, then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? |
+| **Claude** | first walks you through the change in plain words: what each changed file does, what the tests prove, and the few critical lines with a short snippet of each. It then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? |
 | **You** | answer, and decide each judgement call: fix now, a follow-up ticket of its own, or accept |
 | **You&nbsp;get** | a **review record** posted on the PR, naming the exact commit you reviewed. The `human-review` check turns green |
 | **Done&nbsp;when** | every question is checked and every judgement call decided |
 
 | The PR is… | Review |
 |---|---|
-| a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: impact report and 5–8 questions |
+| a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: the walkthrough, an impact report and 5–8 questions |
 | a change to the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` | full: green checks can't vouch for a PR that changes them |
 | built in `learn` or `build-with-me`: code you wrote, or followed block by block | full |
-| a two-way door with a small blast radius, built in `deliver` (or a tiny change you opened yourself) | quick: check the evidence, 2 questions |
+| a two-way door with a small blast radius, built in `deliver` (or a tiny change you opened yourself) | quick: the walkthrough, a check of the evidence, 2 questions |
 
 > 📚 **In the example:** #57 was built in build-with-me, so the review is full. One of its questions is a *Predict*:
 > "two members reserve the last copy at once: what does the second one get?" You say "position 2". Claude runs the

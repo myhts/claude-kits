@@ -233,8 +233,9 @@ The dashed boxes are the point of the whole pipeline: at every step, the wrong t
 
 **In one line:** it makes sure you understand the change before you merge it.
 
-- **What it does.** It shows what changed, then asks you questions. Explain this part. Predict what happens if two
-  requests arrive at once. Who else is affected? How would you roll it back?
+- **What it does.** It first walks you through the change in plain words: what each changed file does, what the
+  tests prove, and the few critical lines, each with a short snippet. Then it asks you questions. Explain this part.
+  Predict what happens if two requests arrive at once. Who else is affected? How would you roll it back?
 - **Why it exists.** "Looks fine" on code you did not write is where agent mistakes slip through. Answering questions
   shows whether you really know what is about to ship.
 - **How it works.** It checks each answer against the code and says what you missed, with the file and line. For a
