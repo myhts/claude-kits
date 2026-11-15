@@ -72,7 +72,8 @@ Check each answer against the code. Reply "matches", or name what was missed wit
 again. For a **Predict** question, run the test or scenario after they answer, so they see whether the prediction held.
 
 Then go through the judgement calls one by one. The human decides each: fix in this PR, follow-up ticket, or accept as
-is.
+is. A follow-up is a ticket of its own, written with `/to-tickets`. Never add it as a comment on another ticket: it
+grows that ticket where no budget counts it.
 
 Done when every question has a checked answer and every judgement call has a decision.
 

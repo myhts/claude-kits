@@ -307,7 +307,7 @@ defects the other missed.
 | | |
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
-| **Claude** | first sizes the review by the change's merge danger (the table below). In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead |
+| **Claude** | first sizes the review by the change's merge danger (the table below). In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead. So does a finding that asks for more than the ticket did, unless the harm would be live the day the PR merges |
 | **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
 | **Done&nbsp;when** | the confirmed must-fix findings are fixed (and re-reviewed once, in a full review), and anything still open is on your list |
 
@@ -343,7 +343,7 @@ against the code. The depth depends on the risk, and on whether it's code you ch
 |---|---|
 | **You&nbsp;type** | `/pipeline:human-review #57` |
 | **Claude** | shows what changed and what it touches, then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? |
-| **You** | answer, and decide each judgement call: fix now, a follow-up ticket, or accept |
+| **You** | answer, and decide each judgement call: fix now, a follow-up ticket of its own, or accept |
 | **You&nbsp;get** | a **review record** posted on the PR, naming the exact commit you reviewed. The `human-review` check turns green |
 | **Done&nbsp;when** | every question is checked and every judgement call decided |
 
