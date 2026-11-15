@@ -29,15 +29,13 @@ close one gap.
 | The learning kit | A way of working where you write the code and Claude teaches | The goal is to learn, not to ship |
 | The proofs | Tests that show the kit's own claims hold | You wonder how far to trust it |
 
-The `interview` plugin is not covered here. It has its own page, [INTERVIEW.md](INTERVIEW.md).
-
 ## The whole kit in one picture
 
-The kit is six plugins and two parts that are not plugins. Only `pipeline` is needed by every project.
+The kit is five plugins and two parts that are not plugins. Only `pipeline` is needed by every project.
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/how-it-works/kit-dark.png">
-  <img src="docs/assets/how-it-works/kit-light.png" width="760" alt="The whole kit. The pipeline plugin runs on its own and holds the commands, the helper skills, seven agents and the merge guard. The spring stack pack needs pipeline. The spring-ai and spring-web add-ons need spring. The e2e add-on stands alone. The interview plugin needs pipeline. Two parts are not plugins: the learning kit, which is the same agents and skills copied into a practice project as files, and kit-check, the tests that prove the kit.">
+  <img src="docs/assets/how-it-works/kit-light.png" width="760" alt="The whole kit. The pipeline plugin runs on its own and holds the commands, the helper skills, seven agents and the merge guard. The spring stack pack needs pipeline. The spring-ai and spring-web add-ons need spring. The e2e add-on stands alone. Two parts are not plugins: the learning kit, which is the same agents and skills copied into a practice project as files, and kit-check, the tests that prove the kit.">
 </picture></p>
 
 An arrow means "needs": install the plugin it points to first. `/setup-project` does this for you in a Spring Boot repo.
