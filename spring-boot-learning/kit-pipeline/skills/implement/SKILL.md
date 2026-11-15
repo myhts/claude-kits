@@ -29,11 +29,14 @@ Carry on if the human says so.
    - in its own words, what the ticket asks for, and how the code works today according to the spec (2–5 sentences
      each);
    - each decision the ticket leaves to the implementer: a name, a data shape, an edge case, a library;
-   - each claim about today's code that the code contradicts, with `file:line`.
+   - each claim about today's code that the code contradicts, with `file:line`;
+   - each piece of work that a comment on the ticket adds beyond its acceptance criteria, such as a follow-up from an
+     earlier review.
 
-   Show the human the paraphrase, to compare with what they meant, and settle each open decision with them. Post the
-   answers as one comment on the ticket, where an implementer will read them. Skip this step when the human calls the
-   ticket tiny.
+   Show the human the paraphrase, to compare with what they meant, and settle each open decision with them. Work
+   beyond the acceptance criteria stays out, as a ticket of its own, unless the human takes it in. Post the answers as
+   one comment on the ticket, where an implementer will read them. Skip this step when the human calls the ticket
+   tiny.
 4. **Seams:** take the testing seams from the ticket or its spec. If none are written, propose them (the public
    interface, and what each seam catches and misses) and get them confirmed. The `tdd` skill tests only at agreed seams.
 
@@ -111,12 +114,18 @@ Sort the findings first. You hold the ticket, the spec and the seams; the fixer 
   call.
 - **Pre-existing:** a finding on lines this diff didn't change becomes a proposed follow-up ticket, not part of this
   PR, unless the change makes it reachable or worse.
+- **Beyond the ticket:** a finding whose fix would add behaviour the ticket doesn't ask for (a new rule, a stricter
+  check, a guard for a case the ticket never names) becomes a proposed follow-up ticket too. Fix here what shows the
+  change fails the ticket or breaks a written rule. When the finding is about behaviour that is itself beyond the
+  ticket, don't harden it here: take that behaviour out of this PR, and the follow-up carries it. The one exception is
+  a harm that's live the day this merges, such as a hole someone can reach or data that can be lost: fix that here.
 
 Then fix:
 
 - **deliver and build-with-me:** a fresh `implementer` fixes the confirmed must-fix findings, plus the should-fix ones
   it can fix within the ticket, then reruns the full verify. Each fix covers every place the same mistake appears, not
-  only the line cited. In build-with-me, each fix is a block like any other.
+  only the line cited. A fix that turns out to need behaviour the ticket doesn't ask for isn't made: it comes back as
+  a proposed follow-up. In build-with-me, each fix is a block like any other.
 - **learn:** the findings go to the learner, who fixes them.
 
 Then, in a full review, review once more, and only once: each reviewer whose findings were fixed reads only the
