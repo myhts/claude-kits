@@ -342,14 +342,14 @@ against the code. The depth depends on the risk, and on whether it's code you ch
 | | |
 |---|---|
 | **You&nbsp;type** | `/pipeline:human-review #57` |
-| **Claude** | first walks you through the change in plain words: what each changed file does, what the tests prove, and the few critical lines with a short snippet of each. It then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? |
+| **Claude** | first walks you through the change in plain words: what each changed file does, what the tests prove, and the few critical lines with a short snippet of each. It then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? In a full review it then **breaks** up to three of the critical lines, one at a time, runs the tests so you see whether one goes red, and restores each line |
 | **You** | answer, and decide each judgement call: fix now, a follow-up ticket of its own, or accept |
 | **You&nbsp;get** | a **review record** posted on the PR, naming the exact commit you reviewed. The `human-review` check turns green |
 | **Done&nbsp;when** | every question is checked and every judgement call decided |
 
 | The PR is… | Review |
 |---|---|
-| a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: the walkthrough, an impact report and 5–8 questions |
+| a one-way door (data loss, a sent message, a published contract, a destructive migration) or has a large blast radius | full: the walkthrough, an impact report, 5–8 questions and the break-it check |
 | a change to the checks themselves: `.github/workflows/`, or the hooks and settings in `.claude/` | full: green checks can't vouch for a PR that changes them |
 | built in `learn` or `build-with-me`: code you wrote, or followed block by block | full |
 | a two-way door with a small blast radius, built in `deliver` (or a tiny change you opened yourself) | quick: the walkthrough, a check of the evidence, 2 questions |
