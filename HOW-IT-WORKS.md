@@ -239,7 +239,9 @@ The dashed boxes are the point of the whole pipeline: at every step, the wrong t
 - **Why it exists.** "Looks fine" on code you did not write is where agent mistakes slip through. Answering questions
   shows whether you really know what is about to ship.
 - **How it works.** It checks each answer against the code and says what you missed, with the file and line. For a
-  prediction, it runs the test so you see whether you were right.
+  prediction, it runs the test so you see whether you were right. In a full review it also breaks a few of the
+  critical lines, one at a time, and runs the tests. A test that goes red is guarding that line. If none does, you
+  have found a gap before it reached `main`.
 - **How deep it goes.** A change that is easy to undo, touches little and was built whole by the agent gets 2
   questions. A change that is hard to undo, touches a lot, or edits the checks themselves gets a full report and 5 to 8
   questions. So does code you wrote yourself or built block by block.

@@ -95,11 +95,26 @@ already said word for word: ask what follows from it.
 Check each answer against the code. Reply "matches", or name what was missed with `file:line`. The human may answer
 again. For a **Predict** question, run the test or scenario after they answer, so they see whether the prediction held.
 
+**Break it**, in a full review, and in a quick one when the human asks. Green tests show that a critical place
+works; only a red one shows that a test would notice it failing. Take up to three of the walkthrough's critical
+places, the costliest first, one at a time:
+
+1. Ask the human which test goes red if that line is wrong.
+2. In a clean checkout of the head commit (the ticket's worktree, or a new one), make the smallest edit that makes
+   the line wrong: flip the comparison, drop the check, change the limit. Run the narrowest test command on the stack
+   card that covers the place, and show the result.
+3. Restore the file and show that `git status` is clean before the next place. The break lives only in the working
+   tree.
+
+A test that goes red guards the place: name it. If every test stays green, nothing guards it, and "no test fails
+when `path:line` is wrong" joins the judgement calls.
+
 Then go through the judgement calls one by one. The human decides each: fix in this PR, follow-up ticket, or accept as
 is. A follow-up is a ticket of its own, written with `/to-tickets`. Never add it as a comment on another ticket: it
 grows that ticket where no budget counts it.
 
-Done when every question has a checked answer and every judgement call has a decision.
+Done when every question has a checked answer, every broken place is restored, and every judgement call has a
+decision.
 
 ## 5. Record
 
@@ -115,6 +130,7 @@ Draft the record, show it, and post it as a PR comment only after the human conf
 |---|---|---|
 
 **Gaps found and how they were resolved:** ...
+**Break it:** <each place broken: the test that went red, or "no test went red">
 **Judgement calls:** <decision for each>
 
 - [ ] I read every changed file (full) / the summary and evidence (quick)
