@@ -338,8 +338,14 @@ None of these calls the real model or needs a key. The one live check, `LiveExtr
 `prepare-arms.sh` makes copies of one agent with only `model` and `effort` changed, and `score.py --baseline` applies
 a pass rule fixed before any run: the cheapest arm that reviews as well as today's is the choice. Run for
 `code-reviewer` on 2026-11-21: on Sonnet at high effort it scored the same as on Opus at high effort (31.83, all 10
-planted defects in every run) for about a third less per review. Opus at medium effort passed too. Not applied yet,
-and the fixture is at its ceiling, so it can't show whether the bigger setting finds harder defects.
+planted defects in every run) for about a third less per review. Opus at medium effort passed too. The fixture is
+at its ceiling, so it can't show whether the bigger setting finds harder defects.
+
+**Each project chooses.** The agents stay `model: inherit`. `/setup-project` asks once which model and effort each
+reviewer runs on, with this finding in front of you, and saves the answer in the stack card's "Review models"
+section; `/implement` reads it and never stops to ask. Change it by editing the card, with
+`/pipeline:setup-project review-models`, or for one review by saying so (`/implement <ticket>, code-reviewer on
+session`). Only `code-reviewer` has been measured; the card says to move `blind-reviewer` only if you have to.
 
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
@@ -449,8 +455,8 @@ PR.
 
 ### 6.5 Add or change an agent
 1. A file in `kit-pipeline/agents/<name>.md` with frontmatter: `name`, `description` (when to use it: Claude reads this
-   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit` (a model and an `effort` are set
-   only when the reviewer evaluation chose them, §3.10), and if useful
+   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit` (a project sets a
+   reviewer's model and effort in its stack card, §3.10), and if useful
    `omitClaudeMd: true` (no project context), `skills:` (preload), `isolation: worktree` (its own copy of the repo).
 2. Body: what it does, the process, what it must never do, the report format.
 3. Test it on a real project; restart `claude` to load it.

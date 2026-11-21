@@ -82,7 +82,7 @@ or a failing test. Make the change, open a pull request, and go straight to your
 
 **In one line:** it writes down the facts about your project, so no later step has to guess them.
 
-- **What it does.** Claude reads the repo, asks five questions in one round, shows the list of files it will write, and
+- **What it does.** Claude reads the repo, asks six questions in one round, shows the list of files it will write, and
   waits for your OK.
 - **Why it exists.** An agent that does not know your test command, your stack or your rules will invent them. Written
   down once, every command reads the same facts.
@@ -90,12 +90,13 @@ or a failing test. Make the change, open a pull request, and go straight to your
   ask it to change.
 - **In a normal team:** the onboarding page and the team's working agreement.
 
-The five questions are: which stack pack, which build mode, one glossary or several, the PR size budget, and whether to
-add the PR checks. Each comes with a recommended answer, so "yes" is enough.
+The six questions are: which stack pack, which build mode, one glossary or several, the PR size budget, whether to
+add the PR checks, and which model each reviewer runs on. Each comes with a recommended answer, so "yes" is enough.
+The last one is asked once and saved, so no ticket stops to ask it again. The stack card says how to change it later.
 
 | File it writes | What it holds | Who reads it |
 | --- | --- | --- |
-| `docs/agents/stack.md` (the stack card) | Your real commands for test, lint and run, the build mode, the PR size budget | Every command and every agent |
+| `docs/agents/stack.md` (the stack card) | Your real commands for test, lint and run, the build mode, the PR size budget, the model each reviewer runs on | Every command and every agent |
 | `CODING_STANDARDS.md` | Your rules for code | The project reviewer |
 | `docs/agents/issue-tracker.md` and `domain.md` | Where tickets live and where the glossary lives | The planning commands |
 | Two short blocks in `CLAUDE.md` | Pointers to the files above | Every session |

@@ -134,9 +134,9 @@ write yourself.
 | | |
 |---|---|
 | **You&nbsp;type** | `claude plugin marketplace add myhts/claude-kits --scope project` and `claude plugin install pipeline@kits --scope project` in a terminal, then `/pipeline:setup-project` in Claude Code |
-| **Claude** | looks at the repo (stack, existing commands, CI, docs), then asks **five questions in one round**: pack, build mode, domain layout, PR budget, CI checks. Each comes with a recommended answer |
+| **Claude** | looks at the repo (stack, existing commands, CI, docs), then asks **six questions in one round**: pack, build mode, domain layout, PR budget, CI checks, and which model each reviewer runs on. Each comes with a recommended answer |
 | **You** | answer, or say "yes" to take the recommendations. Then approve the list of files it will write |
-| **You&nbsp;get** | the stack card `docs/agents/stack.md` (commands, mode, budget, deploy target), `CODING_STANDARDS.md`, the tracker and domain notes, two short blocks in `CLAUDE.md`, the PR checks (`pr-size`, `human-review`, and `ci.yml` if you had none), the labels the planning steps use and, once the setup is on `main`, a GitHub ruleset that protects it |
+| **You&nbsp;get** | the stack card `docs/agents/stack.md` (commands, mode, budget, review models, deploy target), `CODING_STANDARDS.md`, the tracker and domain notes, two short blocks in `CLAUDE.md`, the PR checks (`pr-size`, `human-review`, and `ci.yml` if you had none), the labels the planning steps use and, once the setup is on `main`, a GitHub ruleset that protects it |
 | **Done&nbsp;when** | every command in the stack card has run once, or says "not set up yet" |
 
 **Then protect `main`.** Once the setup is merged, `/pipeline:setup-project protect` adds a GitHub ruleset: every
@@ -307,7 +307,7 @@ defects the other missed.
 | | |
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
-| **Claude** | first sizes the review by the change's merge danger (the table below). In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead. So does a finding that asks for more than the ticket did, unless the harm would be live the day the PR merges |
+| **Claude** | first sizes the review by the change's merge danger (the table below). Each reviewer runs on the model and effort the stack card's "Review models" names, chosen once at setup, so no ticket stops to ask. In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead. So does a finding that asks for more than the ticket did, unless the harm would be live the day the PR merges |
 | **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
 | **Done&nbsp;when** | the confirmed must-fix findings are fixed (and re-reviewed once, in a full review), and anything still open is on your list |
 

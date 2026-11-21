@@ -36,7 +36,7 @@ and doesn't build: it writes its own folder and debugger configs, and asks befor
 /pipeline:setup-project
 ```
 
-It looks around, asks five questions in one round (each with a recommended answer), shows what it will write, then
+It looks around, asks six questions in one round (each with a recommended answer), shows what it will write, then
 writes it.
 
 **3. Start your first feature** by describing it in a sentence:
