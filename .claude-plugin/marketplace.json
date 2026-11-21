@@ -48,7 +48,7 @@
       "name": "spring-ai",
       "source": "./spring-boot-learning/kit-ai",
       "description": "Calling a model from a Spring service with the Anthropic Java SDK: structured outputs, prompt injection, stop reasons, caching, cost, evals as tests, synthetic data, and a review checklist.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": { "name": "Aseem Pareek" },
       "license": "Apache-2.0",
       "keywords": ["llm", "claude", "spring-boot"],

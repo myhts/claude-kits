@@ -57,6 +57,14 @@ Added 2026-10-25:
   before/after evaluation is prepared in `kit-check/reviewer-eval/` (`prepare-llm.sh`, fixture `llm-claims`) and
   not yet run.
 
+Added 2026-11-21:
+- `kit-check/reviewer-eval/`: `prepare-arms.sh` (copies of one agent with only `model` and `effort` changed),
+  `score.py --baseline` (a pass rule for such an arm), the model, cost and time of each run in `extract.py`,
+  `grader-prompt.md`, and a fix to `blind.py`. First used on `code-reviewer`: Opus at high effort against Opus at
+  medium and Sonnet at high; results in `results/2026-11-21-*`.
+- `llm-engineering/evals.md`: cost per correct case, API errors counted apart from wrong answers, reading the
+  failing cases' raw responses, and a "Choosing the model" section.
+
 Added 2026-11-01 (the stack-neutral pipeline):
 - `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock
   (https://github.com/mattpocock/skills, commit `4ae2317`, 2026-10-31), MIT License, Copyright (c) 2026 Matt Pocock:

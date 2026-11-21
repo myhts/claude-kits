@@ -53,7 +53,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
 | **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
 | **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (44 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
-| **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
+| **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), or one agent on different models and effort levels, and its first results |
 | **The explorer evaluation** | `spring-boot-learning/kit-check/explorer-eval/` | Which model should read the code for `/project-explorer`: an answer key taken from the code, a scoring script, usage per model, and its first result |
 | **`/project-explorer`** | `spring-boot-learning/kit-pipeline/skills/project-explorer/` (in the `pipeline` plugin as `/pipeline:project-explorer`; copy installs get it too) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
 | **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here, and not public |
@@ -334,6 +334,13 @@ None of these calls the real model or needs a key. The one live check, `LiveExtr
   31.83 vs 27.17. All 10 were found in every run, against 8 or 9, so the new version replaced the old. The reports
   and grades are in `reviewer-eval/results/`.
 
+**Also for model and effort.** Every agent is `model: inherit`, so it runs on whatever your session is on.
+`prepare-arms.sh` makes copies of one agent with only `model` and `effort` changed, and `score.py --baseline` applies
+a pass rule fixed before any run: the cheapest arm that reviews as well as today's is the choice. Run for
+`code-reviewer` on 2026-11-21: on Sonnet at high effort it scored the same as on Opus at high effort (31.83, all 10
+planted defects in every run) for about a third less per review. Opus at medium effort passed too. Not applied yet,
+and the fixture is at its ceiling, so it can't show whether the bigger setting finds harder defects.
+
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
 2. An answer key and scoring rules written **before** reading any result (`answer-key.md`).
@@ -442,7 +449,8 @@ PR.
 
 ### 6.5 Add or change an agent
 1. A file in `kit-pipeline/agents/<name>.md` with frontmatter: `name`, `description` (when to use it: Claude reads this
-   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit`, and if useful
+   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit` (a model and an `effort` are set
+   only when the reviewer evaluation chose them, §3.10), and if useful
    `omitClaudeMd: true` (no project context), `skills:` (preload), `isolation: worktree` (its own copy of the repo).
 2. Body: what it does, the process, what it must never do, the report format.
 3. Test it on a real project; restart `claude` to load it.
@@ -477,6 +485,8 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
   it lands, move the stack-neutral parts of the deploy templates (the workflow, the Kustomize shape) into `pipeline`.
 - Run the **LLM checks** of `spring-security-reviewer` and `blind-reviewer` through the reviewer evaluation
   (prepared in its README).
+- A **harder fixture** for the reviewer evaluation, with defects no checklist names: every model and effort arm of
+  `code-reviewer` found all 10 in `llm-claims`. Then the same arms for the other reviewers.
 - A `jpa-patterns` exercise for `IDENTITY` vs `SEQUENCE` batching, with a statement-count test.
 
 ---
@@ -524,7 +534,7 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
 | Code in the Spring and AI skills | 44 tests on Spring Boot 4.1.1 with real Postgres, plus 23 for the LLM code shapes against a local fake of the API | `kit-check/` (`./mvnw verify`), §3.9 |
 | Docker, CI and Kubernetes templates | built and run; overlays validated against the Kubernetes 1.33 schemas; workflows linted. With `--kind`: a rollout, a broken release that leaves the old pods serving, and `rollout undo` | `kit-check/verify-templates.sh` |
 | The plugins | the 15 adopted skills match upstream byte for byte; the merge guard blocks 22 dangerous commands and allows 15 safe ones; the marketplace validates; all five plugins install and load in a throwaway home; `/next` names the expected step for 26 repo states, and `protect-main.sh` sends the right ruleset in 6 cases, both with `gh` stubbed. On a real repository (myhts/lombard), `protect-main.sh` created the ruleset, then ran again and kept it unchanged | `kit-check/verify-pipeline.sh` |
-| The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version) | `kit-check/reviewer-eval/`, §3.10 |
+| The reviewers | blind-graded comparisons on code with known defects. `code-reviewer` and `blind-reviewer` tied, each finding things the other missed. The rewritten `code-reviewer` found all 10 planted defects in every run (31.8 against 27.2 for its previous version). On Sonnet at high effort it scored the same as on Opus at high effort (31.8, all 10 in every run) for about a third less per review; the fixture is at its ceiling, so it can't show whether Opus finds harder defects | `kit-check/reviewer-eval/`, §3.10 |
 | The explorer's readers | on a copy of Google's Online Boutique (11 services, 5 languages), readers on Opus, Sonnet and Haiku each found all 23 entry points, 14 calls and the store in an answer key taken from the code, with no broken references and no invented calls. Sonnet readers halved the cost of a run; Haiku's readers made 3 to 4 times the tool calls and cost no less. So the readers use Sonnet, and the map, the flows and the explanations stay on Opus | `kit-check/explorer-eval/` |
 | e2e, AI and web add-ons | installed into a copy and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
 

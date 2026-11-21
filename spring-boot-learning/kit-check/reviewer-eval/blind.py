@@ -33,6 +33,7 @@ def blind(text):
         kept.append(line)
     t = "\n".join(kept)
     t = re.sub(r"/\S*?/work/run-[\w-]+/", "", t)
+    t = re.sub(r"/[^\s`'\"]*?/work/run-[\w-]+", ".", t)   # the run folder named on its own: it carries the agent's name
     t = re.sub(r"^#+ Review \(standards\)", "## Review", t, flags=re.M)
     t = re.sub(r"^#+ Review:", "## Review:", t, flags=re.M)
     t = re.sub(r"^### Must fix \(bugs, data loss, security\)", "### Must fix", t, flags=re.M)

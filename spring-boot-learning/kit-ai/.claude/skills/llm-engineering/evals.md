@@ -37,7 +37,9 @@ src/test/java/.../eval/
 | Decision accuracy and a confusion table (pay / need info / refer) | Which mistakes: a wrong "refer" costs time, a wrong "pay" costs money |
 | Citations verified (share of citations that match the source) | Grounding, not just plausible prose |
 | Refused and unusable rate | Cases that silently went to a human |
+| API errors and timeouts, counted apart from wrong answers | A 529 or a timeout is the harness failing, not the model; scored as wrong, it hides which model is better |
 | Cost per case, and p95 latency | The two numbers a product owner asks first |
+| Cost per correct case (total cost ÷ cases that passed every grader) | The fair number between models: a cheap one that fails more, or takes more turns, can cost more per good answer |
 | The injection cases, separately | A prompt change can quietly weaken the defence |
 
 ## Graders
@@ -74,6 +76,20 @@ src/test/java/.../eval/
 - Change one thing at a time (the prompt, the schema descriptions, effort, the model), run, record the scores next
   to the prompt version, keep or revert.
 - Tune on `dev`, report `test`. Tuning on the test set turns it into a dev set and the score into fiction.
+- Read the raw responses of the failing cases before believing a score. A low one can be the harness (errors, a
+  cut-off answer, a grader that's too strict); a high one can be a leak (the answer visible in the input).
 - The built-in `claude-api` skill helps: `/claude-api build-eval` (interview to design the set and grader),
   `/claude-api hillclimb` (a structured improve-measure loop with a train/test split), `/claude-api cost-optimize`
   (cheapest model and effort that keep the score).
+
+## Choosing the model
+
+Public benchmarks say which models are strong in general. Only this eval says which one is right for this route.
+
+- Run the same set on each candidate. A candidate is a model **and** an effort level: a bigger model at low effort
+  can beat a smaller one at high effort on score and on cost. Three runs each, as in the gate.
+- Take the cheapest candidate, by cost per correct case, that holds the floor. If the route has a latency limit, set
+  it (p95) before the runs and drop any candidate over it.
+- Write the rule down before the first run, so the numbers decide and not the model you were hoping for.
+- A prompt tuned on one model isn't a fair test of another. Read the new model's prompting guide, adjust the prompt
+  on `dev`, then compare on `test`.
