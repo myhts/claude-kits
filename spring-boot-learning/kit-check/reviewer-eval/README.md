@@ -1,12 +1,11 @@
 # Reviewer evaluation: compare two versions of an agent fairly
 
 A repeatable method for deciding whether a changed agent is actually better, instead of trusting a few good-looking
-reports. Used twice so far: `code-reviewer` (uses the project's context) vs `blind-reviewer` (code only), then the
-rewritten `code-reviewer` vs its previous version.
+reports. Used three times so far: `code-reviewer` (uses the project's context) vs `blind-reviewer` (code only), the
+rewritten `code-reviewer` vs its previous version, and `code-reviewer` on three model and effort settings.
 
-The same method also answers a second question: which model and effort level an agent should run on. That
-comparison is [prepared below](#pending-which-model-and-effort-should-code-reviewer-run-on-rule-fixed-2026-11-21-not-run),
-with its rule fixed and no scored run yet.
+The same method also answers a second question: which model and effort level an agent should run on. The
+[third run](#third-run-2026-11-21-which-model-and-effort-should-code-reviewer-run-on) did that for `code-reviewer`.
 
 ## Result of the first run (2026-10-19)
 
@@ -77,7 +76,7 @@ been (above); the other two are ready to run:
   `run.sh` runs on your Claude Code subscription (it unsets any API key, so nothing is billed to the API) with
   `MODEL=opus` by default, as in the 2026-10-19 run; compare scores only within one model.
 
-## Pending: which model and effort should `code-reviewer` run on? (rule fixed 2026-11-21, not run)
+## Third run (2026-11-21): which model and effort should `code-reviewer` run on?
 
 Every agent in the kit is `model: inherit`, so a reviewer runs on whatever the session is on: usually the biggest
 model at high effort. Reviews are the step that runs most often per PR, so a cheaper setting would save most there,
@@ -95,7 +94,7 @@ Sonnet's.
 | **Each arm** | 3 runs, blinded and paired with the baseline's 3 runs, each pair graded by a separate agent |
 | **Measured** | points by the scoring rules; known defects with full marks, per run; wrong findings; cost at list price and wall-clock time per run (`extract.py`) |
 
-**The rule (fixed 2026-11-21, before any scored run).** An arm **passes** when:
+**The rule (fixed and committed on 2026-11-21, before any scored run).** An arm **passes** when:
 1. every one of its runs has full marks on each known defect that the baseline got full marks on in all three of
    its runs;
 2. it has no more wrong findings than the baseline, over the three runs;
@@ -120,10 +119,52 @@ python3 blind.py work results/<date>-sonnet-high code-reviewer code-reviewer-son
 python3 score.py results/<date>-opus-medium --baseline code-reviewer
 ```
 
-- **Proved so far** (2026-11-21, Claude Code 2.1.311): in one run of the `sonnet:high` arm, the reviewer's own
-  messages came from `claude-sonnet-5-5` under an Opus session. Its report was not read or graded. The rule itself
-  was checked against the 2026-11-01 grades: the new `code-reviewer` passes as an arm of the old one, and the old
-  one fails as an arm of the new (no full marks on K3 or K6 in any run).
+### Results
+
+Nine reviews on Claude Code 2.1.311, one after another. The baseline's reports were graded twice, once in each
+pairing, so it has two sets of numbers.
+
+| | baseline (Opus, effort `high`) | `opus:medium` | `sonnet:high` |
+|---|---|---|---|
+| Run scores | 32.0 · 31.5 · 32.0, and 32.5 · 31.0 · 32.0 | 31.0 · 32.5 · 30.5 | 32.0 · 31.5 · 32.0 |
+| **Mean** | **31.83** in both gradings | **31.33** | **31.83** |
+| Known defects (of 10) | all 10, full marks, in every run | the same | the same |
+| Other real defects (high · medium · low) | 0 · 3 · 5, and 0 · 2 · 7 | 0 · 2 · 4 | 0 · 2 · 7 |
+| Opinion-only · wrong | 9 · 0, and 7 · 0 | 7 · 0 | 14 · 0 |
+| Cost per review, list price | $0.585 | $0.494 | $0.383 |
+| …of which the reviewer itself | about $0.31 | about $0.22 | $0.11 |
+| Time per review | 118 s | 92 s | 76 s |
+| The rule | | passes | passes |
+
+- **Choice by the rule: `sonnet:high`.** Both arms pass, and Sonnet at high effort is the cheapest by measured cost:
+  about a third less per review than the baseline, and a third faster. **Not applied yet:** `code-reviewer` is
+  still `model: inherit`, waiting for the owner's approval.
+- **The reviewer's own share.** In the Sonnet arm the two models' costs are separate in the log: $0.11 for the
+  reviewer and $0.27 for the Opus session that starts it and repeats its report. The other two figures in that row
+  are the total minus that $0.27, so they are estimates. By them, the reviewer itself costs about a third on Sonnet
+  of what it costs on Opus at high effort.
+- **The fixture is at its ceiling, which limits what this shows.** Every arm found all 10 planted defects with full
+  marks in every run. All 10 are named in `llm-engineering/review-checklist.md`, which every arm read. So the
+  result says a cheaper setting is no worse at finding defects a checklist names. It can't say whether Opus at
+  high effort finds harder ones, because none are planted here. A fixture with defects no checklist names is the
+  test to run before this result is stretched to other reviewers or other stacks.
+- **Sonnet wrote twice as many opinion-only findings** (14 against 7). They score 0, but each one costs the reader
+  time.
+- **The grading was steady.** The baseline's two gradings, by different graders, have the same mean, and no run
+  differs by more than half a point.
+- **How it was graded.** Six separate graders on Opus 5.5, each confined to a folder with only the code, the answer
+  key and two blinded reports under a neutral name ([grader-prompt.md](grader-prompt.md)). Four ran as subagents
+  and two as headless sessions, with the same instructions.
+- **Audit.** Every reviewer's own messages came from its arm's model (`extract.py`), and none read anything
+  outside its copy. An arm's effort isn't written in the log; the `opus:medium` runs were shorter and cheaper than
+  the baseline's in all three runs, which fits.
+- **One fix on the way.** A Sonnet report named its run folder (`…/work/run-code-reviewer-sonnet-high-2`) with no
+  slash after it, which `blind.py` let through. It now removes that form too; the reports were blinded again before
+  any grading. The blinded reports, grades and mappings are in `results/2026-11-21-opus-medium/` and
+  `results/2026-11-21-sonnet-high/`, and `python3 score.py <folder> --baseline code-reviewer` reproduces the totals.
+
+### Notes on the method
+
 - **What a run's cost includes.** The session's own share is in the total: it starts the reviewer and repeats the
   report word for word, about $0.27 of the $0.40 in that one run. It is the same work in every arm, so the
   difference between arms is the reviewer's. When an arm's model differs from the session's, `node ../explorer-eval/usage.mjs
@@ -132,7 +173,7 @@ python3 score.py results/<date>-opus-medium --baseline code-reviewer
   run on the same model, so `prepare-arms.sh` takes `<model>:<effort>` and writes both. `run.sh` unsets the
   environment variables that would override an agent's own model or effort.
 - **Limits:** one fixture (a Java service that calls a model), the standards axis only (there is no ticket for the
-  spec axis to read), two arms. A `haiku:high` arm is added the same way.
+  spec axis to read), two arms, three runs each. A `haiku:high` arm is added the same way.
 
 ## The method
 
@@ -162,7 +203,9 @@ python3 score.py results/<date>-opus-medium --baseline code-reviewer
    pair one of each under labels X and Y, keep the mapping in `mapping.secret`: `python3 blind.py work <dir> <agent A>
    <agent B>`. Then read the output for anything else that gives an agent away.
 7. **Grade each pair with a separate agent** that verifies every finding in the code against the answer key and writes
-   `pairN-grades.json`.
+   `pairN-grades.json`. Give it a folder of its own with only the code, the key and the two reports, under a name
+   that says nothing about the agents. The instructions used on 2026-11-21 are in
+   [grader-prompt.md](grader-prompt.md).
 8. **Unblind and total**: `python3 score.py <dir with mapping.secret and pairN-grades.json>`. With `--baseline <agent>`
    it also applies the model-and-effort rule above to the other agent.
 

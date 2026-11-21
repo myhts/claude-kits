@@ -336,8 +336,10 @@ None of these calls the real model or needs a key. The one live check, `LiveExtr
 
 **Also for model and effort.** Every agent is `model: inherit`, so it runs on whatever your session is on.
 `prepare-arms.sh` makes copies of one agent with only `model` and `effort` changed, and `score.py --baseline` applies
-a pass rule fixed before any run: the cheapest arm that reviews as well as today's is the choice. Prepared for
-`code-reviewer` on 2026-11-21 (Opus at medium effort, Sonnet at high); not yet run.
+a pass rule fixed before any run: the cheapest arm that reviews as well as today's is the choice. Run for
+`code-reviewer` on 2026-11-21: on Sonnet at high effort it scored the same as on Opus at high effort (31.83, all 10
+planted defects in every run) for about a third less per review. Opus at medium effort passed too. Not applied yet,
+and the fixture is at its ceiling, so it can't show whether the bigger setting finds harder defects.
 
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
@@ -483,7 +485,8 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
   it lands, move the stack-neutral parts of the deploy templates (the workflow, the Kustomize shape) into `pipeline`.
 - Run the **LLM checks** of `spring-security-reviewer` and `blind-reviewer` through the reviewer evaluation
   (prepared in its README).
-- Run the **model and effort arms** of `code-reviewer` (prepared in the same README), then the other reviewers.
+- A **harder fixture** for the reviewer evaluation, with defects no checklist names: every model and effort arm of
+  `code-reviewer` found all 10 in `llm-claims`. Then the same arms for the other reviewers.
 - A `jpa-patterns` exercise for `IDENTITY` vs `SEQUENCE` batching, with a statement-count test.
 
 ---
