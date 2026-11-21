@@ -9,6 +9,8 @@ good; the human decides. Run this in the main session: it starts the subagents, 
 
 Agents named here are the pipeline plugin's (`pipeline:implementer`, `pipeline:code-reviewer`, and so on). Arguments:
 a ticket or spec reference, and optionally a mode (`learn`, `build-with-me`, `deliver`) that overrides the stack card.
+The human can also name a reviewer's model for this one review ("code-reviewer on session", "blind-reviewer on sonnet,
+high"); step 4 uses it.
 
 **One ticket, one session.** If this conversation already holds other work (planning, another ticket, a review), say
 so in one line before step 1 and suggest `/clear`, then the same command again. Nothing is lost: everything this
@@ -89,6 +91,17 @@ Run the stack card's lint and full verify on the branch. Fix red before any revi
 Code built in `learn` or `build-with-me` is the code the human chose to write or to follow block by block, so it gets
 the full review whatever its danger. The human can ask for the other review on any ticket ("full review", "light
 review"); say which one ran and who chose it.
+
+**Each reviewer's model.** Read "Review models" in the stack card. A reviewer set to `session`, or a card with no
+such section, means: start it with no model or effort of your own, so it runs on this session's. For any other
+setting, start that reviewer with exactly that model and that effort as parameters of the start (`sonnet, high` →
+model `sonnet`, effort `high`), in the first round and the second. Always pass both: a session's effort doesn't
+reach a reviewer on another model. A setting the human named for this review wins over the card and changes nothing
+in it. Never stop to ask: the card was answered at setup. Before the reviewers start, say in one line what each
+runs on and how to change it, for example: "Reviewers: `code-reviewer` on Sonnet at high effort, the others on this
+session's model (stack card, "Review models": edit it, or run `/pipeline:setup-project review-models`)". With no
+section in the card, the line says every reviewer is on this session's model and that the same command sets it up.
+The setting covers this automated review only; a `MINE` block's teaching review stays on the session's model.
 
 Start the reviewers in parallel, each in a fresh context, and give each only what its brief says:
 

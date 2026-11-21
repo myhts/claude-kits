@@ -1,6 +1,6 @@
 ---
 name: setup-project
-description: "Set up a repository for the delivery pipeline: stack card, tracker and domain docs, coding standards, CLAUDE.md pointers, the pack plugin, labels, PR checks, and a GitHub ruleset that protects main. Run once per repo, before the other pipeline skills; with the argument protect, it only adds or updates the protection."
+description: "Set up a repository for the delivery pipeline: stack card, tracker and domain docs, coding standards, CLAUDE.md pointers, the pack plugin, labels, PR checks, and a GitHub ruleset that protects main. Run once per repo, before the other pipeline skills; with the argument protect, it only adds or updates the protection; with review-models, it only asks which model each reviewer runs on."
 disable-model-invocation: true
 ---
 
@@ -8,6 +8,10 @@ Prepare this repository so every pipeline stage knows its stack, its commands, i
 result is a handful of small files the other skills read; nothing here writes application code.
 
 With the argument `protect`, do only step 1's GitHub bullet and step 5.
+
+With the argument `review-models`, do only question 6 of step 2. Show what the stack card says now, ask, then write
+the answer into the card's "Review models" section (add the section from the template if the card has none) and
+repeat the note on how to change it.
 
 **A fresh session.** If this conversation already holds other work (the explorer, say), mention it in one line and
 suggest `/clear`, then the same command again: the setup reads the repository, not the conversation. Carry on if the
@@ -51,8 +55,18 @@ recommendation.
    can split it later.
 4. **PR budget**: 400 changed lines.
 5. **Write the CI checks** (`pr-size`, `human-review`, and the pack's CI if the repo has none): yes.
+6. **Review models**: which model and effort each reviewer runs on in `/implement`'s automated review. Show the
+   template's "What was measured" note and its `blind-reviewer` note as they are, then offer:
+   - `code-reviewer` on Sonnet at high effort, every other reviewer on the session's model. Recommend this: it is
+     the one setting that has been measured.
+   - Every reviewer on the session's model, as before.
+   - A setting per reviewer. Say which ones are unmeasured, and for `blind-reviewer` give the template's reason for
+     leaving it alone unless the human has to.
 
-Done when the user has answered or accepted all five.
+   Say that this is asked once: the answer goes into the stack card, no ticket stops to ask again, and the card says
+   how to change it later.
+
+Done when the user has answered or accepted all six.
 
 ## 3. Show the plan, then write
 
@@ -64,7 +78,8 @@ everything you weren't asked to change as it was.
   `<plugin>@kits: <path inside the plugin>`. For `spring`, the review checklist is
   `spring@kits: .claude/skills/spring-boot/review-checklist.md` and the templates are
   `spring@kits: .claude/skills/build-templates/`. Anyone reading the card finds the plugin's folder with
-  `claude plugin list --json` (its `installPath`).
+  `claude plugin list --json` (its `installPath`). Fill the "Review models" table from question 6 and keep its
+  three notes.
 - **`docs/agents/issue-tracker.md`** from the upstream GitHub tracker template, and **`docs/agents/domain.md`** from the
   upstream domain template, set to the chosen layout.
 - **`CODING_STANDARDS.md`** from the template, only if the repo has none.
@@ -90,6 +105,9 @@ once or is marked "not set up yet".
 Tell the user, in a few lines:
 
 - What was written.
+- **Review models:** what each reviewer runs on, and the three ways to change it: edit the stack card's "Review
+  models" table, run `/pipeline:setup-project review-models`, or name a setting for one review when running
+  `/implement`.
 - **Protecting `main`:** if the setup files are already on the default branch, go on to step 5 now. Otherwise the human
   commits them and merges them, then runs `/pipeline:setup-project protect`; `/pipeline:next` reminds them.
 - **`gh` older than 2.94:** suggest `brew upgrade gh`.

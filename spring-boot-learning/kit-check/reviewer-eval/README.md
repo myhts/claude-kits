@@ -104,7 +104,7 @@ Sonnet's.
 mean measured cost of its runs and not by the price per token. If none passes, `code-reviewer` stays on `inherit`.
 If an arm fails on one defect in one run, it and the baseline each run three more times. The baseline's reports are
 graded twice, once in each pairing: if its two means differ by 2 points or more, the grading is too noisy to choose
-by, and both pairings are graded again. The owner approves before the agent's frontmatter changes. The result
+by, and both pairings are graded again. The owner approves before the kit's default changes. The result
 covers `code-reviewer` on this fixture only; another reviewer needs its own runs.
 
 ```bash
@@ -137,8 +137,9 @@ pairing, so it has two sets of numbers.
 | The rule | | passes | passes |
 
 - **Choice by the rule: `sonnet:high`.** Both arms pass, and Sonnet at high effort is the cheapest by measured cost:
-  about a third less per review than the baseline, and a third faster. **Not applied yet:** `code-reviewer` is
-  still `model: inherit`, waiting for the owner's approval.
+  about a third less per review than the baseline, and a third faster. **How it is applied:** the agent stays
+  `model: inherit`, and each project chooses. `/setup-project` asks once, shows this finding, and saves the answer
+  in the stack card's "Review models" section, which `/implement` reads.
 - **The reviewer's own share.** In the Sonnet arm the two models' costs are separate in the log: $0.11 for the
   reviewer and $0.27 for the Opus session that starts it and repeats its report. The other two figures in that row
   are the total minus that $0.27, so they are estimates. By them, the reviewer itself costs about a third on Sonnet

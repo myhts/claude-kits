@@ -134,7 +134,8 @@ the SPA fallback, no console errors).
 Agents are measured, not unit-tested, with the reviewer evaluation (`kit-check/reviewer-eval/`). The rewritten
 `code-reviewer` was compared with its previous version on 2026-11-01, and with itself on three model and effort
 settings on 2026-11-21: on Sonnet at high effort it scored the same as on Opus at high effort, for about a third
-less per review, on a fixture where every setting found all 10 planted defects. The LLM checks added to
+less per review, on a fixture where every setting found all 10 planted defects. The agents stay `model: inherit`:
+a project chooses its reviewers' models in its stack card, asked once by `/setup-project`. The LLM checks added to
 `spring-security-reviewer` and `blind-reviewer` are still waiting for their run. Not covered at all: the prose
 advice in `java-modern` and `interview-drill`.
 
