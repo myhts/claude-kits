@@ -31,7 +31,7 @@ project yourself. An improved, learning-focused edition of
 | Skill | `interview-drill` | Interview questions about *your* code, with senior/staff feedback. `/interview-drill` |
 | `--e2e` agent | `e2e-tester` | Plans, writes and repairs end-to-end tests; explores the running app with the Playwright MCP browser |
 | `--e2e` skill | `e2e-testing` | Playwright + Testcontainers conventions: stack config, no sleeps, oracle tables, pinned known bugs, safety |
-| `--ai` skill | `llm-engineering` | The engineering around a Claude call (official Java SDK): one client, structured outputs, prompt injection, stop reasons and refusals, retries and timeouts, citations checked against the source, caching and cost, PII-safe logs, an audit record; plus `evals.md`, `synthetic-data.md`, `review-checklist.md` (used by the reviewers) and a CI eval job |
+| `--ai` skill | `llm-engineering` | The engineering around a Claude call (official Java SDK): one client, structured outputs, prompt injection, stop reasons and refusals, retries and timeouts, citations checked against the source, caching and cost, PII-safe logs, an audit record; plus `evals.md` (with how to choose a model), `synthetic-data.md`, `review-checklist.md` (used by the reviewers) and a CI eval job |
 | `--ai` rules | `CLAUDE.ai.md` | Model rules to merge into `CLAUDE.md`: spending needs a yes, the key only in the environment, invented data only, prompts are versioned |
 | `--ai` + `--e2e` | `e2e/llm-fake/` | WireMock answering `POST /v1/messages` with canned responses, so e2e runs never call the real model |
 | Rules | `CLAUDE.md` | Learning mode: you write the code, Claude explains/reviews; ask before risky actions |
@@ -132,7 +132,9 @@ Playwright (create through the form, a problem detail on a blank field, the prox
 the SPA fallback, no console errors).
 
 Agents are measured, not unit-tested, with the reviewer evaluation (`kit-check/reviewer-eval/`). The rewritten
-`code-reviewer` was compared with its previous version on 2026-11-01. The LLM checks added to
+`code-reviewer` was compared with its previous version on 2026-11-01, and with itself on three model and effort
+settings on 2026-11-21: on Sonnet at high effort it scored the same as on Opus at high effort, for about a third
+less per review, on a fixture where every setting found all 10 planted defects. The LLM checks added to
 `spring-security-reviewer` and `blind-reviewer` are still waiting for their run. Not covered at all: the prose
 advice in `java-modern` and `interview-drill`.
 
