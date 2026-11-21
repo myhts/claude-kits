@@ -64,6 +64,9 @@ Added 2026-11-21:
   medium and Sonnet at high; results in `results/2026-11-21-*`.
 - `llm-engineering/evals.md`: cost per correct case, API errors counted apart from wrong answers, reading the
   failing cases' raw responses, and a "Choosing the model" section.
+- Review models (pipeline 0.6.4): a "Review models" section in the stack card template, a sixth question in
+  `setup-project` with the argument `review-models` to ask it again, and `implement` starting each reviewer with
+  the model and effort the card names.
 
 Added 2026-11-01 (the stack-neutral pipeline):
 - `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock

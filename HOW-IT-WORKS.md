@@ -192,7 +192,8 @@ goes to you.
 4. **The review is sized by the risk.** A change that is easy to undo, touches little and was built whole by the agent
    gets the project reviewer only, and one round. A change that is hard to undo or touches a lot gets both reviewers,
    the security and deploy reviewers where they apply, and a second look at the fixes. So does any code you wrote
-   yourself or built block by block.
+   yourself or built block by block. Each reviewer runs on the model your stack card names. You chose that once at
+   setup, so no ticket stops to ask, and every review says in one line what it used and how to change it.
 5. **Findings need proof.** A reviewer can be wrong too. Claude confirms each must-fix in the code before anyone fixes
    it, and "it was intended" does not count as evidence.
 

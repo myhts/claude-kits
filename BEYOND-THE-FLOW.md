@@ -467,7 +467,7 @@ without a test or a cited source.
 | The adopted skills are unchanged | They are compared with Matt Pocock's originals, byte for byte | `verify-pipeline.sh` |
 | Two reviewers beat one | A blind-graded comparison on code with known defects. They tied, and each found things the other missed | `reviewer-eval/` |
 | The rewritten project reviewer is better | It found all 10 planted defects in every run, and scored 31.8 against 27.2 for the version it replaced | `reviewer-eval/` |
-| The project reviewer works as well on a cheaper model | On the same code, the mid-size model at high effort scored the same as the biggest one (31.8), found all 10 planted defects in every run, and cost about a third less per review. Every setting found all 10, so the test can't show whether the biggest model finds harder ones | `reviewer-eval/` |
+| The project reviewer works as well on a cheaper model | On the same code, the mid-size model at high effort scored the same as the biggest one (31.8), found all 10 planted defects in every run, and cost about a third less per review. Every setting found all 10, so the test can't show whether the biggest model finds harder ones. Each project chooses its reviewers' models once, at setup | `reviewer-eval/` |
 | The explorer reads code correctly on a cheaper model | Three models read an 11-service app and were scored against an answer key taken from the code. The mid-size model found everything at half the cost | `explorer-eval/` |
 | The add-ons install and run | Each is installed into a copy of a project and run end to end | `verify-e2e.sh`, `verify-ai.sh`, `verify-web.sh` |
 
