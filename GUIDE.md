@@ -53,7 +53,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
 | **The web add-on** (`--web`) | `spring-boot-learning/kit-web/` | A React + Vite + TanStack Query template in `web/` (nginx image proxying `/api`) and the `react-frontend` skill |
 | **kit-check** | `spring-boot-learning/kit-check/` | A Spring Boot 4.1.1 app whose tests prove the code in the skills (44 + 23 for the LLM shapes, against a local fake API); scripts that verify the templates and the e2e, AI and web add-ons |
-| **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), and its first result |
+| **The reviewer evaluation** | `spring-boot-learning/kit-check/reviewer-eval/` | A repeatable method for comparing two agent versions (blind grading), or one agent on different models and effort levels, and its first results |
 | **The explorer evaluation** | `spring-boot-learning/kit-check/explorer-eval/` | Which model should read the code for `/project-explorer`: an answer key taken from the code, a scoring script, usage per model, and its first result |
 | **`/project-explorer`** | `spring-boot-learning/kit-pipeline/skills/project-explorer/` (in the `pipeline` plugin as `/pipeline:project-explorer`; copy installs get it too) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
 | **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here, and not public |
@@ -334,6 +334,11 @@ None of these calls the real model or needs a key. The one live check, `LiveExtr
   31.83 vs 27.17. All 10 were found in every run, against 8 or 9, so the new version replaced the old. The reports
   and grades are in `reviewer-eval/results/`.
 
+**Also for model and effort.** Every agent is `model: inherit`, so it runs on whatever your session is on.
+`prepare-arms.sh` makes copies of one agent with only `model` and `effort` changed, and `score.py --baseline` applies
+a pass rule fixed before any run: the cheapest arm that reviews as well as today's is the choice. Prepared for
+`code-reviewer` on 2026-11-21 (Opus at medium effort, Sonnet at high); not yet run.
+
 The method, step by step (details and scripts in its `README.md`):
 1. A code-only copy of a project with known defects, the docs that describe them removed (`prepare.sh`).
 2. An answer key and scoring rules written **before** reading any result (`answer-key.md`).
@@ -442,7 +447,8 @@ PR.
 
 ### 6.5 Add or change an agent
 1. A file in `kit-pipeline/agents/<name>.md` with frontmatter: `name`, `description` (when to use it: Claude reads this
-   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit`, and if useful
+   to choose), `tools` (**least privilege**: a reviewer gets no Write/Edit), `model: inherit` (a model and an `effort` are set
+   only when the reviewer evaluation chose them, §3.10), and if useful
    `omitClaudeMd: true` (no project context), `skills:` (preload), `isolation: worktree` (its own copy of the repo).
 2. Body: what it does, the process, what it must never do, the report format.
 3. Test it on a real project; restart `claude` to load it.
@@ -477,6 +483,7 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
   it lands, move the stack-neutral parts of the deploy templates (the workflow, the Kustomize shape) into `pipeline`.
 - Run the **LLM checks** of `spring-security-reviewer` and `blind-reviewer` through the reviewer evaluation
   (prepared in its README).
+- Run the **model and effort arms** of `code-reviewer` (prepared in the same README), then the other reviewers.
 - A `jpa-patterns` exercise for `IDENTITY` vs `SEQUENCE` batching, with a statement-count test.
 
 ---

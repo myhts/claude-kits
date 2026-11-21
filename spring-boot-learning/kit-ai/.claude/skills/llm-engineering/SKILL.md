@@ -62,7 +62,8 @@ AnthropicClient anthropicClient(@Value("${app.claude.base-url:}") String baseUrl
 
 - **Default for this kit's product: `claude-haiku-5-5`** ($0.10 / $0.50 per million tokens in / out for prompts up to
   100K tokens; cache reads 0.1×, 5-minute cache writes 1.25×). Fast and cheap for extraction and routing.
-  Move a route to a bigger model only when the eval shows Haiku isn't good enough there.
+  Move a route to a bigger model only when the eval shows Haiku isn't good enough there
+  ([evals.md](evals.md), "Choosing the model").
 - Keep the model id in configuration (`app.claude.model`) and in the audit record.
 - **Don't send `temperature`, `top_p` or `top_k`**: non-default values are a 400 on Haiku 5.5. Steer with the prompt
   and constrain with structured outputs. Verified: the request carries no `temperature`.
