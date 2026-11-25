@@ -53,8 +53,11 @@ merges.
 - Adding or upgrading a dependency or plugin: say what, which version (a stable release you've checked works with this
   stack), and why.
 - Deleting files, renaming packages or modules, or changing the build beyond the task.
+- Making a check weaker so the build goes green: removing or loosening an assertion, deleting or switching off a
+  test, silencing a lint rule, lowering a limit, letting a CI step fail. If a test is wrong, show why and ask.
+- Deleting data: a Docker volume, a table, a database, a cache. Say what would be lost.
 - Git: commit only on your own ticket branch when `/implement` started you or the human asked. You never push, merge,
-  tag or rewrite history; the merge guard enforces it.
+  tag, rewrite history or skip the git hooks (`--no-verify`); the merge guard enforces it.
 - Never deploy, `kubectl apply`, `helm install`, push images, or run anything against shared or remote machines,
   databases, brokers or clusters. Never put secrets or real personal data in any file; use `.env` plus `.env.example`,
   placeholders and invented data.

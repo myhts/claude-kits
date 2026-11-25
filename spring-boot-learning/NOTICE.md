@@ -68,6 +68,14 @@ Added 2026-11-21:
   `setup-project` with the argument `review-models` to ask it again, and `implement` starting each reviewer with
   the model and effort the card names.
 
+Added 2026-11-25 (pipeline 0.6.5):
+- The merge guard also blocks skipping the git hooks (`--no-verify`, `git commit -n`, `-c core.hooksPath`), `rm -r`
+  on the project, the home folder, `.git` or `.github`, deleting a CI workflow, and deleting data (Docker volumes,
+  `DROP` and `TRUNCATE` through a database client, `dropdb`, a Redis flush). These additions are ours, not from
+  `git-guardrails-claude-code`. `verify-pipeline.sh` feeds it 47 commands to block and 33 to allow.
+- A weakened check (a removed assertion, a switched-off test, a CI step allowed to fail) is always a must-fix in
+  `code-reviewer`, can't be contested in `implement`, and is on the `implementer`'s ask-first list.
+
 Added 2026-11-01 (the stack-neutral pipeline):
 - `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock
   (https://github.com/mattpocock/skills, commit `4ae2317`, 2026-10-31), MIT License, Copyright (c) 2026 Matt Pocock:

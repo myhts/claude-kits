@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Proves the pipeline plugin:
 #   1. upstream: kit-pipeline/upstream/ equals mattpocock/skills at the pinned commit, after our two substitutions
-#   2. merge guard: the hook blocks merges, pushes to main and destructive git, and lets feature-branch pushes through
+#   2. merge guard: the hook blocks merges, pushes to main, destructive git, skipped git hooks and deleted data, and
+#      lets feature-branch pushes and ordinary clean-up through
 #   3. plugins: `claude plugin validate` passes for the marketplace at the repo root
 #   4. every plugin installs and loads its parts
 #   5. /next: its script names the right next step for each state of a repo (gh is stubbed, so it runs offline)
@@ -70,6 +71,30 @@ blocked=(
   "gh api repos/o/r/rulesets -f name=x"
   "gh api -XDELETE repos/o/r/branches/main/protection"
   "gh api graphql -f query='mutation { deleteRepositoryRuleset(input: {repositoryRulesetId: \"x\"}) { clientMutationId } }'"
+  "git commit --no-verify -m wip"
+  "git commit -nm wip"
+  "git commit -a -n"
+  "git push --no-verify origin feature/x"
+  "git merge --no-verify feature/y"
+  "git -c core.hooksPath=/dev/null commit -m wip"
+  "git rm .github/workflows/ci.yml"
+  "rm .github/workflows/human-review.yml"
+  "rm -rf ."
+  "cd build && rm -rf *"
+  "rm -rf .git"
+  "sudo rm -rf /"
+  'rm -fr "$HOME"'
+  "if [ -d out ]; then rm -r ..; fi"
+  "docker volume rm cargo_pgdata"
+  "docker volume prune -f"
+  "docker compose -p cargo down -v"
+  "docker-compose down --volumes"
+  "docker system prune -af"
+  'psql -U app -c "DROP TABLE policies"'
+  'docker exec pg psql -U app -c "truncate table quotes"'
+  'echo "drop schema public cascade" | mysql shop'
+  "dropdb cargo"
+  "redis-cli FLUSHALL"
 )
 allowed=(
   "git push -u origin feature/42-borrow-a-copy"
@@ -86,6 +111,24 @@ allowed=(
   "gh api repos/o/r/branches/main/protection --jq .required_status_checks"
   "gh api repos/o/r/issues/7/comments -f body=done"
   "gh api -X POST repos/o/r/issues/7/comments -f body='the rulesets and branch protection docs'"
+  "git commit -m 'Say why --no-verify is blocked'"
+  "git commit -am 'rm -rf . is now blocked'"
+  "git commit -uno -m wip"
+  "git push -n origin feature/x"
+  "git rm docs/old-notes.md"
+  "rm -rf target"
+  "rm -rf node_modules/.cache build"
+  'rm -rf "$tmp"/*'
+  'rm -rf "$work"/'
+  "rm notes.txt"
+  "docker compose -p cargo down"
+  "docker compose -p cargo up -d --volumes-from x"
+  "docker volume ls"
+  "docker run --rm -v data:/data alpine ls"
+  "grep -rn 'DROP TABLE' backend/src/main/resources/db/migration"
+  'psql -U app -c "select count(*) from policies"'
+  "ls db/mysql/ && grep -c 'drop table' db/mysql/V1.sql"
+  "truncate -s 0 app.log"
 )
 guard() {   # $1 = command; prints the hook's exit code. Runs against a throwaway repo on branch $branch.
   local rc=0
@@ -101,7 +144,8 @@ for c in "${allowed[@]}"; do [ "$(guard "$c")" = 0 ] || fail "wrongly blocked: $
 git -C "$repo" checkout -q -b main
 [ "$(guard "git push")" = 2 ] || fail "plain git push from main was not blocked"
 [ "$(guard "git push origin HEAD")" = 2 ] || fail "git push origin HEAD from main was not blocked"
-echo "   $(( ${#blocked[@]} + 2 )) commands blocked, $(( ${#allowed[@]} + 1 )) allowed, as expected"
+[ "$(guard "rm -rf $repo")" = 2 ] || fail "deleting the whole project folder was not blocked"
+echo "   $(( ${#blocked[@]} + 3 )) commands blocked, $(( ${#allowed[@]} + 1 )) allowed, as expected"
 
 echo "== 3. plugin marketplace validates"
 command -v claude >/dev/null || fail "claude CLI not found"

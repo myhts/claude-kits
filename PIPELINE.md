@@ -372,7 +372,7 @@ requested.
 | | |
 |---|---|
 | **You&nbsp;type** | press **Merge** on GitHub (or `gh pr merge` in your own terminal) |
-| **Claude** | can't. The `pipeline` plugin's **merge guard** blocks merges, pushes to `main` or `master`, force pushes, changes to branch protection, and commands that throw work away. If Claude tries, it's told to ask you instead |
+| **Claude** | can't. The `pipeline` plugin's **merge guard** blocks merges, pushes to `main` or `master`, force pushes, changes to branch protection, commits that skip the git hooks, and commands that throw work or data away. If Claude tries, it's told to ask you instead |
 | **You&nbsp;get** | the change on `main`, which starts step 8 |
 | **Done&nbsp;when** | merged |
 
@@ -477,6 +477,19 @@ You choose which changes to apply.
 `git clean -f`; `git branch -D`; `git checkout .`; `git restore .` (unless only staged); `gh api` writes to rulesets
 or branch protection, and the GraphQL mutations that change them. Pushing a feature branch, opening a PR, reading
 protection and `/setup-project protect` (which only adds) still work.
+
+Skipping the git hooks: `--no-verify` on any git command, `git commit -n`, and `git -c core.hooksPath=…`.
+
+Deleting files: `rm -r` on `/`, `~`, `$HOME`, `.`, `..`, `*`, the project folder, `.git` or `.github`; `rm` or
+`git rm` of a file in `.github/workflows/`. An ordinary `rm -rf target` or `rm -rf "$tmp"/*` still works.
+
+Deleting data: `docker volume rm` and `prune`; `docker compose down -v`; `docker system prune`; `DROP TABLE`,
+`DROP DATABASE`, `DROP SCHEMA` and `TRUNCATE` in a command that runs `psql`, `mysql`, `mariadb`, `sqlite3` or
+`sqlcmd`; `dropdb`; `redis-cli FLUSHALL` and `FLUSHDB`. `docker compose down` without `-v` still works.
+
+The guard reads shell commands only. It does not see a file emptied with an editing tool, a delete inside a script
+it runs, or a cloud or cluster command (`kubectl delete`, `terraform destroy`): the builder's rules forbid those,
+and the reviewers and your review are the check.
 
 </details>
 
