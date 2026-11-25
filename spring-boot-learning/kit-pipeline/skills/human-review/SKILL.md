@@ -137,7 +137,12 @@ Draft the record, show it, and post it as a PR comment only after the human conf
 - [ ] I looked at the test or e2e evidence
 - [ ] Migrations are reversible, or there's a plan
 - [ ] I know how to roll this back
+
+<what usage.sh printed, unchanged>
 ```
+
+For the last part, run `bash "${CLAUDE_SKILL_DIR}/../implement/usage.sh" human-review` when you draft the record,
+and paste what it prints. Never write those numbers yourself; if it says "not available", paste that one line.
 
 The human ticks the boxes. The `human-review` CI check turns green only for a record that names the current head
 commit; any new commit makes it stale, and this skill runs again.

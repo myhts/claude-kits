@@ -355,6 +355,7 @@ GitHub refuses, whatever Claude says.
 | It says "done" with no proof | Each behaviour starts as a failing test. The failing run and the passing run are both kept and shown in the PR | Told, and you can see the proof |
 | It marks its own homework | Two reviewers start with a fresh memory. One knows your rules, one sees only the code. A reviewer that crashes is reported as "not run", never as "clean" | Second agent |
 | It ships without you | Claude cannot merge or push to `main`. GitHub needs your review record and green tests. Production waits for your approval | Blocked |
+| It costs more than you think | The review is sized by the danger, and each reviewer's model is chosen once at setup. Every PR then carries a time-and-usage table: minutes and tokens for the session and for each agent, added up by a script from the session's records | Measured, not limited |
 | It forgets between sessions | Everything a step needs is on GitHub or in the repo, never only in a chat. `/next` rebuilds the picture from that | By design |
 
 **What is still on trust.** A "told" rule can be broken by an agent on a bad day. That is why every told rule has a

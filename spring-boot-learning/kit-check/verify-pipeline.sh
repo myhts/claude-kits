@@ -7,6 +7,7 @@
 #   4. every plugin installs and loads its parts
 #   5. /next: its script names the right next step for each state of a repo (gh is stubbed, so it runs offline)
 #   6. protecting main: protect-main.sh sends the right ruleset, and only adds to one that exists (gh is stubbed too)
+#   7. time and usage: usage.sh adds up a made-up session's replies, counts each once, and starts at the command
 # Nothing is installed or changed; step 1 only downloads public files into a temp folder.
 #   ./verify-pipeline.sh                    run all checks
 #   ./verify-pipeline.sh --update-upstream  rewrite kit-pipeline/upstream/ from the commit pinned in upstream.lock
@@ -355,5 +356,61 @@ grep -q 'needs admin rights' <<< "$out" || fail "protect-main without admin righ
 [ ! -f "$pt/fix/sent" ] || fail "protect-main sent something without admin rights"
 if protect >/dev/null 2>&1; then fail "protect-main ran with no checks"; fi
 echo "   6 cases: dry run, new, strict, an existing ruleset, no admin rights, no checks"
+
+echo "== 7. usage.sh"
+# A made-up session: one reply before the command (not counted), the command, a reply stored on two lines (counted
+# once), a tool result that only quotes the command (not a new start), and three agents, one of them finished
+# before the command.
+ut=$(mktemp -d); trap 'rm -rf "$tmp" "$repo" "$sandbox" "$nt" "$pt" "$ut"' EXIT
+U="$K/skills/implement/usage.sh"
+us="$ut/projects/-some-project"; mkdir -p "$us/s1/subagents"
+reply() {   # time, reply id, model, input, written to cache, read from cache, output
+  jq -cn --arg t "2026-01-01T$1Z" --arg id "$2" --arg m "$3" --argjson i "$4" --argjson w "$5" --argjson r "$6" --argjson o "$7" \
+    '{type:"assistant",timestamp:$t,message:{id:$id,model:$m,content:[{type:"text",text:"x"}],
+      usage:{input_tokens:$i,cache_creation_input_tokens:$w,cache_read_input_tokens:$r,output_tokens:$o}}}'
+}
+prompt() { jq -cn --arg t "2026-01-01T$1Z" --arg c "$2" '{type:"user",timestamp:$t,message:{content:$c}}'; }
+result() { jq -cn --arg t "2026-01-01T$1Z" --arg c "$2" '{type:"user",timestamp:$t,message:{content:[{type:"tool_result",content:$c}]}}'; }
+typed='<command-message>pipeline:implement</command-message> <command-name>/pipeline:implement</command-name>'
+{ prompt 09:00:00.000 "an earlier question"
+  reply  09:00:05.000 m0 claude-opus-5-5 5000 5000 0 9000
+  prompt 10:00:00.000 "$typed"
+  reply  10:00:10.000 m1 claude-opus-5-5 100 900 0 50
+  reply  10:00:10.500 m1 claude-opus-5-5 100 900 0 60
+  result 10:00:20.000 "a file that mentions <command-name>/pipeline:implement</command-name>"
+  reply  10:00:30.000 m2 claude-opus-5-5 10 0 1000 40
+  echo '{"type":"api-request-blob","note":"other kinds of line are skipped"}'
+} > "$us/s1.jsonl"
+{ prompt 10:00:12.000 "review this"
+  reply  10:01:12.000 a1 claude-sonnet-5-5 5 1995 0 300
+  result 10:02:12.000 "ok"
+  reply  10:03:12.000 a2 claude-sonnet-5-5 0 0 2600 700
+} > "$us/s1/subagents/agent-aaa.jsonl"
+{ prompt 10:00:12.000 "review this too"
+  reply  10:01:12.000 b1 claude-sonnet-5-5 1000 0 0 600
+} > "$us/s1/subagents/agent-bbb.jsonl"
+{ prompt 09:00:10.000 "an older agent"
+  reply  09:00:40.000 c1 claude-opus-5-5 7000 0 0 7000
+} > "$us/s1/subagents/agent-ccc.jsonl"
+echo '{"agentType":"pipeline:code-reviewer"}' > "$us/s1/subagents/agent-aaa.meta.json"
+echo '{"agentType":"pipeline:code-reviewer"}' > "$us/s1/subagents/agent-bbb.meta.json"
+echo '{"agentType":"general-purpose"}' > "$us/s1/subagents/agent-ccc.meta.json"
+usage() {   # $1 = session id, $2 = command
+  CLAUDE_CONFIG_DIR="$ut" CLAUDE_CODE_SESSION_ID="$1" USAGE_NOW="$(jq -n '"2026-01-01T10:30:00Z" | fromdateiso8601')" bash "$U" "$2"
+}
+out=$(usage s1 implement)
+for line in \
+  '**Time and usage:** 30 min on the clock since /implement was typed, 2 agents.' \
+  '| this session | opus-5-5 | – | 1k | 1k | 100 |' \
+  '| code-reviewer ×2 | sonnet-5-5 | 4 | 3k | 3k | 2k |' \
+  '| **Total** | | 4 | 4k | 4k | 2k |'
+do grep -qxF -- "$line" <<< "$out" || fail "usage.sh: missing line: $line
+$out"; done
+out=$(usage s1 human-review)
+grep -qF '90 min on the clock in this session (no /human-review line was found), 3 agents.' <<< "$out" || fail "usage.sh, whole session: $out"
+grep -qxF '| this session | opus-5-5 | – | 11k | 1k | 9k |' <<< "$out" || fail "usage.sh, whole session: $out"
+out=$(usage no-such-session implement) || fail "usage.sh must exit 0 when it has nothing to read"
+[[ "$out" == "Time and usage: not available"* ]] || fail "usage.sh without a session said: $out"
+echo "   3 cases: counted from the command, the whole session, no session record"
 
 echo "OK: pipeline plugin verified"
