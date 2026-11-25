@@ -55,6 +55,11 @@ Sources, in order of authority:
    - **Refused bequest**: a subtype ignoring most of what it inherits.
 7. **Tests:** the behaviour is tested through public interfaces at the agreed seams. Expected values come from an
    independent source, not recomputed the way the code computes them. Mocks sit only at system boundaries.
+8. **A weakened check** is always a must-fix. Look for it in every diff: an assertion removed or loosened, a test
+   deleted or switched off (`@Disabled`, `@Ignore`, `.skip`, `xit`, `t.Skip`, `pytest.mark.skip`), a lint or type
+   rule silenced, a coverage or size limit lowered, a CI step removed or allowed to fail (`continue-on-error`,
+   `|| true`). Quote the removed or changed line. Whether the ticket asked for it is decided by whoever holds the
+   ticket, not by you.
 
 ## Axis: spec
 

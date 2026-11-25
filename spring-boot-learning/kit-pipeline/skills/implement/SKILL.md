@@ -125,6 +125,10 @@ Sort the findings first. You hold the ticket, the spec and the seams; the fixer 
 - **Contest** a finding the code shows is wrong, and cite the `file:line` that shows it. "It's intended" isn't
   evidence, and neither is having written the code: if the code alone doesn't show why it's fine, it's a judgement
   call.
+- **A weakened check** (an assertion removed or loosened, a test deleted or switched off, a lint rule silenced, a
+  limit lowered, a CI step removed or allowed to fail) needs no further proof: the diff shows it. It can't be
+  contested with "the test was wrong". Unless the ticket asks for that change in words, put the check back and fix
+  the code; if the check really is wrong, that goes to the human as a judgement call, with the check still in place.
 - **Pre-existing:** a finding on lines this diff didn't change becomes a proposed follow-up ticket, not part of this
   PR, unless the change makes it reachable or worse.
 - **Beyond the ticket:** a finding whose fix would add behaviour the ticket doesn't ask for (a new rule, a stricter

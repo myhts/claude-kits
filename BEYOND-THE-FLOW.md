@@ -87,7 +87,7 @@ A skill only adds to what your session knows. The other three are separate from 
 **In one line:** a hook is a script outside Claude, so no wording in a chat can talk it out of its answer.
 
 - **The kit has one:** the merge guard. Claude Code runs it before every shell command, and it refuses merges, pushes to
-  `main`, force pushes and commands that throw work away.
+  `main`, force pushes, commits that skip the git hooks, and commands that throw work or data away.
 - **Why it exists.** A written rule can be broken on a bad day. A script cannot be persuaded.
 - **In a normal team:** branch permissions, applied on your own machine.
 
@@ -462,7 +462,7 @@ without a test or a cited source.
 | --- | --- | --- |
 | The code in the Spring and AI skills works | 44 tests run it on Spring Boot 4.1.1 against a real Postgres, and 23 more run the model code against a local stand-in | `./mvnw verify` |
 | The build and deploy files work | They are built and run. With a local cluster: a release, a broken release that leaves the old version serving, and an undo | `verify-templates.sh` |
-| The merge guard blocks the right things | It is fed 22 dangerous commands and 15 safe ones | `verify-pipeline.sh` |
+| The merge guard blocks the right things | It is fed 47 dangerous commands and 33 safe ones | `verify-pipeline.sh` |
 | `/next` names the right step | It is run against 26 different repo states | `verify-pipeline.sh` |
 | The adopted skills are unchanged | They are compared with Matt Pocock's originals, byte for byte | `verify-pipeline.sh` |
 | Two reviewers beat one | A blind-graded comparison on code with known defects. They tied, and each found things the other missed | `reviewer-eval/` |

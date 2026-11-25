@@ -258,7 +258,8 @@ You also decide each question the reviewers left open: fix it now, make a follow
 **In one line:** a person decides what reaches `main`, and that is enforced, not requested.
 
 - **What stops Claude.** The merge guard is a script that reads every shell command before it runs. It refuses a merge,
-  a push to `main`, a force push, a change to branch protection, and commands that discard work.
+  a push to `main`, a force push, a change to branch protection, a commit that skips the git hooks, and commands
+  that discard work or delete data.
 - **What it still allows.** Pushing a feature branch and opening a pull request, because that is how work reaches you.
 - **The second lock.** GitHub's own rule refuses the merge without a current review record and green tests.
 - **In a normal team:** the release decision.
@@ -347,7 +348,9 @@ GitHub refuses, whatever Claude says.
 | It changes too many files at once | Tickets are thin slices. A pull request has a budget of about 400 lines, and Claude proposes a split above it. In build-with-me mode it writes about 60 lines, then waits for your OK | Told. GitHub labels an oversized PR |
 | You cannot tell what it changed | The pull request shows the change as pseudo-code, the proof, and the danger of merging. `/human-review` then asks you questions and checks your answers against the code | Blocked: no merge without your review record |
 | It edits things nobody asked for | The builder's rules forbid drive-by refactors and unrelated formatting. The spec reviewer reports anything "not asked for". A bug in untouched code becomes a new ticket, not a quiet fix. So does a review finding that asks for more than the ticket did | Second agent |
-| It deletes files or throws work away | The builder must ask before deleting a file, renaming a module or adding a dependency. The merge guard refuses `git reset --hard`, `git clean -f`, `git checkout .`, `git restore .`, `git branch -D` and force pushes | Asking is told. The git commands are blocked |
+| It deletes files or throws work away | The builder must ask before deleting a file, renaming a module or adding a dependency. The merge guard refuses `git reset --hard`, `git clean -f`, `git checkout .`, `git restore .`, `git branch -D` and force pushes. It also refuses `rm -r` on the whole project, your home folder, `.git` or `.github`, and deleting a CI workflow | Asking is told. The commands are blocked |
+| It deletes data to get unstuck | The builder must ask before deleting a volume, a table or a cache. The merge guard refuses `docker volume rm`, `docker compose down -v`, `docker system prune`, `DROP` and `TRUNCATE` through a database client, `dropdb` and a Redis flush | Asking is told. The commands are blocked |
+| It weakens a check to get green | The builder must ask before removing, switching off or loosening a test, an assertion or a CI step. The standards reviewer reports any such change as a must-fix, and "the test was wrong" does not close it. The merge guard refuses a commit or push that skips the git hooks (`--no-verify`) | Second agent. Skipping the hooks is blocked |
 | It breaks something far away | Tests run against a real database in containers. GitHub runs them again on every PR. Releases go to staging first and undo themselves on failure | Blocked on GitHub |
 | It says "done" with no proof | Each behaviour starts as a failing test. The failing run and the passing run are both kept and shown in the PR | Told, and you can see the proof |
 | It marks its own homework | Two reviewers start with a fresh memory. One knows your rules, one sees only the code. A reviewer that crashes is reported as "not run", never as "clean" | Second agent |
@@ -355,7 +358,9 @@ GitHub refuses, whatever Claude says.
 | It forgets between sessions | Everything a step needs is on GitHub or in the repo, never only in a chat. `/next` rebuilds the picture from that | By design |
 
 **What is still on trust.** A "told" rule can be broken by an agent on a bad day. That is why every told rule has a
-second agent or a block behind it, and why the change reaches you small enough to read.
+second agent or a block behind it, and why the change reaches you small enough to read. The merge guard reads shell
+commands only: a file emptied with an editing tool, or a delete inside a script, gets past it and is caught by the
+reviewers and by your review.
 
 ## Where the ideas came from
 
