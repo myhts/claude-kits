@@ -308,7 +308,7 @@ defects the other missed.
 |---|---|
 | **You&nbsp;type** | nothing: `/implement` runs them in parallel before the PR opens |
 | **Claude** | first sizes the review by the change's merge danger (the table below). Each reviewer runs on the model and effort the stack card's "Review models" names, chosen once at setup, so no ticket stops to ask. In a full review, **`code-reviewer`** runs twice. On **standards**, it checks `CODING_STANDARDS.md`, the pack's checklist, the glossary's *avoid* words and a code-smell baseline. On **spec**, it checks the ticket, spec and event model for anything missing, extra or wrong. **`blind-reviewer`** sees only the code. **`security-reviewer`** (**`spring-security-reviewer`** in a Spring project) and **`deploy-reviewer`** join when the change touches their area. Claude then confirms each must-fix in the code, a fresh implementer fixes the confirmed ones, and the reviewers read the fixes once more, and only once. A bug in code the PR didn't touch becomes a proposed follow-up ticket instead. So does a finding that asks for more than the ticket did, unless the harm would be live the day the PR merges |
-| **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why |
+| **You&nbsp;get** | a PR you see only after its confirmed must-fix findings are fixed, plus a list of **judgement calls** left for you, including any finding Claude contested and why. The same comment ends with a [time-and-usage table](#reference): what this ticket took |
 | **Done&nbsp;when** | the confirmed must-fix findings are fixed (and re-reviewed once, in a full review), and anything still open is on your list |
 
 **The review is sized by the risk,** so the reviewers' time and yours go where a mistake would hurt. Two questions
@@ -344,7 +344,7 @@ against the code. The depth depends on the risk, and on whether it's code you ch
 | **You&nbsp;type** | `/pipeline:human-review #57` |
 | **Claude** | first walks you through the change in plain words: what each changed file does, what the tests prove, and the few critical lines with a short snippet of each. It then asks **questions**. *Explain* this part. *Predict* what happens if… (it then runs the test to check your answer). What's the *impact* on…? How would you *roll it back*? What would an *incident* look like? In a full review it then **breaks** up to three of the critical lines, one at a time, runs the tests so you see whether one goes red, and restores each line |
 | **You** | answer, and decide each judgement call: fix now, a follow-up ticket of its own, or accept |
-| **You&nbsp;get** | a **review record** posted on the PR, naming the exact commit you reviewed. The `human-review` check turns green |
+| **You&nbsp;get** | a **review record** posted on the PR, naming the exact commit you reviewed, with the review's own time and usage at the end. The `human-review` check turns green |
 | **Done&nbsp;when** | every question is checked and every judgement call decided |
 
 | The PR is… | Review |
@@ -490,6 +490,37 @@ Deleting data: `docker volume rm` and `prune`; `docker compose down -v`; `docker
 The guard reads shell commands only. It does not see a file emptied with an editing tool, a delete inside a script
 it runs, or a cloud or cluster command (`kubectl delete`, `terraform destroy`): the builder's rules forbid those,
 and the reviewers and your review are the check.
+
+</details>
+
+<details>
+<summary><b>The time-and-usage table</b></summary>
+
+`/implement` ends its PR comment with it, and `/human-review` ends its record with it, so every ticket carries what
+it took. A script adds up every reply of the session and of each agent since you typed the command. Claude never
+writes the numbers itself.
+
+```markdown
+**Time and usage:** 64 min on the clock since /implement was typed, 5 agents.
+
+| Who | Model | Working min | Input | Input from cache | Output |
+|---|---|---|---|---|---|
+| this session | opus-5-5 | – | 310k | 6.2M | 41k |
+| implementer | opus-5-5 | 21 | 420k | 5.9M | 52k |
+| code-reviewer ×2 | sonnet-5-5 | 5 | 96k | 720k | 27k |
+| blind-reviewer | opus-5-5 | 3 | 72k | 735k | 15k |
+| security-reviewer | opus-5-5 | 3 | 62k | 1.0M | 18k |
+| **Total** | | 32 | 960k | 14.6M | 153k |
+```
+
+- **Input** is text a model read for the first time. **Input from cache** is text it read again, at a fraction of
+  the price. **Output** is what it wrote, the dearest kind. The table counts tokens, not money.
+- **On the clock** runs from the command to the table, with your own thinking in it. **Working min** is each
+  agent's own time.
+- The numbers come from Claude Code's records of the session on your machine. If they can't be read, the table is
+  one line that says "not available", and nothing is estimated.
+- The count an agent reports when it finishes is not used: that is its size at the end, far less than what it
+  read on the way.
 
 </details>
 

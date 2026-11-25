@@ -76,6 +76,11 @@ Added 2026-11-25 (pipeline 0.6.5):
 - A weakened check (a removed assertion, a switched-off test, a CI step allowed to fail) is always a must-fix in
   `code-reviewer`, can't be contested in `implement`, and is on the `implementer`'s ask-first list.
 
+Added 2026-11-25 (pipeline 0.6.6):
+- `skills/implement/usage.sh`: the time and usage of one step, added up from Claude Code's records of the session
+  and of each agent. `/implement` ends its PR comment with the table and `/human-review` ends its record with it.
+  Checked in `verify-pipeline.sh` on a made-up session.
+
 Added 2026-11-01 (the stack-neutral pipeline):
 - `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock
   (https://github.com/mattpocock/skills, commit `4ae2317`, 2026-10-31), MIT License, Copyright (c) 2026 Matt Pocock:

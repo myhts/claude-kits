@@ -464,6 +464,7 @@ without a test or a cited source.
 | The build and deploy files work | They are built and run. With a local cluster: a release, a broken release that leaves the old version serving, and an undo | `verify-templates.sh` |
 | The merge guard blocks the right things | It is fed 47 dangerous commands and 33 safe ones | `verify-pipeline.sh` |
 | `/next` names the right step | It is run against 26 different repo states | `verify-pipeline.sh` |
+| The time-and-usage table adds up | It is run on a made-up session with a reply stored twice and an agent from before the command | `verify-pipeline.sh` |
 | The adopted skills are unchanged | They are compared with Matt Pocock's originals, byte for byte | `verify-pipeline.sh` |
 | Two reviewers beat one | A blind-graded comparison on code with known defects. They tied, and each found things the other missed | `reviewer-eval/` |
 | The rewritten project reviewer is better | It found all 10 planted defects in every run, and scored 31.8 against 27.2 for the version it replaced | `reviewer-eval/` |

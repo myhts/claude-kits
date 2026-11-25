@@ -170,8 +170,12 @@ through `/to-tickets`.
 4. Post the judgement calls and a one-line summary per reviewer as a PR comment. Its first line says how the change
    was built and reviewed, because `/human-review` sizes itself from it:
    `Built in: <mode> · Automated review: <light | full> (<reason>)`.
+   Its last part is the time and usage. Run `bash "${CLAUDE_SKILL_DIR}/usage.sh" implement` just before you post,
+   and paste what it prints, unchanged. It adds up every reply of this session and of each agent since the command
+   was typed. Never write these numbers yourself, and never use the token count an agent reports when it finishes:
+   that is its size at the end, not what it used. If the script says "not available", paste that one line.
 
 ## 8. Stop
 
-Report the PR link, the reviewer summaries, the judgement calls, and the next step: `/human-review <PR>`, in a fresh
-session (`/clear` first). The human merges; this skill never does, and the merge guard blocks it anyway.
+Report the PR link, the reviewer summaries, the judgement calls, the time-and-usage table as it was posted, and the
+next step: `/human-review <PR>`, in a fresh session (`/clear` first). The human merges; this skill never does, and the merge guard blocks it anyway.
