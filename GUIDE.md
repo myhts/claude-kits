@@ -47,7 +47,7 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **`setup.sh`** | repo root | One-time: checks your tools, and removes the `/project-explorer` link older versions put in `~/.claude/skills/` |
 | **`new-project.sh`** | repo root | Creates a Spring Boot 4 project from start.spring.io and installs the kit into it (`--pipeline`: enables the plugins instead of copying) |
 | **The plugin marketplace** `kits` | `.claude-plugin/marketplace.json` | `pipeline` (stages, agents, core skills, merge guard), `spring`, `e2e`, `spring-ai`, `spring-web`: the same files as the kits, loaded as plugins. See [PIPELINE.md](PIPELINE.md) |
-| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 7 core skills, `project-explorer` among them; the merge guard hook |
+| **The pipeline kit** | `spring-boot-learning/kit-pipeline/` | `/setup-project`, `/implement`, `/human-review`, `/deploy`, `/next`, `event-storming`; 15 skills copied unchanged from mattpocock/skills (`upstream/`); the 6 stack-neutral agents, `spring-security-reviewer` and 7 core skills, `project-explorer` among them; the merge guard hook; `usage.sh`, which adds up a step's time and tokens |
 | **The learning kit** | `spring-boot-learning/` | 7 agents and 7 core skills (kept in `kit-pipeline/`), 8 Spring skills (`kit/`), a working agreement, progress/lesson files; `install.sh` copies them into any project |
 | **The e2e add-on** (`--e2e`) | `spring-boot-learning/kit-e2e/` | Playwright + Testcontainers end-to-end tests, the `e2e-tester` agent, the `e2e-testing` skill, the Playwright MCP |
 | **The AI add-on** (`--ai`) | `spring-boot-learning/kit-ai/` | The `llm-engineering` skill (Claude through the Java SDK: structured outputs, prompt injection, stop reasons, citations, caching, cost, evals, synthetic data, a review checklist, a CI eval job), `CLAUDE.ai.md` rules, and with `--e2e` a WireMock fake of the model for e2e runs |
@@ -58,17 +58,17 @@ Add one to a repo with `claude plugin install <name>@kits --scope project`. For 
 | **`/project-explorer`** | `spring-boot-learning/kit-pipeline/skills/project-explorer/` (in the `pipeline` plugin as `/pipeline:project-explorer`; copy installs get it too) | Turns any codebase into an interactive architecture explorer with debug walkthroughs, guides and optional scaling labs |
 | **EventStorm** | the author's private example project | Where these were built and proven: explorer + Study path tab, e2e suite, `CLAUDE.md`, the agents in use. Referenced below; not needed to use anything here, and not public |
 
-### The agents (6 in the kit, plus 1 with `--e2e`)
+### The agents (7 in the kit, plus 1 with `--e2e`)
 
 | Agent | Writes code? | Tools | Use it when |
 |---|---|---|---|
 | `mentor` | No | Read, Grep, Glob, Bash | You're stuck or curious; you want an explanation with your own code, a hint, an exercise |
-| `code-reviewer` | No | Read, Grep, Glob, Bash | A feature is done: a review on two axes, the project's standards (coding standards, the pack's checklist, the glossary, code smells) and the ticket's spec. Uses the project's context; teaches in learn mode (scenario, how to see it, principle, hint) |
+| `code-reviewer` | No | Read, Grep, Glob, Bash | A feature is done: a review on two axes, the project's standards (coding standards, the pack's checklist, the glossary, code smells) and the ticket's spec. Uses the project's context; teaches in learn mode (scenario, how to see it, principle, hint). A weakened check (a test switched off, an assertion loosened, a CI step allowed to fail) is always a must-fix |
 | `blind-reviewer` | No | Read, Grep, Glob, Bash, WebFetch, WebSearch | You want an **independent** review: no project docs or CLAUDE.md, only code; checks against the stack's published best practices with sources |
 | `security-reviewer` | No | Read, Grep, Glob, Bash | Before a release or after adding auth, in any language: attack scenarios, access control first |
 | `spring-security-reviewer` | No | Read, Grep, Glob, Bash | The same for a Spring Boot app: knows its annotations, configuration and actuator |
 | `deploy-reviewer` | No | Read, Grep, Glob, Bash | You wrote a Dockerfile, compose, CI or Kubernetes files, in any language: memory, shutdown and probes per runtime |
-| `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files |
+| `implementer` | **Yes**, only when named | Read, Write, Edit, Bash, Glob, Grep | You want something **done for you**: a feature, a fix, a review finding, build files. Asks before deleting files or data, or weakening a check |
 | `e2e-tester` (`--e2e`) | Tests only, when asked | all (inherits the MCP browser) | Plan, write, repair or de-flake end-to-end tests; explore the running app in a browser |
 
 ### The skills (15 in the kit, plus 1 with `--e2e`)
@@ -528,8 +528,8 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
 ## 9. Ground rules
 
 - You write the production code unless you name the implementer.
-- Claude asks before: new dependencies, build changes, deleting files, commits or pushes, anything outside the project,
-  anything on shared machines or other projects' containers.
+- Claude asks before: new dependencies, build changes, deleting files or data, weakening a test or check, commits or
+  pushes, anything outside the project, anything on shared machines or other projects' containers.
 - No real personal or client data anywhere; invent test data. Secrets live in `.env` (gitignored), never in files.
 - Pin versions; prove claims with a test or a source; measure before saying "faster".
 
@@ -551,6 +551,7 @@ what was and wasn't tested (the Next, Vue and Svelte shells were never run). The
 - The three build modes, including learn and build-with-me.
 - The human gate: a review sized by risk, and a record tied to the head commit.
 - The merge guard.
+- The time-and-usage table on every PR and review record, added up from the session's records by a script.
 - `/next`: the repo's real state read in one pass, and one command named, nearest to production first.
 - Two reviewers, one that knows the project and one blind, compared in `kit-check/reviewer-eval`.
 - Stack packs proved by tests (kit-check).

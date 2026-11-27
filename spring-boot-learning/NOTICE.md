@@ -81,6 +81,10 @@ Added 2026-11-25 (pipeline 0.6.6):
   and of each agent. `/implement` ends its PR comment with the table and `/human-review` ends its record with it.
   Checked in `verify-pipeline.sh` on a made-up session.
 
+Added 2026-11-27:
+- `kit/CLAUDE.md`: "Ask before" also names deleting data and removing or loosening a test or an assertion, to match
+  the `implementer`'s ask-first list from pipeline 0.6.5.
+
 Added 2026-11-01 (the stack-neutral pipeline):
 - `kit-pipeline/upstream/`: 15 skills copied **unchanged** from **mattpocock/skills** by Matt Pocock
   (https://github.com/mattpocock/skills, commit `4ae2317`, 2026-10-31), MIT License, Copyright (c) 2026 Matt Pocock:

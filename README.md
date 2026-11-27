@@ -73,11 +73,15 @@ Pick the default in `/setup-project`. Change it for one ticket by adding a mode:
 
 ## Why you can trust what it ships
 
-- 🛑 **Claude can't merge.** A hook blocks merges, pushes to `main` and force pushes. Your review leaves a record tied
-  to the PR's latest commit, and a required check reads that record.
+- 🛑 **Claude can't merge.** A hook blocks merges, pushes to `main`, force pushes, commits that skip the git hooks,
+  and commands that throw work or data away. Your review leaves a record tied to the PR's latest commit, and a
+  required check reads that record.
 - ✂️ **Small PRs.** One ticket is one PR of about 400 lines, tested at seams you agreed on before any code was written.
 - 👀 **Two reviewers that see different things.** One knows the project; the other reads only the code. In blind-graded
-  tests, each caught defects the other missed. You choose once, at setup, which model each reviewer runs on.
+  tests, each caught defects the other missed. You choose once, at setup, which model each reviewer runs on. A test
+  that was removed, switched off or loosened is always a must-fix.
+- ⏱️ **You see what each ticket took.** Every PR and every review record ends with the minutes and tokens used, for
+  the session and for each agent, added up by a script rather than written by Claude.
 - 🧪 **Proof before claims.** Code in the skills runs as tests, the deploy templates go through a real rollout and
   rollback, and a changed agent ships only after it scores at least as well as the version it replaces. See
   [what's proved, and how](GUIDE.md#10-proofs).

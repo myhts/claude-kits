@@ -28,8 +28,9 @@ line, not that the app gets built fastest. Claude is a mentor and reviewer here,
   it's a stable release that works with this Boot version, and tell me why it's needed. Never "always latest".
 - Constructor injection; no field `@Autowired` in production code (fine in tests). No Lombok, so I see what the
   code does.
-- Ask before: adding dependencies, changing the build, deleting files, anything outside this repo, git commits and
-  pushes, anything that touches shared machines, databases or containers that aren't this project's.
+- Ask before: adding dependencies, changing the build, deleting files or data (a volume, a table, a cache), removing
+  or loosening a test or an assertion, anything outside this repo, git commits and pushes, anything that touches
+  shared machines, databases or containers that aren't this project's.
 - No real personal or client data anywhere: invent test data.
 
 ## This project (fill in)

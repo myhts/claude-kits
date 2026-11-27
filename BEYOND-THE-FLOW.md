@@ -255,8 +255,8 @@ one by name in plain words: "use the blind-reviewer on my changes".
 | Agent | Its one job | What it may change | What makes it different |
 | --- | --- | --- | --- |
 | `mentor` | Explains a concept using your own code, and gives hints, smallest first | Nothing | It gives the full answer only when you ask for it |
-| `implementer` | Builds what it is handed, test-first | Code, but only when `/implement` or you hand it the work | It asks before adding a dependency or deleting a file, and it never merges |
-| `code-reviewer` | Reviews a change with everything the project has written down | Nothing | Two separate passes: your standards, then the ticket |
+| `implementer` | Builds what it is handed, test-first | Code, but only when `/implement` or you hand it the work | It asks before adding a dependency, deleting a file or data, or weakening a check, and it never merges |
+| `code-reviewer` | Reviews a change with everything the project has written down | Nothing | Two separate passes: your standards, then the ticket. A weakened check is always a must-fix |
 | `blind-reviewer` | Reviews a change knowing nothing about the project | Nothing | It reads no documentation and ignores any description you give it |
 | `security-reviewer` | Looks for ways to attack the app, in any language | Nothing | Each finding is a concrete attack, and it never opens a file of real secrets |
 | `spring-security-reviewer` | The same, for a Spring Boot app | Nothing | It knows Spring's annotations, settings and built-in endpoints |
@@ -412,7 +412,7 @@ flow](PIPELINE.md#2-event-storming).
 
 | File | What it holds | When it is read |
 | --- | --- | --- |
-| `CLAUDE.md` | The agreement: you write the production code, small steps, a review after every feature, ask before adding dependencies or deleting files | At the start of every session |
+| `CLAUDE.md` | The agreement: you write the production code, small steps, a review after every feature, ask before adding dependencies, deleting files or data, or weakening a test | At the start of every session |
 | `docs/learning/PROGRESS.md` | The plan of 8 to 15 steps, what you can now explain, and anything the builder agent did for you | At the start of every session |
 | `docs/learning/LESSONS.md` | Each mistake, turned into a one-line rule | At the start of every session |
 
@@ -538,8 +538,8 @@ Find your situation in the left column. The right column is what to type or say.
 | An agent or skill is not found | Start `claude` from the project folder, and restart it after installing |
 | A skill's advice fails | The framework version moved on. Run `kit-check` and fix the skill |
 
-**The rules that hold everywhere.** Claude asks before adding a dependency, changing the build, deleting a file,
-committing, or touching anything outside the project. No real personal or client data goes anywhere: test data is
+**The rules that hold everywhere.** Claude asks before adding a dependency, changing the build, deleting a file or
+data, weakening a test or check, committing, or touching anything outside the project. No real personal or client data goes anywhere: test data is
 invented. Secrets stay in a file git ignores.
 
 **More detail:** [4 Workflows](GUIDE.md#4-workflows-step-by-step), [5 Applying it
