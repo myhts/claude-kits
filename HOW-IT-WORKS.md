@@ -212,10 +212,12 @@ The mode decides who writes the code. You chose a default in `/setup-project`, a
 
 - Adding or upgrading a dependency.
 - Deleting files, renaming modules, or changing the build beyond the ticket.
+- Making a check weaker so the build goes green: removing or loosening a test, an assertion or a CI step.
+- Deleting data: a Docker volume, a table, a database or a cache.
 - Anything outside your machine: deploying, shared databases, real secrets. These it never does.
 
 It also ends every job with a list of each file it changed, one line each, saying what and why. Merging, pushing to
-`main` and throwing work away are not left to trust: the merge guard blocks them.
+`main`, skipping the git hooks and throwing work or data away are not left to trust: the merge guard blocks them.
 
 **More detail:** [3 Test-first build](PIPELINE.md#3-test-first-build-with-container-tests), [4 A small
 PR](PIPELINE.md#4-a-small-pr) and [5 Two reviewer agents](PIPELINE.md#5-two-reviewer-agents).

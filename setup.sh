@@ -33,6 +33,8 @@ need java   "Java 21+ for the Spring Boot projects" "java -version" 21
 need docker "Testcontainers and the e2e stack"
 need node   "Node 22+ for the e2e tests and the explorer tools" "node --version" 22
 need curl   "new-project.sh downloads from start.spring.io"
+need gh     "GitHub CLI 2.94 or later, for the pipeline's tickets and PRs" "gh --version" 2
+need jq     "the merge guard and the time-and-usage table read JSON with it"
 if command -v docker >/dev/null 2>&1 && ! docker info >/dev/null 2>&1; then echo "  ! docker is installed but not running"; fi
 [ "$ok" -eq 1 ] || echo "Install what's missing, then run ./setup.sh again (linking still works without it)."
 [ "$CHECK_ONLY" -eq 1 ] && exit 0

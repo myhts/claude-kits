@@ -458,6 +458,7 @@ You choose which changes to apply.
 |---|---|
 | `/pipeline:…` isn't in the menu | The plugin isn't enabled in this repo. Run `claude plugin list`, then the two commands in [step 0](#0-set-up-once), then `/reload-plugins` |
 | "Blocked by the merge guard" | Working as intended. If you really want that command, run it yourself |
+| "Time and usage: not available (…)" | The brackets say why. "jq is not installed": `brew install jq`. "this session has no id" or "no record of this session was found": the step ran outside a normal Claude Code session, or your Claude Code keeps its records somewhere else. The PR is unaffected, and nothing is estimated in its place |
 | A planning step can't create sub-issues or blocking links | `gh` is older than 2.94. Upgrade it (`brew upgrade gh`) |
 | The `human-review` check stays red | No record names the latest commit. Run `/human-review` again after every new commit |
 | The PR got `size/large` | Split it, or reply in the PR with the reason. The label never blocks |

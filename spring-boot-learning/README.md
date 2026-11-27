@@ -105,6 +105,13 @@ cd spring-boot-learning/kit-check
 
 Fix whatever fails, then update the skill text to match.
 
+The `pipeline` plugin is checked by `kit-check/verify-pipeline.sh`, offline except for one download: the 15 adopted
+skills match mattpocock/skills at the pinned commit byte for byte; the merge guard blocks 47 dangerous commands
+(merges, pushes to `main`, force pushes, skipped git hooks, deleted work or data) and lets 33 safe ones through; the
+marketplace validates and every plugin installs and loads in a throwaway home; `/next` names the expected step for
+26 repo states and `protect-main.sh` sends the right ruleset in 6 cases, both with `gh` stubbed; and `usage.sh`
+adds up a made-up session in 3 cases, counting a reply stored twice once.
+
 The `build-templates` files are checked by `kit-check/verify-templates.sh`: it builds the image from the template
 Dockerfile, runs it with the template compose file on 127.0.0.1 ports, calls the API, checks the user, JVM flags
 and shutdown, renders the Kustomize overlays (`k8s/overlays/staging`, `prod`) and validates them (kubeconform), and
